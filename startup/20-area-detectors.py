@@ -55,13 +55,15 @@ class Pilatus(SingleTrigger, PilatusDetector):
 
     tiff = Cpt(TIFFPluginWithFileStore,
                suffix='TIFF1:',
-               write_path_template='/GPFS/xf11bm/Pilatus300/%Y/%m/%d/')
+               write_path_template='/GPFS/xf11bm/Pilatus300/%Y/%m/%d/',
+               root='/GPFS/x11bm')
 
 
 #class StandardProsilicaWithTIFF(StandardProsilica):
 #    tiff = Cpt(TIFFPluginWithFileStore,
 #               suffix='TIFF1:',
-#               write_path_template='/XF11ID/data/%Y/%m/%d/')
+#               write_path_template='/GPFS/xf11bm/data/%Y/%m/%d/',
+#               root='/GPFS/xf11bm/')
 
 
 
