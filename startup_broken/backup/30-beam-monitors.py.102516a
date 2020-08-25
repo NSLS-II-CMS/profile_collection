@@ -1,0 +1,23 @@
+
+########## FOE ##########
+
+
+########## Endstation ##########
+
+## Ion chamber: FMB Oxford I404
+
+def get_BIM3():
+    bim3_v1 = caget('XF:11BMB-BI{IM:3}:IC1_MON')
+    bim3_v2 = caget('XF:11BMB-BI{IM:3}:IC2_MON')
+    bim3_h1 = caget('XF:11BMB-BI{IM:3}:IC3_MON')
+    bim3_h2 = caget('XF:11BMB-BI{IM:3}:IC4_MON')
+    print('BIM3 - Ion Chamber (Endstation)')
+    print('Signal - vertical 1: %.3e A' % bim3_v1)
+    print('Signal - vertical 2: %.3e A' % bim3_v2)
+    print('Signal - vertical total: %.3e A' % bim3_v1+bim3_v2)
+    print('Flux - vertial total:  ph/s')
+    print('Signal - horizontal 1: %.3e A' % bim3_h1)
+    print('Signal - horizontal 1: %.3e A' % bim3_h2)
+    print('Signal - horizontal total: %.3e A' % bim3_h1+bim3_h2)
+    print('Flux - horizontal total:  ph/s')
+

@@ -1,0 +1,55 @@
+#ERROR LOG
+
+ERROR ENCOUNTERED in EpicsSignal_testing.put()
+ self.pvname: XF:11BMB-ES{Det:PIL2M}:Stats2:EnableCallbacks_RBV time: 1533100293.4705918
+ value: None
+ERROR ENCOUNTERED in EpicsSignal_testing.get() ret is None
+ self.pvname: XF:11BMB-ES{Det:PIL2M}:Stats2:NDArrayPort_RBV
+ time: 1534329115.5201588
+ value: None
+ value matches Python None
+ERROR ENCOUNTERED in EpicsSignal_testing.get() ret is None
+ self.pvname: XF:11BMB-ES{Det:PIL2M}:cam1:NumExposures_RBV
+ time: 1534346685.8858538
+ value: None
+ value matches Python None
+ERROR ENCOUNTERED in EpicsSignal_testing.get() ret is None
+ self.pvname: XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime_RBV
+ time: 1534439859.5374236
+ value: None
+ value matches Python None
+ERROR ENCOUNTERED in EpicsSignal_testing.get() ret is None
+ self.pvname: XF:11BMB-ES{Det:PIL2M}:Stats2:NDArrayPort_RBV
+ time: 1534598309.595432
+ value: None
+ value matches Python None
+ERROR ENCOUNTERED in EpicsSignal_testing.get() ret is None
+ self.pvname: XF:11BMB-ES{Det:PIL2M}:cam1:TriggerMode_RBV
+ time: 1534662255.149249
+ value: None
+ value matches Python None
+ERROR ENCOUNTERED in EpicsSignal_testing.get() ret is None
+ self.pvname: XF:11BMB-ES{Det:PIL2M}:cam1:ArrayCallbacks_RBV
+ time: 1536952937.9026897
+ value: None
+ value matches Python None
+ERROR ENCOUNTERED in EpicsSignal_testing.put() except ValueError
+ self.pvname: XF:11BMB-ES{Det:PIL2M}:image1:EnableCallbacks_RBV
+ time: 1537938415.1780076
+ value: None
+ value matches 'None'
+ERROR ENCOUNTERED in EpicsSignal_testing.get() ret is None
+ self.pvname: XF:11BMB-ES{Det:PIL2M}:cam1:ArrayCallbacks_RBV
+ time: 1539020276.9888117
+ value: None
+ value matches Python None
+ERROR ENCOUNTERED in EpicsSignal_testing.put() except ValueError
+ self.pvname: XF:11BMB-ES{Det:PIL2M}:image1:EnableCallbacks_RBV
+ time: 1539065099.636242
+ value: None
+ value matches 'None'
+ERROR ENCOUNTERED in EpicsSignal_testing.put() except ValueError
+ self.pvname: XF:11BMB-ES{Det:PIL2M}:ROI2:EnableCallbacks_RBV
+ time: 1539226086.6537783
+ value: None
+ value matches 'None'

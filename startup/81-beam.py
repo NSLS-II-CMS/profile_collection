@@ -929,7 +929,8 @@ class CMSBeam(object):
         self.armr_absorber_o = -24.5
         self.armr_absorber_out = -55.1
         self.absorber_transmission_list_13p5kev = [1, 0.041, 0.0017425, 0.00007301075, 0.00000287662355, 0.000000122831826, 0.00000000513437]    # at E = 13.5keV
-        self.absorber_transmission_list_17kev = [1, 1.847e-1, 3.330e-2, 6.064e-3, 1.101e-3, 1.966e-4, 3.633e-5]    # at E = 13.5keV
+        self.absorber_transmission_list_17kev = [1, 1.847e-1, 3.330e-2, 6.064e-3, 1.101e-3, 1.966e-4, 3.633e-5]    # at E = 17keV
+        self.absorber_transmission_list_10kev = [1, 8.5938e-4, 6.8924e-7, 5.9232e-10, 1e-15, 1e-15, 1e-15, 1e-15]    # at E = 10.08keV
         #TODO: make this energy dependent
         
         if False:
@@ -1577,7 +1578,7 @@ class CMSBeam(object):
             print('  final:      {} T = {:.6g}'.format(filters_final, self.calc_transmission_filters(filters_final, verbosity=0)))
 
         
-    def setTransmission(self, transmission, retries=3, tolerance=0.5, verbosity=3):
+    def setTransmission(self, transmission, retries=3, tolerance=0.7, verbosity=3):
         """
         Sets the transmission through the attenuator/filter box.
         Because the filter box has a discrete set of foils, it is impossible to
@@ -1709,6 +1710,11 @@ class CMSBeam(object):
         
         if abs(E - 13.5) < 0.01:
             self.absorber_transmission_list = [1, 0.041, 0.0017425, 0.00007301075, 0.00000287662355, 0.000000122831826, 0.00000000513437]    # at E = 13.5keV
+        elif abs(E - 17) < 0.01:
+            self.absorber_transmission_list = self.absorber_transmission_list_17kev
+        elif abs(E - 10) < 0.1:
+            self.absorber_transmission_list = self.absorber_transmission_list_10kev
+            
         else:
             tmp_list = []
             for i in np.arange(6+1):
@@ -1961,7 +1967,7 @@ class Beamline(object):
 
                 
 
-
+#from nslsii.devices.devices import TwoButtonShutter
 
 class CMS_Beamline(Beamline):
     '''This object collects together various standard protocols and sequences
@@ -1981,8 +1987,9 @@ class CMS_Beamline(Beamline):
         from epics import PV
         
         self._chamber_pressure_pv = PV('XF:11BMB-VA{Chm:Det-TCG:1}P-I')
-        #self.PV_Smpl_pressure = PV('XF:11BMB-VA{Chm:Smpl-TCG:1}P-I')
-        #self.PV_Det_pressure = PV('XF:11BMB-VA{Chm:Det-TCG:1}P-I')
+        self._PV_Smpl_pressure = PV('XF:11BMB-VA{Chm:Smpl-TCG:1}P-I')
+        self._PV_Det_pressure = PV('XF:11BMB-VA{Chm:Det-TCG:1}P-I')
+        self._PV_SAXS_pressure = PV('XF:11BMB-VA{BS:SAXS-TCG:1}P-I')
         
         self.detector = [] 
         self.PLOT_Y = []
@@ -2005,15 +2012,30 @@ class CMS_Beamline(Beamline):
         #sample soft pump: XF:11BMB-VA{Chm:Smpl-VV:1_Soft}    ------------NEW
         #detector pump: XF:11BMB-VA{Chm:Det-IV:1}
         #detector soft pump: XF:11BMB-VA{Chm:Det-IV:1_Soft}
-        self.PV_Smpl_vent = 'XF:11BMB-VA{Chm:Smpl-VV:1}'
-        self.PV_Smpl_vent_soft = 'XF:11BMB-VA{Chm:Smpl-VV_Soft:1}'
-        self.PV_Smpl_pump = 'XF:11BMB-VA{Chm:Smpl-VV:1}' # --------------NEW
-        self.PV_Smpl_pump_soft = 'XF:11BMB-VA{Chm:Smpl-VV:1_Soft}'   # ------------NEW
-        self.PV_Det_pump = 'XF:11BMB-VA{Chm:Det-IV:1}'
-        self.PV_Det_pump_soft = 'XF:11BMB-VA{Chm:Det-IV:1_Soft}'
-        self.PV_SAXS_GV = 'XF:11BMB-VA{Chm:Det-GV:1}'
-        self.PV_SAXS_pump = 'XF:11BMB-VA{BT:SAXS-IV:1}'
-        self.PV_FS4_pump = 'XF:11BMB-VA{Mir:KB-IV:1}' #-----NEED to CHANGE
+        
+        self._PV_Smpl_vent = 'XF:11BMB-VA{Chm:Smpl-VV:1}'
+        self._PV_Smpl_vent_soft = 'XF:11BMB-VA{Chm:Smpl-VV_Soft:1}'
+        self._PV_Smpl_pump = 'XF:11BMB-VA{Chm:Smpl-IV:1}' # --------------NEW
+        self._PV_Smpl_pump_soft = 'XF:11BMB-VA{Chm:Smpl-IV:1_Soft}'   # ------------NEW
+        self._PV_Det_pump = 'XF:11BMB-VA{Chm:Det-IV:1}'
+        self._PV_Det_pump_soft = 'XF:11BMB-VA{Chm:Det-IV:1_Soft}'
+        self._PV_SAXS_GV = 'XF:11BMB-VA{Chm:Det-GV:1}'
+        self._PV_SAXS_pump = 'XF:11BMB-VA{BT:SAXS-IV:1}'
+        self._PV_FS4_pump = 'XF:11BMB-VA{FS:4-IV:1_Soft}'
+ 
+        self._vent_Smpl = TriState('XF:11BMB-VA{Chm:Smpl-V', name='vent_Smpl')
+        self._pump_Smpl = TriState('XF:11BMB-VA{Chm:Smpl-I', name='pump_Smpl')
+        self._pump_Det = TriState('XF:11BMB-VA{Chm:Det-I', name='pump_Det')
+        self._pump_Pipe = TriState('XF:11BMB-VA{BT:SAXS-IV', name='pump_Pipe')
+        self._pump_FS4 = TriState('XF:11BMB-VA{FS:4-IV', name='pump_FS4')
+        self._GV_SAXS = TwoButtonShutterNC('XF:11BMB-VA{Chm:Det-GV:1}', name='GV_SAXS')
+        self._pump1_toggle = EpicsSignal('XF:11BMB-VA{BT:SAXS-Pmp:1}Cmd:Enbl-Cmd', name='pump1_toggle')
+        self._pump1_state = EpicsSignal('XF:11BMB-VA{BT:SAXS-Pmp:1}Sts:Enbl-Sts', name='pump1_state')
+        self._pump2_toggle = EpicsSignal('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', name='pump1_toggle')
+        self._pump2_state = EpicsSignal('XF:11BMB-VA{Chm:Det-Pmp:1}Sts:Enbl-Sts', name='pump1_state')
+        
+        self._WAXS_outlet_sts = EpicsSignal('XF:11BMB-VA{Chm:Det}UserCmd-Sts', name='WAXS_outlet_sts')
+        self._WAXS_outlet_toggle = EpicsSignal('XF:11BMB-VA{Chm:Det}UserButton', name='WAXS_outlet_toggle')
         
     def modeAlignment_bim6(self, verbosity=3):
         
@@ -2037,8 +2059,6 @@ class CMS_Beamline(Beamline):
         
         self.beam.bim6.reading()
 
-        
-        
     def modeMeasurement_bim6(self, verbosity=3):
         
         self.current_mode = 'undefined'
@@ -2216,7 +2236,42 @@ class CMS_Beamline(Beamline):
             print('  Checking state of PV ::: {} '.format(pv))
         time.sleep(wait_time)
         return caget(pv+'Pos-Sts')
-        
+
+    #020620, define the gate for vacuum
+    #TODO:homeF and homeR
+    #def gateIn(self):
+        #gatex.move(0)
+        ##home
+        ##caput('XF:11BMB-ES{Chm:Gate-Ax:X}Start:Home-Cmd',1)
+
+    #def gateOut(self):
+        #gatex.move(-95)
+        #
+
+    def _gateIn(self):
+        yield from  bps.mov(gatex, 0)
+        #home
+        #caput('XF:11BMB-ES{Chm:Gate-Ax:X}Start:Home-Cmd',1)
+
+    def _gateOut(self):
+        yield from  bps.mov(gatex, -95)
+
+    def _gateHome(self):
+        gatex.move(-5)
+        caput('XF:11BMB-ES{Chm:Gate-Ax:X}Start:Home-Cmd', 1)
+        #yield from  bps.mov(gatex, -95)
+
+    def _gateState(self, verbosity=3):
+        if abs(gatex.position-0)<0.1:
+            state = True
+            if verbosity>=3:
+                print(' The gate is closed')
+        else:
+            state = False
+            if verbosity>=3:
+                print(' The gate is open')
+        return state
+
     ##=====================================================================================================
     ##=====================================================================================================
     ##071617, RL, modify the pump/vent procedure for sample/WAXS area.
@@ -2242,32 +2297,133 @@ class CMS_Beamline(Beamline):
     ##detector soft pump: XF:11BMB-VA{Chm:Det-IV:1_Soft}
     ##FS4 pressure gauge: 'XF:11BMB-VA{FS:4-IV:1}'
     
+    #RE version of pumpSample
+    def _pumpSample(self, threshold=0.7): 
+        
+        #check the difference of pressures
+        start_time = time.time()
+        if self.diffPressure(verbosity=0) != 1:
+            return print('Check the system. Vacuum may be not necessary for the sample.')
+        # close 2s vent valve
+        yield from bps.mov(self._vent_Smpl, 'Close') 
+        # close 2d pump valve -- protect WAXS detector
+        yield from bps.mov(self._pump_Det, 'Close') 
+        # open 2s pump 
+        yield from bps.mov(self._pump_Smpl, 'Soft') 
+        # start pump2 
+        #yield from bps.mov(self._pump2_toggle, 1) 
+        ## Check pump again
+        yield from bps.sleep(10) 
+        while self._pump2_state.get()!=1:
+            yield from bps.mov(self._pump2_toggle, 0)
+            yield from bps.sleep(1)
+            yield from bps.mov(self._pump2_toggle, 1) 
+            yield from bps.sleep(1)
+        # Fully open valve to pump
+        while self._PV_Smpl_pressure.get()>500:
+            yield from bps.sleep(3) 
+        yield from bps.mov(self._pump_Smpl, 'Open') 
+        while self._PV_Smpl_pressure.get()>threshold: #gate cannot be open >0.5mbar
+        #while self._PV_Smpl_pressure.get()>1: #gate cannot be open >0.5mbar
+            print('waiting to complete pumping.')
+            yield from bps.sleep(3) 
+        yield from bps.mov(self._pump_Det, 'Open') 
+        print('The pumping is completed after {}s.'.format(time.time()-start_time))
+            
+        #open window
+        yield from self._gateOut()
+        ###
+        
+    def _ventSample(self): 
+
+        #close the Gate valve of SAXS pipe
+        yield from bps.mov(self._GV_SAXS, 'Close')
+        #turn off the outlet power of WAXS detector
+        while self._WAXS_outlet_sts.get()==1: #if the outlet is on, close it
+            yield from bps.mov(self._WAXS_outlet_toggle, 0) 
+            time.sleep(.5)
+        #close window
+        yield from self._gateIn()
+        ###
+        start_time = time.time()
+        start_p = self._PV_Det_pressure.get()
+        #close 2s pump valve
+        yield from bps.mov(self._pump_Smpl, 'Close') 
+        yield from bps.sleep(5)
+        #open 2s vent valve
+        yield from bps.mov(self._vent_Smpl, 'Soft') 
+        #yield from bps.sleep(1)
+        #yield from bps.mov(self._vent_Smpl, 'Close') 
+        #while self._PV_Det_pressure.get()<0.35:
+            #yield from bps.sleep(5)
+            #if self._PV_Det_pressure.get()<0.35:
+                #yield from bps.mov(self._vent_Smpl, 'Soft') 
+                #break
+        #else :
+            #yield from bps.mov(self._vent_Smpl, 'Close') 
+            #yield from bps.sleep(10)
+            #while self._PV_Det_pressure.get()>0.35:
+                #yield from bps.sleep(10)
+            #yield from bps.mov(self._vent_Smpl, 'Soft') 
+        while self._PV_Smpl_pressure.get()<100:
+            yield from bps.sleep(3)
+        yield from bps.mov(self._vent_Smpl, 'Open')         
+        while self._PV_Smpl_pressure.get()<980:
+            print('waiting to complete venting.')
+            yield from bps.sleep(3)
+        print('The venting is completed after {}s.'.format(time.time()-start_time))
+        
+    def _changePipe(self):
+        #close SAXS GV
+        yield from bps.mov(self._GV_SAXS, 'Close')
+        yield from bps.mov(self._pump_FS4, 'Close') 
+        yield from bps.mov(self._pump_Pipe, 'Close') 
+        while self._pump1_state.get()!=0:
+            yield from bps.mov(self._pump2_toggle, 1) 
+            yield from bps.sleep(1)
+            yield from bps.mov(self._pump2_toggle, 0)
+            yield from bps.sleep(1)
+        
+
+    def pumpSample(self, threshold=0.7):
+        RE(self._pumpSample(threshold=threshold))
+    def ventSample(self):
+        RE(self._ventSample())
+    def changePipe(self):
+        RE(self.changePipe())
+
     #def pumpSample(self, max_tries=8, verbosity=3):
         ##check the difference of pressures
+        #print('step 1')
         #if self.diffPressure(verbosity=0) != 1:
-            #return print('Check the system. Vacuum is not necessary for sample')
+            #return print('Check the system. Vacuum may be not necessary for the sample.')
         
         ## close 2d pump valve -- protect WAXS detector
         ## close 2s vent valve
-        #self._actuate_close(self.PV_Smpl_vent, verbosity=verbosity)
-        #self._actuate_close(self.PV_Det_pump, verbosity=verbosity)
+        #self._actuate_close(self._PV_Smpl_vent, verbosity=verbosity)
+        #self._actuate_close(self._PV_Det_pump, verbosity=verbosity)
         
+        #print('step 2')
         ## --checkpoint: the valves are closed
         #tries = 1
-        #while self._actuate_state(self.PV_Det_pump)==1 or self._actuate_state(self.PV_Smpl_vent)==1:
+        #while self._actuate_state(self._PV_Det_pump)==1 or self._actuate_state(self._PV_Smpl_vent)==1:
             #if tries<=max_tries:
                 #time.sleep(2.0)
                 #tries += 1
             #else:
                 #return print('Error: valve (Det_pump or Smpl_vent) is NOT closed')
+
+        #print('step 3')
                  
         ## pump 2s 
         ## Soft-open valve to pump
-        #self._actuate_close(self.PV_Smpl_pump, verbosity=verbosity)
+        #self._actuate_close(self._PV_Smpl_pump, verbosity=verbosity)
         #time.sleep(0.5)
-        #self._actuate_open(self.PV_Smpl_pump_soft, verbosity=verbosity)
+        #self._actuate_open(self._PV_Smpl_pump_soft, verbosity=verbosity)
         #time.sleep(1.0)
         ## Check pump 
+        #print('step 4')
+
         #tries = 1
         #while caget('XF:11BMB-VA{Chm:Det-Pmp:1}Sts:Enbl-Sts')==0 and tries<=max_tries:
             #caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 0)
@@ -2286,23 +2442,34 @@ class CMS_Beamline(Beamline):
             #time.sleep(3.0)
             #tries += 1        
         
-        #self.checkPressure(PV=self.PV_Smpl_pressure, range_low=500)
+        #print('step 5')
+
+        #self.checkPressure(PV=self._PV_Smpl_pressure, range_low=500)
 
         ## Fully open valve to pump
-        #self._actuate_close(self.PV_Smpl_pump_soft, verbosity=verbosity)
+        #self._actuate_close(self._PV_Smpl_pump_soft, verbosity=verbosity)
         #time.sleep(0.5)
-        #self._actuate_open(self.PV_Smpl_pump, verbosity=verbosity)
+        #self._actuate_open(self._PV_Smpl_pump, verbosity=verbosity)
+        #print('step 6')
         
-        #self.checkPressure(PV=self.PV_Smpl_pressure, range_low=5)
-     
+        #self.checkPressure(PV=self._PV_Smpl_pressure, range_low=5)
+        #self._actuate_open(self._PV_Det_pump, verbosity=verbosity)
+
+        ##open window
+        #self.gateOut()
+        ####
+
+
+            
     #def ventSample(self, verbosity=3):
         ##close window
-        #self.closeKaptonWindow(verbosity=verbosity)
+        #self.gateIn()
+        ##self.closeKaptonWindow(verbosity=verbosity)
         ##close 2s pump valve
-        #self._actuate_close(self.PV_Smpl_pump)
+        #self._actuate_close(self._PV_Smpl_pump)
         ##--checkpoint: the valve/window are closed
         #tries=1
-        #while self._actuate_state(self.PV_Smpl_pump)==1 or self.stateKaptonWindow==1:
+        #while self._actuate_state(self._PV_Smpl_pump)==1 or self.stateKaptonWindow==1:
             #if tries<=max_tries:
                 #time.sleep(2.0)
                 #tries += 1
@@ -2319,14 +2486,14 @@ class CMS_Beamline(Beamline):
         #time.sleep(1.0)
         #self._actuate_open('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}', verbosity=verbosity)
         
-        #self.checkPressure(PV=self.PV_Smpl_pressure, range_high=100)
+        #self.checkPressure(PV=self._PV_Smpl_pressure, range_high=100)
         
         ## Fully open the upstream vent-vale
         #self._actuate_close('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}', verbosity=verbosity)
         #time.sleep(1.0)
         #self._actuate_open('XF:11BMB-VA{Chm:Smpl-VV:1}', verbosity=verbosity)
 
-        #self.checkPressure(PV=self.PV_Smpl_pressure, range_high=990)
+        #self.checkPressure(PV=self._PV_Smpl_pressure, range_high=990)
         
         ##close the GN2 valve and switch to air 
         #ioL.setOff(Relay[6])        
@@ -2338,176 +2505,166 @@ class CMS_Beamline(Beamline):
             #print('Sample chamber is ready to be opened.')
             
             
-    #def openKaptonWindow(self, verbosity=3):
-        #pass
-
-    #def closeKaptonWindow(self, verbosity=3):
-        #pass
-
-    #def stateKaptonWindow(self, state=0, verbosity=3):
-        #if verbosity>=3:
-            #print('The state of Kapton Window is {}'.format(state))
-        #return state #0 = close, 1 = open
     
-    #def changePipe(self, max_tries=8, verbosity=3):
-        ##close GV for SAXS
-        #self._actuate_close(self.PV_SAXS_GV)
-        ##--checkpoint: the valves are closed
-        #tries=1
-        #while self._actuate_state(self.PV_SAXS_GV)==1:
-            #if tries<=max_tries:
-                #time.sleep(2.0)
-                #tries += 1
-            #else:
-                #return print('SAXS gate valve is not closed')
+    def changePipe(self, max_tries=8, verbosity=3):
+        #close GV for SAXS
+        self._actuate_close(self._PV_SAXS_GV)
+        #--checkpoint: the valves are closed
+        tries=1
+        while self._actuate_state(self._PV_SAXS_GV)==1:
+            if tries<=max_tries:
+                time.sleep(2.0)
+                tries += 1
+            else:
+                return print('SAXS gate valve is not closed')
             
-        ##close pump valve for section 1 and 3
-        #self._actuate_close('XF:11BMB-VA{BT:SAXS-IV:1}')
-        #self._actuate_close('XF:11BMB-VA{Mir:KB-IV:1}')
-        #tries=1
-        #while self._actuate_state('XF:11BMB-VA{BT:SAXS-IV:1}')==1 or self._actuate_state('XF:11BMB-VA{Mir:KB-IV:1}')==1:
-            #if tries<=max_tries:
-                #time.sleep(2.0)
-                #tries += 1
-            #else:
-                #return print('Error: valves for pump1 are NOT closed properly.')
+        #close pump valve for section 1 and 3
+        self._actuate_close('XF:11BMB-VA{BT:SAXS-IV:1}')
+        self._actuate_close('XF:11BMB-VA{Mir:KB-IV:1}')
+        tries=1
+        while self._actuate_state('XF:11BMB-VA{BT:SAXS-IV:1}')==1 or self._actuate_state('XF:11BMB-VA{Mir:KB-IV:1}')==1:
+            if tries<=max_tries:
+                time.sleep(2.0)
+                tries += 1
+            else:
+                return print('Error: valves for pump1 are NOT closed properly.')
             
-        ##turn off pump1 
-        #while caget('XF:11BMB-VA{BT:SAXS-Pmp:1}Sts:Enbl-Sts')==1 and tries<=max_tries:
-            #caput('XF:11BMB-VA{BT:SAXS-Pmp:1}Cmd:Enbl-Cmd', 0)
-            #time.sleep(1.0)
+        #turn off pump1 
+        while caget('XF:11BMB-VA{BT:SAXS-Pmp:1}Sts:Enbl-Sts')==1 and tries<=max_tries:
+            caput('XF:11BMB-VA{BT:SAXS-Pmp:1}Cmd:Enbl-Cmd', 0)
+            time.sleep(1.0)
     
-    ##def ventChamber(self, verbosity=3):
-        ##self.ventSample(verbosity=verbosity)
-        ##self.openKaptonWindow(verbosity=verbosity)
+    #def ventChamber(self, verbosity=3):
+        #self.ventSample(verbosity=verbosity)
+        #self.openKaptonWindow(verbosity=verbosity)
 
-    ##def pumpChamber(self, verbosity=3):
-        ##self.pumpSample(verbosity=verbosity)
-        ##self._actuate_open(self.PV_SAXS_GV)
+    #def pumpChamber(self, verbosity=3):
+        #self.pumpSample(verbosity=verbosity)
+        #self._actuate_open(self.PV_SAXS_GV)
         
-    #def checkPressure(self, PV=self._chamber_pressure_pv, range_low=None, range_high=None, readout_period=1.0, verbosity=3):
-        #'''Monitors the pressure in the sample/WAXS chamber, printing the current value.
-        #If range arguments are provided, the monitoring will end once the pressure
-        #is outside the range.
-        #'''
-        #monitor = True
-        #while monitor:
+    def checkPressure(self, PV, range_low=None, range_high=None, readout_period=1.0, verbosity=3):
+        '''Monitors the pressure in the sample/WAXS chamber, printing the current value.
+        If range arguments are provided, the monitoring will end once the pressure
+        is outside the range.
+        '''
+        monitor = True
+        while monitor:
             
-            #try:
+            try:
             
-                #if range_low is not None and PV.get()<range_low:
-                    #monitor = False
+                if range_low is not None and PV.get()<range_low:
+                    monitor = False
                     
-                #if range_high is not None and PV.get()>range_high:
-                    #monitor = False
+                if range_high is not None and PV.get()>range_high:
+                    monitor = False
 
-                #P_mbar = PV.get()
-                #P_atm = P_mbar*0.000986923
-                #P_torr = P_mbar*0.750062
-                #P_kPa = P_mbar*0.1
-                #P_psi = 0.0145038
+                P_mbar = PV.get()
+                P_atm = P_mbar*0.000986923
+                P_torr = P_mbar*0.750062
+                P_kPa = P_mbar*0.1
+                P_psi = 0.0145038
                 
-                #if verbosity>=4:
-                    #print('Sample chamber pressure: {:8.2f} mbar = {:5.3f} atm = {:7.3f} torr = {:4.1g} kPa     \r'.format(P_mbar, P_atm, P_torr, P_kPa), end='', flush=True)
-                #elif verbosity>=2:
-                    #print('Sample chamber pressure: {:8.2f} mbar ({:5.3f} atm)    \r'.format(P_mbar, P_atm), end='', flush=True)
+                if verbosity>=4:
+                    print('Sample chamber pressure: {:8.2f} mbar = {:5.3f} atm = {:7.3f} torr = {:4.1g} kPa     \r'.format(P_mbar, P_atm, P_torr, P_kPa), end='', flush=True)
+                elif verbosity>=2:
+                    print('Sample chamber pressure: {:8.2f} mbar ({:5.3f} atm)    \r'.format(P_mbar, P_atm), end='', flush=True)
                     
-                #time.sleep(readout_period)
+                time.sleep(readout_period)
                 
                 
-            #except KeyboardInterrupt:
-                #monitor = False
+            except KeyboardInterrupt:
+                monitor = False
     
-    #def diffPressure(self, verbosity=3)
-        #'''check the difference of pressures in the sample and WAXS chamber. 
-        #'''
-        #Smpl_pressure = self.PV_Smpl_pressure.get()
-        #Det_pressure = self.PV_Det_pressure.get()
+    def diffPressure(self, verbosity=3):
+        '''check the difference of pressures in the sample and WAXS chamber. 
+        '''
+        Smpl_pressure = self._PV_Smpl_pressure.get()
+        Det_pressure = self._PV_Det_pressure.get()
         
-        #if Smpl_pressure < 5 and Det_pressure < 5:
-            #if verbosity>=3:
-                #print('Both Sample and WAXS are in vacuum.')
-            #return 0
+        if Smpl_pressure < 1 and Det_pressure < 1:
+            if verbosity>=3:
+                print('Both Sample and WAXS are in vacuum.')
+            return 0
         
-        #elif Smpl_pressure >950 and Det_pressure > 950:
-            #if verbosity>=3:
-                #print('Both Sample and WAXS are in air.')
-            #return 3
+        elif Smpl_pressure >950 and Det_pressure > 950:
+            if verbosity>=3:
+                print('Both Sample and WAXS are in air.')
+            return 3
         
-        #elif Smpl_pressure > Det_pressure:
-            #if verbosity>=3:
-                #print('Sample pressure > WAXS pressure.')
-            #return 1
+        elif Smpl_pressure > Det_pressure:
+            if verbosity>=3:
+                print('Sample pressure > WAXS pressure.')
+            return 1
         
-        #elif Smpl_pressure < Det_pressure:
-            #if verbosity>=3:
-                #print('Sample pressure < WAXS pressure.')
-            #return 2
+        elif Smpl_pressure < Det_pressure:
+            if verbosity>=3:
+                print('Sample pressure < WAXS pressure.')
+            return 2
     ##=====================================================================================================
     ##=====================================================================================================
-
     
-    def ventChamber(self, verbosity=3):
+    
+    #def ventChamber(self, verbosity=3):
         
-        #TODO: Remove the old (commented-out) caput lines
+        ##TODO: Remove the old (commented-out) caput lines
         
-        #open the GN2 valve and close the air valve
-        ioL.setOn(Relay[6])
-        while ioL.read(Relay[6]) ==0:
-            time.sleep(1)
-            ioL.setOn(Relay[6])
+        ##open the GN2 valve and close the air valve
+        #ioL.setOn(Relay[6])
+        #while ioL.read(Relay[6]) ==0:
+            #time.sleep(1)
+            #ioL.setOn(Relay[6])
         
-        # Close large gate valve (downstream side of sample chamber)
-        #caput('XF:11BMB-VA{Chm:Det-GV:1}Cmd:Cls-Cmd',1)
-        self._actuate_close('XF:11BMB-VA{Chm:Det-GV:1}', verbosity=verbosity)
+        ## Close large gate valve (downstream side of sample chamber)
+        ##caput('XF:11BMB-VA{Chm:Det-GV:1}Cmd:Cls-Cmd',1)
+        #self._actuate_close('XF:11BMB-VA{Chm:Det-GV:1}', verbosity=verbosity)
 
-        # Close small gate valve (upstream side of sample chamber)
-        #caput('XF:11BMB-VA{Slt:4-GV:1}Cmd:Cls-Cmd',1)
-        self._actuate_close('XF:11BMB-VA{Slt:4-GV:1}', verbosity=verbosity)
+        ## Close small gate valve (upstream side of sample chamber)
+        ##caput('XF:11BMB-VA{Slt:4-GV:1}Cmd:Cls-Cmd',1)
+        #self._actuate_close('XF:11BMB-VA{Slt:4-GV:1}', verbosity=verbosity)
 
-        # Close valve connecting sample chamber to vacuum pump
-        #caput('XF:11BMB-VA{Chm:Det-IV:1}Cmd:Cls-Cmd',1)
-        self._actuate_close('XF:11BMB-VA{Chm:Det-IV:1}', verbosity=verbosity)
+        ## Close valve connecting sample chamber to vacuum pump
+        ##caput('XF:11BMB-VA{Chm:Det-IV:1}Cmd:Cls-Cmd',1)
+        #self._actuate_close('XF:11BMB-VA{Chm:Det-IV:1}', verbosity=verbosity)
         
-        # Soft-open the upstream vent-valve
-        #caput('XF:11BMB-VA{Chm:Smpl-VV:1}Cmd:Cls-Cmd', 1)
-        self._actuate_close('XF:11BMB-VA{Chm:Smpl-VV:1}', verbosity=verbosity)
-        time.sleep(1.0)
-        #caput('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}Cmd:Opn-Cmd', 1)
-        self._actuate_open('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}', verbosity=verbosity)
-        # Soft-open the downstream vent-vale
-        #caput('XF:11BMB-VA{Chm:Det-VV:1_Soft}Cmd:Cls-Cmd', 1)
-        self._actuate_close('XF:11BMB-VA{Chm:Det-VV:1}', verbosity=verbosity)
-        time.sleep(1.0)
-        #caput('XF:11BMB-VA{Chm:Det-VV:1}Cmd:Opn-Cmd', 1)
-        self._actuate_open('XF:11BMB-VA{Chm:Det-VV:1_Soft}', verbosity=verbosity)
+        ## Soft-open the upstream vent-valve
+        ##caput('XF:11BMB-VA{Chm:Smpl-VV:1}Cmd:Cls-Cmd', 1)
+        #self._actuate_close('XF:11BMB-VA{Chm:Smpl-VV:1}', verbosity=verbosity)
+        #time.sleep(1.0)
+        ##caput('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}Cmd:Opn-Cmd', 1)
+        #self._actuate_open('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}', verbosity=verbosity)
+        ## Soft-open the downstream vent-vale
+        ##caput('XF:11BMB-VA{Chm:Det-VV:1_Soft}Cmd:Cls-Cmd', 1)
+        #self._actuate_close('XF:11BMB-VA{Chm:Det-VV:1}', verbosity=verbosity)
+        #time.sleep(1.0)
+        ##caput('XF:11BMB-VA{Chm:Det-VV:1}Cmd:Opn-Cmd', 1)
+        #self._actuate_open('XF:11BMB-VA{Chm:Det-VV:1_Soft}', verbosity=verbosity)
         
-        self.chamberPressure(range_high=100)
+        #self.chamberPressure(range_high=100)
         
-        # Fully open the upstream vent-vale
-        #caput('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}Cmd:Cls-Cmd', 1)
-        self._actuate_close('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}', verbosity=verbosity)
-        time.sleep(1.0)
-        #caput('XF:11BMB-VA{Chm:Smpl-VV:1}Cmd:Opn-Cmd', 1)
-        self._actuate_open('XF:11BMB-VA{Chm:Smpl-VV:1}', verbosity=verbosity)
+        ## Fully open the upstream vent-vale
+        ##caput('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}Cmd:Cls-Cmd', 1)
+        #self._actuate_close('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}', verbosity=verbosity)
+        #time.sleep(1.0)
+        ##caput('XF:11BMB-VA{Chm:Smpl-VV:1}Cmd:Opn-Cmd', 1)
+        #self._actuate_open('XF:11BMB-VA{Chm:Smpl-VV:1}', verbosity=verbosity)
 
-        # Fully open the downstream vent-vale
-        #caput('XF:11BMB-VA{Chm:Det-VV:1_Soft}Cmd:Cls-Cmd', 1)
-        self._actuate_close('XF:11BMB-VA{Chm:Det  -VV:1_Soft}', verbosity=verbosity)
-        time.sleep(1.0)
-        #caput('XF:11BMB-VA{Chm:Det-VV:1}Cmd:Opn-Cmd', 1)
-        self._actuate_open('XF:11BMB-VA{Chm:Det-VV:1}', verbosity=verbosity)
+        ## Fully open the downstream vent-vale
+        ##caput('XF:11BMB-VA{Chm:Det-VV:1_Soft}Cmd:Cls-Cmd', 1)
+        #self._actuate_close('XF:11BMB-VA{Chm:Det  -VV:1_Soft}', verbosity=verbosity)
+        #time.sleep(1.0)
+        ##caput('XF:11BMB-VA{Chm:Det-VV:1}Cmd:Opn-Cmd', 1)
+        #self._actuate_open('XF:11BMB-VA{Chm:Det-VV:1}', verbosity=verbosity)
         
-        self.chamberPressure(range_high=990)
+        #self.chamberPressure(range_high=990)
         
-        #close the GN2 valve and switch to air 
-        ioL.setOff(Relay[6])        
-        while ioL.read(Relay[6]) ==1:
-            time.sleep(1)
-            ioL.setOff(Relay[6])
+        ##close the GN2 valve and switch to air 
+        #ioL.setOff(Relay[6])        
+        #while ioL.read(Relay[6]) ==1:
+            #time.sleep(1)
+            #ioL.setOff(Relay[6])
                        
-        if verbosity>=1:
-            print('Sample chamber is ready to be opened.')
+        #if verbosity>=1:
+            #print('Sample chamber is ready to be opened.')
         
             
         
@@ -2589,68 +2746,68 @@ class CMS_Beamline(Beamline):
 
         
         
-    def pumpChamber(self, max_tries=8, verbosity=3):
+    #def pumpChamber(self, max_tries=8, verbosity=3):
         
-        #close the GN2 valve and switch to air 
-        if ioL.read(Relay[6]) ==1:
-            ioL.setOff(Relay[6])        
+        ##close the GN2 valve and switch to air 
+        #if ioL.read(Relay[6]) ==1:
+            #ioL.setOff(Relay[6])        
             
-        # Close vent-valves
-        #caput('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}Cmd:Cls-Cmd', 1)
-        #caput('XF:11BMB-VA{Chm:Smpl-VV:1}Cmd:Cls-Cmd', 1)
-        #caput('XF:11BMB-VA{Chm:Det-VV:1_Soft}Cmd:Cls-Cmd', 1)
-        #caput('XF:11BMB-VA{Chm:Det-VV:1}Cmd:Cls-Cmd', 1)
-        self._actuate_close('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}', verbosity=verbosity)
-        self._actuate_close('XF:11BMB-VA{Chm:Smpl-VV:1}', verbosity=verbosity)
-        self._actuate_close('XF:11BMB-VA{Chm:Det-VV:1_Soft}', verbosity=verbosity)
-        self._actuate_close('XF:11BMB-VA{Chm:Det-VV:1}', verbosity=verbosity)
+        ## Close vent-valves
+        ##caput('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}Cmd:Cls-Cmd', 1)
+        ##caput('XF:11BMB-VA{Chm:Smpl-VV:1}Cmd:Cls-Cmd', 1)
+        ##caput('XF:11BMB-VA{Chm:Det-VV:1_Soft}Cmd:Cls-Cmd', 1)
+        ##caput('XF:11BMB-VA{Chm:Det-VV:1}Cmd:Cls-Cmd', 1)
+        #self._actuate_close('XF:11BMB-VA{Chm:Smpl-VV:1_Soft}', verbosity=verbosity)
+        #self._actuate_close('XF:11BMB-VA{Chm:Smpl-VV:1}', verbosity=verbosity)
+        #self._actuate_close('XF:11BMB-VA{Chm:Det-VV:1_Soft}', verbosity=verbosity)
+        #self._actuate_close('XF:11BMB-VA{Chm:Det-VV:1}', verbosity=verbosity)
         
-        # Turn on pump (if necessary)
-        tries = 1
-        while caget('XF:11BMB-VA{Chm:Det-Pmp:1}Sts:Enbl-Sts')==0 and tries<=max_tries:
-            caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 0)
-            time.sleep(0.2)
-            caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 1)
-            time.sleep(2.0)
-            tries += 1
+        ## Turn on pump (if necessary)
+        #tries = 1
+        #while caget('XF:11BMB-VA{Chm:Det-Pmp:1}Sts:Enbl-Sts')==0 and tries<=max_tries:
+            #caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 0)
+            #time.sleep(0.2)
+            #caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 1)
+            #time.sleep(2.0)
+            #tries += 1
         
-        # Soft-open valve to pump
-        #caput('XF:11BMB-VA{Chm:Det-IV:1}Cmd:Cls-Cmd', 1)
-        self._actuate_close('XF:11BMB-VA{Chm:Det-IV:1}', verbosity=verbosity)
-        time.sleep(0.5)
-        #caput('XF:11BMB-VA{Chm:Det-IV:1_Soft}Cmd:Opn-Cmd', 1)
-        self._actuate_open('XF:11BMB-VA{Chm:Det-IV:1_Soft}', verbosity=verbosity)
+        ## Soft-open valve to pump
+        ##caput('XF:11BMB-VA{Chm:Det-IV:1}Cmd:Cls-Cmd', 1)
+        #self._actuate_close('XF:11BMB-VA{Chm:Det-IV:1}', verbosity=verbosity)
+        #time.sleep(0.5)
+        ##caput('XF:11BMB-VA{Chm:Det-IV:1_Soft}Cmd:Opn-Cmd', 1)
+        #self._actuate_open('XF:11BMB-VA{Chm:Det-IV:1_Soft}', verbosity=verbosity)
         
-        time.sleep(5.0)
-        # Check pump again
-        tries = 1
-        while caget('XF:11BMB-VA{Chm:Det-Pmp:1}Sts:Enbl-Sts')==0 and tries<=max_tries:
-            caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 0)
-            time.sleep(1.0)
-            caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 1)
-            time.sleep(3.0)
-            tries += 1
+        #time.sleep(5.0)
+        ## Check pump again
+        #tries = 1
+        #while caget('XF:11BMB-VA{Chm:Det-Pmp:1}Sts:Enbl-Sts')==0 and tries<=max_tries:
+            #caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 0)
+            #time.sleep(1.0)
+            #caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 1)
+            #time.sleep(3.0)
+            #tries += 1
         
-        time.sleep(10.0)
-        # Check pump again
-        tries = 1
-        while caget('XF:11BMB-VA{Chm:Det-Pmp:1}Sts:Enbl-Sts')==0 and tries<=max_tries:
-            caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 0)
-            time.sleep(1.0)
-            caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 1)
-            time.sleep(3.0)
-            tries += 1        
+        #time.sleep(10.0)
+        ## Check pump again
+        #tries = 1
+        #while caget('XF:11BMB-VA{Chm:Det-Pmp:1}Sts:Enbl-Sts')==0 and tries<=max_tries:
+            #caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 0)
+            #time.sleep(1.0)
+            #caput('XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd', 1)
+            #time.sleep(3.0)
+            #tries += 1        
         
-        self.chamberPressure(range_low=500)
+        #self.chamberPressure(range_low=500)
 
-        # Fully open valve to pump
-        #caput('XF:11BMB-VA{Chm:Det-IV:1_Soft}Cmd:Cls-Cmd', 1)
-        self._actuate_close('XF:11BMB-VA{Chm:Det-IV:1_Soft}', verbosity=verbosity)
-        time.sleep(0.5)
-        #caput('XF:11BMB-VA{Chm:Det-IV:1}Cmd:Opn-Cmd', 1)
-        self._actuate_open('XF:11BMB-VA{Chm:Det-IV:1}', verbosity=verbosity)
+        ## Fully open valve to pump
+        ##caput('XF:11BMB-VA{Chm:Det-IV:1_Soft}Cmd:Cls-Cmd', 1)
+        #self._actuate_close('XF:11BMB-VA{Chm:Det-IV:1_Soft}', verbosity=verbosity)
+        #time.sleep(0.5)
+        ##caput('XF:11BMB-VA{Chm:Det-IV:1}Cmd:Opn-Cmd', 1)
+        #self._actuate_open('XF:11BMB-VA{Chm:Det-IV:1}', verbosity=verbosity)
         
-        self.chamberPressure(range_low=200)
+        #self.chamberPressure(range_low=200)
                 
         
     def _old_pumpChamber(self, readout_delay=0.2):

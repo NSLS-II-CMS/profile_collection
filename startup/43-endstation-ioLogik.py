@@ -53,6 +53,7 @@ class RTDpv(object):
     def __init__(self, ii):
         self.name = 'RTD_Chan{}'.format(ii)
         self.sts = 'XF:11BMB-ES{}T:{}-I'.format('{IO:RTD}', ii)
+        
 RTD=[None]
 for ii in range(1, 7):
     RTD.append(RTDpv(ii))
@@ -129,8 +130,12 @@ class ioLogik(Device):
         #coeff_slope = 0.030
 
         #For sensor 114 used for environmental bar
-        coeff_offset = 0.787
-        coeff_slope = 0.030
+        #coeff_offset = 0.787
+        #coeff_slope = 0.030
+
+        #For sensor 43 used in humidity stage
+        coeff_offset = 0.816887
+        coeff_slope = 0.028813
 
         sensor_RH = (corr_voltage_out - coeff_offset) / coeff_slope
 

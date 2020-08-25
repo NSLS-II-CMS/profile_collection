@@ -7,8 +7,9 @@ from ophyd import EpicsMotor, Device, Component as Cpt
 #    top = Cpt(EpicsMotor, '-Ax:T}Mtr')
 #    bottom = Cpt(EpicsMotor, '-Ax:B}Mtr')
 
-#beamline_stage = 'open_MAXS'  
-beamline_stage = 'default'  
+#beamline_stage = 'open_MAXS'
+beamline_stage = 'default'
+#beamline_stage = 'BigHuber'
 
 
 #slits = Slits('XF:11BMA-OP{Slt:0', name='slits') 
@@ -96,8 +97,24 @@ if beamline_stage == 'default':
 elif beamline_stage == 'open_MAXS':
     smx = EpicsMotor('XF:11BMB-ES{Chm:Smpl2-Ax:X}Mtr', name='smx')
     smy = EpicsMotor('XF:11BMB-ES{Chm:Smpl2-Ax:Y}Mtr', name='smy')
+    #sth = EpicsMotor('XF:11BMB-ES{SM:2-Ax:theta}Mtr', name='sth')
+    #schi = EpicsMotor('XF:11BMB-ES{SM:2-Ax:chi}Mtr', name='schi')
+    #swap sth and schi at 082219 by RL
     sth = EpicsMotor('XF:11BMB-ES{SM:2-Ax:theta}Mtr', name='sth')
     schi = EpicsMotor('XF:11BMB-ES{SM:2-Ax:chi}Mtr', name='schi')
+    
+elif beamline_stage == 'BigHuber':
+    # Huber
+    smy = EpicsMotor('XF:11BMB-ES{Chm:Smpl3-Ax:Y}Mtr', name='smy')
+    sth = EpicsMotor('XF:11BMB-ES{Chm:Smpl3-Ax:theta}Mtr', name='sth')
+    schi = EpicsMotor('XF:11BMB-ES{Chm:Smpl3-Ax:chi}Mtr', name='schi')
+    
+    # Newports
+    smx = EpicsMotor('XF:11BMB-ES{PTA:Sample-Ax:X}Mtr', name='smx')
+    laserx = EpicsMotor('XF:11BMB-ES{PTA:Laser-Ax:X}Mtr', name='laserx')
+    lasery = EpicsMotor('XF:11BMB-ES{PTA:Laser-Ax:Y}Mtr', name='lasery')
+    
+    
     
 smy2 = EpicsMotor('XF:11BMB-ES{Chm:Smpl-Ax:Y}Mtr', name='smy2')
 sphi = EpicsMotor('XF:11BMB-ES{Chm:Smpl-Ax:phi}Mtr', name='sphi')
@@ -143,6 +160,9 @@ bsx = EpicsMotor('XF:11BMB-ES{BS:SAXS-Ax:X}Mtr', name='bsx')
 bsy = EpicsMotor('XF:11BMB-ES{BS:SAXS-Ax:Y}Mtr', name='bsy')
 bsphi = EpicsMotor('XF:11BMB-ES{BS:SAXS-Ax:phi}Mtr', name='bsphi')
 
+##stage for vacuum gate
+gatex = EpicsMotor('XF:11BMB-ES{Chm:Gate-Ax:X}Mtr', name='gatex')
+
 ## easy access for stages
 def wbs():
     print('bsx = {}'.format(bsx.position))
@@ -162,3 +182,18 @@ def wWAXS():
 def wSAXS():
     print('SAXSx = {}'.format(SAXSx.position))
     print('SAXSy = {}'.format(SAXSy.position))
+
+def wMAXS():
+    print('MAXSx = {}'.format(MAXSx.position))
+    print('MAXSy = {}'.format(MAXSy.position))
+    
+def wGONIO():
+    print('sort = {}'.format(srot.position))
+    print('strans = {}'.format(strans.position))
+    print('strans2 = {}'.format(strans2.position))
+    print('stilt = {}'.format(stilt.position))
+    print('stilt2 = {}'.format(stilt2.position))
+    
+
+
+

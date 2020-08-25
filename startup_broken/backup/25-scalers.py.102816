@@ -1,0 +1,7 @@
+import ophyd
+
+quad_electrometer1 = ophyd.EpicsSignalRO("XF:11BMA-BI{IM:1}EM180:Current1:MeanValue_RBV", name='quad_electrometer1')
+quad_electrometer2 = ophyd.EpicsSignalRO("XF:11BMA-BI{IM:1}EM180:Current2:MeanValue_RBV", name='quad_electrometer2')
+quad_electrometer3 = ophyd.EpicsSignalRO("XF:11BMA-BI{IM:1}EM180:Current3:MeanValue_RBV", name='quad_electrometer3')
+quad_electrometer4 = ophyd.EpicsSignalRO("XF:11BMA-BI{IM:1}EM180:Current4:MeanValue_RBV", name='quad_electrometer4')
+

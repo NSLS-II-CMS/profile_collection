@@ -1,0 +1,25 @@
+from math import sin, cos, tan, asin, acos, atan, pi
+
+##### mono
+hc_over_e = 12.39842
+dmm_dsp = 20.1 		## DMM bilayer pitch in [Ang], according to Rigaku metrology report
+
+def getE():
+    bragg = (pi/180.)*caget('XF:11BMA-OP{Mono:DMM-Ax:Bragg}Mtr.RBV')	## in [rad]
+    wavelen = 2. * dmm_dsp * sin(bragg)					## in [Ang]
+    E = hc_over_e/wavelen
+    print('E = %.4g keV, Wavelength = %.4g Ang, DMM d-sp = %.4g Ang, Bragg = %.4g rad (%.4g deg)' % (E, wavelen, dmm_dsp, bragg, bragg*180./pi))
+    return(E)
+ 
+def moveE(eng):
+    wavelen = hc_over_e/eng		        ## in [Ang]
+    bragg = asin(wavelen/(2.*dmm_dsp))*180./pi	## in [deg]
+    print('mono_bragg will move to %.4g deg' % bragg)
+    yn = input('Are you sure? (y/n): ')
+    if yn == 'y' or yn == 'Y':
+        mov(mono_bragg, bragg)
+        print('mono_bragg was moved')
+    else:
+        print('No move was made')
+    getE()
+    

@@ -1,0 +1,372 @@
+
+===========================================
+with caproto and 'INFO' level login, 0.5s exposure time
+total time. by %time RE(count([pilatus2M]))
+===========================================
+
+In [1]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945944     Time: 2018/11/21 09:46:51
+Persistent Unique Scan ID: '6308e2ed-8f4e-4291-8df6-d7f100f8088a'
+                                                                                                                                            
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary')
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:46:53.2 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['6308e2ed'] (scan num: 945944)
+
+
+
+CPU times: user 960 ms, sys: 120 ms, total: 1.08 s
+Wall time: 2.71 s
+Out[1]: ('6308e2ed-8f4e-4291-8df6-d7f100f8088a',)
+
+In [2]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945945     Time: 2018/11/21 09:47:06
+Persistent Unique Scan ID: '0d8e0717-c57f-42d6-bd2c-5ae295e85c86'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:47:07.4 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['0d8e0717'] (scan num: 945945)
+
+
+
+CPU times: user 740 ms, sys: 56 ms, total: 796 ms
+Wall time: 2.37 s
+Out[2]: ('0d8e0717-c57f-42d6-bd2c-5ae295e85c86',)
+
+In [3]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945946     Time: 2018/11/21 09:47:09
+Persistent Unique Scan ID: '1c3feb42-b3e3-481f-b65e-e8c1418e5641'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:47:11.0 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['1c3feb42'] (scan num: 945946)
+
+
+
+CPU times: user 696 ms, sys: 88 ms, total: 784 ms
+Wall time: 2.55 s
+Out[3]: ('1c3feb42-b3e3-481f-b65e-e8c1418e5641',)
+
+In [4]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945947     Time: 2018/11/21 09:47:12
+Persistent Unique Scan ID: '63520c85-628a-4634-89f6-7acf29e9cf0f'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:47:14.4 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['63520c85'] (scan num: 945947)
+
+
+
+CPU times: user 800 ms, sys: 80 ms, total: 880 ms
+Wall time: 2.46 s
+Out[4]: ('63520c85-628a-4634-89f6-7acf29e9cf0f',)
+
+In [5]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945948     Time: 2018/11/21 09:47:16
+Persistent Unique Scan ID: '8aef8b6b-48f8-40ce-82cd-3a73777dcaaf'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:47:17.9 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['8aef8b6b'] (scan num: 945948)
+
+
+
+CPU times: user 788 ms, sys: 72 ms, total: 860 ms
+Wall time: 2.61 s
+Out[5]: ('8aef8b6b-48f8-40ce-82cd-3a73777dcaaf',)
+
+In [6]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945949     Time: 2018/11/21 09:48:52
+Persistent Unique Scan ID: 'e3e82995-7d50-47b9-9b0b-e3e5b0ce50f8'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:48:53.7 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['e3e82995'] (scan num: 945949)
+
+
+
+CPU times: user 796 ms, sys: 56 ms, total: 852 ms
+Wall time: 2.53 s
+Out[6]: ('e3e82995-7d50-47b9-9b0b-e3e5b0ce50f8',)
+
+In [7]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945950     Time: 2018/11/21 09:48:55
+Persistent Unique Scan ID: '20d1a1c6-252a-4868-ba42-f78964ade47a'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:48:57.1 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['20d1a1c6'] (scan num: 945950)
+
+
+
+CPU times: user 900 ms, sys: 60 ms, total: 960 ms
+Wall time: 2.39 s
+Out[7]: ('20d1a1c6-252a-4868-ba42-f78964ade47a',)
+
+In [8]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945951     Time: 2018/11/21 09:48:58
+Persistent Unique Scan ID: '74fcc0d6-8a17-4e11-8d45-2b7ef9932165'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:48:59.9 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['74fcc0d6'] (scan num: 945951)
+
+
+
+CPU times: user 812 ms, sys: 52 ms, total: 864 ms
+Wall time: 2.32 s
+Out[8]: ('74fcc0d6-8a17-4e11-8d45-2b7ef9932165',)
+
+In [9]: %run -i 99-caproto-test.py
+
+In [10]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945952     Time: 2018/11/21 09:49:18
+Persistent Unique Scan ID: 'c751ac97-d8ee-4d72-826b-041e893cd5bc'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:49:19.8 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['c751ac97'] (scan num: 945952)
+
+
+
+CPU times: user 724 ms, sys: 76 ms, total: 800 ms
+Wall time: 2.54 s
+Out[10]: ('c751ac97-d8ee-4d72-826b-041e893cd5bc',)
+
+
+===========================================
+with caproto and 'DEBUG' level login, 0.5s exposure time
+total time. by %time RE(count([pilatus2M]))
+===========================================
+
+In [1]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945955     Time: 2018/11/21 09:53:10
+Persistent Unique Scan ID: '7f4c8002-478b-4635-ba5b-f22f2bc1aaf0'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:53:12.5 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['7f4c8002'] (scan num: 945955)
+
+
+
+CPU times: user 2.66 s, sys: 320 ms, total: 2.98 s
+Wall time: 4.83 s
+Out[1]: ('7f4c8002-478b-4635-ba5b-f22f2bc1aaf0',)
+
+In [2]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945956     Time: 2018/11/21 09:53:19
+Persistent Unique Scan ID: '825044de-537b-4fc9-a35d-d696b1b8287e'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:53:22.2 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['825044de'] (scan num: 945956)
+
+
+
+CPU times: user 2.48 s, sys: 196 ms, total: 2.68 s
+Wall time: 4.45 s
+Out[2]: ('825044de-537b-4fc9-a35d-d696b1b8287e',)
+
+In [3]: %time RE(count([pilatus2M]))
+^[[A
+Transient Scan ID: 945957     Time: 2018/11/21 09:53:25
+Persistent Unique Scan ID: '5cf0994e-0210-41f1-87c3-1516495bd835'
+^[[A
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:53:27.1 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['5cf0994e'] (scan num: 945957)
+
+
+
+CPU times: user 2.44 s, sys: 140 ms, total: 2.58 s
+Wall time: 4.31 s
+Out[3]: ('5cf0994e-0210-41f1-87c3-1516495bd835',)
+
+In [4]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945958     Time: 2018/11/21 09:53:28
+Persistent Unique Scan ID: '08cf5df1-dc69-4825-b196-61ac67bd737d'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+  'Error:' + str(exc))
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:53:31.2 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['08cf5df1'] (scan num: 945958)
+
+
+
+CPU times: user 2.32 s, sys: 224 ms, total: 2.54 s
+Wall time: 4.06 s
+Out[4]: ('08cf5df1-dc69-4825-b196-61ac67bd737d',)
+
+In [5]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945959     Time: 2018/11/21 09:53:33
+Persistent Unique Scan ID: 'eaeb7606-eb67-42a1-a0fa-0dca648598f9'
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+  'Error:' + str(exc))
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:53:35.4 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['eaeb7606'] (scan num: 945959)
+
+
+
+CPU times: user 2.49 s, sys: 204 ms, total: 2.7 s
+Wall time: 4.24 s
+Out[5]: ('eaeb7606-eb67-42a1-a0fa-0dca648598f9',)
+
+
+===========================================
+with caproto and 'CRITICAL' level login, 0.5s exposure time
+total time. by %time RE(count([pilatus2M]))
+===========================================
+
+
+In [7]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945960     Time: 2018/11/21 09:54:38
+Persistent Unique Scan ID: '9aa7989b-a443-4938-a635-6968c6b3a24c'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:54:40.0 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['9aa7989b'] (scan num: 945960)
+
+
+
+CPU times: user 920 ms, sys: 64 ms, total: 984 ms
+Wall time: 2.54 s
+Out[7]: ('9aa7989b-a443-4938-a635-6968c6b3a24c',)
+
+In [8]: %time RE(count([pilatus2M]))
+^[[A
+Transient Scan ID: 945961     Time: 2018/11/21 09:54:41
+Persistent Unique Scan ID: '78eb73cb-2fca-49b6-b144-672a7abd140c'
+
+^[[A/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+pilatus2M: 100%|██████████████████████████████████████████████████████████████████████████████████████| 1.0/1.0 [00:00<00:00,  1.29images/s]
+                                                                                                                                            
+New stream: 'primary'
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:54:43.2 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['78eb73cb'] (scan num: 945961)
+
+
+
+^[[ACPU times: user 876 ms, sys: 60 ms, total: 936 ms
+Wall time: 2.35 s
+Out[8]: ('78eb73cb-2fca-49b6-b144-672a7abd140c',)
+
+In [9]: %time RE(count([pilatus2M]))
+
+Transient Scan ID: 945962     Time: 2018/11/21 09:54:44
+Persistent Unique Scan ID: '2aac00c7-1e1f-4be2-bf50-2c87bdd44799'
+^[[A
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+  'Error:' + str(exc))
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:54:45.8 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['2aac00c7'] (scan num: 945962)
+
+
+
+CPU times: user 932 ms, sys: 60 ms, total: 992 ms
+Wall time: 2.52 s
+Out[9]: ('2aac00c7-1e1f-4be2-bf50-2c87bdd44799',)
+
+In [10]: 
+
+In [10]: %time RE(count([pilatus2M]))
+Transient Scan ID: 945963     Time: 2018/11/21 09:54:51
+Persistent Unique Scan ID: '9f929b70-89d6-49a9-8d2b-fc75efd333cb'
+
+/opt/conda_envs/collection-2018-3.2/lib/python3.6/site-packages/nslsii/__init__.py:262: UserWarning: This olog is giving errors. This will not be logged.Error:0
+New stream: 'primary'                                                                                                                       
++-----------+------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+
+|         1 | 09:54:52.7 |                      0 |                      0 |
++-----------+------------+------------------------+------------------------+
+generator count ['9f929b70'] (scan num: 945963)
+
+
+
+CPU times: user 772 ms, sys: 56 ms, total: 828 ms
+Wall time: 2.38 s
+Out[10]: ('9f929b70-89d6-49a9-8d2b-fc75efd333cb',)

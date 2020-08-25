@@ -497,8 +497,7 @@ class LivePlot_Custom(LivePlot):
         
         self.current_line, = self.ax.plot(x_data, y_data, **kwargs)
         self.lines.append(self.current_line)
-        self.legend = self.ax.legend(
-            loc=0, title=self.legend_title).draggable()
+        self.legend = self.ax.legend(loc=0, title=self.legend_title)#.draggable()
 
 
  

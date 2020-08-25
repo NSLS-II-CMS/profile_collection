@@ -1,0 +1,70 @@
+#!/bin/bash
+# WARNING : This file is managed by ansible scripts.
+# Any changes to this are periodically overwritten.
+
+. /opt/conda/etc/profile.d/conda.sh
+
+# This script defines BS_ENV and BS_PROFILE if they are not already defined
+# (presumably in ~/.bashrc or explicitly by the user). If the files does not
+# exist _and_ the user has not defines these another way, the script will error
+# out violently on `conda activate` below.
+if [ -f /etc/bsui/default_vars ]; then
+  . /etc/bsui/default_vars
+fi
+
+
+conda_cmd="conda activate $BS_ENV"
+ipython_cmd="ipython --profile=$BS_PROFILE --IPCompleter.use_jedi=False"
+
+$conda_cmd || exit 1
+
+args=$(python -c 'import sys; print(" ".join([x if " " not in x else repr(x) for x in sys.argv[1:]]))' "$@")
+
+cat << EOL
+
+$(tput smul; tput bold)Versions of DAMA software:$(tput sgr0)
+
+$(python -c '\
+msg = "Not installed"
+try:
+    import bluesky
+    bluesky_version = "v{}".format(bluesky.__version__)
+except ImportError:
+    bluesky_version = msg
+try:
+    import ophyd
+    ophyd_version = "v{}".format(ophyd.__version__)
+except ImportError:
+    ophyd_version = msg
+try:
+    import databroker
+    databroker_version = "v{}".format(databroker.__version__)
+except ImportError:
+    databroker_version = msg
+
+print("    - Bluesky    : {}".format(bluesky_version))
+print("    - Ophyd      : {}".format(ophyd_version))
+print("    - Databroker : {}".format(databroker_version))
+')
+
+$(tput smul; tput bold)Links to Bluesky and Databroker tutorials:$(tput sgr0)
+
+    - $(tput setaf 4)http://nsls-ii.github.io/bluesky/tutorial.html$(tput sgr0)
+    - $(tput setaf 4)http://nsls-ii.github.io/databroker/tutorial.html$(tput sgr0)
+
+If you get lost or confused, then we want to know! We have a friendly chat channel:
+
+    $(tput bold; tput setaf 1)https://gitter.im/NSLS-II/DAMA$(tput sgr0)
+
+or you can file a bug to let us know where our documentation could be made more clear:
+
+    $(tput bold; tput setaf 1)https://github.com/NSLS-II/Bug-Reports/issues$(tput sgr0)
+
+$(tput bold)bsui$(tput sgr0) is running these commands now to start an interactive computing environment for data acquisition:
+    $ ${conda_cmd}
+    $ ${ipython_cmd} ${args}
+
+EOL
+
+#$ipython_cmd "$@"
+

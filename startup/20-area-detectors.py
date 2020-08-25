@@ -174,10 +174,17 @@ class PilatusV33(SingleTriggerV33, PilatusDetector):
 class Pilatus800V33(PilatusV33):
     tiff = Cpt(TIFFPluginWithFileStore,
                suffix='TIFF1:',
-               write_path_template='/Pilatus800K/%Y/%m/%d/',
-               read_path_template='/nsls2/xf11bm/Pilatus800K/%Y/%m/%d/',
+               write_path_template='/Pilatus800K/%Y/%m/%d/',       
+               read_path_template='/nsls2/xf11bm/Pilatus800K/%Y/%m/%d/',   
                root='/nsls2/xf11bm')
 
+class Pilatus300V33(PilatusV33):
+    tiff = Cpt(TIFFPluginWithFileStore,
+               suffix='TIFF1:',
+               write_path_template='/nsls2/xf11bm/Pilatus300/%Y/%m/%d/',
+               read_path_template='/nsls2/xf11bm/Pilatus300/%Y/%m/%d/',
+               root='/nsls2/xf11bm')
+    
 class Pilatus2M(SingleTrigger, PilatusDetector):
 
     image = Cpt(ImagePlugin, 'image1:')
@@ -231,10 +238,10 @@ class Pilatus2MV33(SingleTriggerV33, PilatusDetector):
 
     tiff = Cpt(TIFFPluginWithFileStore,
                suffix='TIFF1:',
-               #write_path_template='/nsls2/xf11bm/Pilatus2M/%Y/%m/%d/',
-               write_path_template='/Pilatus2M/%Y/%m/%d/',
-               #root='/nsls2/xf11bm')
-               root='/')
+               write_path_template='/nsls2/xf11bm/Pilatus2M/%Y/%m/%d/',     # GPFS client
+               #write_path_template='/Pilatus2M/%Y/%m/%d/',                 # NSF-mount of GPFS directory
+               root='/nsls2/xf11bm')
+               #root='/')
 
     def setExposureTime(self, exposure_time, verbosity=3):
         yield from mv(self.cam.acquire_time, exposure_time, self.cam.acquire_period, exposure_time+0.1)
@@ -350,20 +357,28 @@ for camera in all_standard_pros:
 #pilatus300 section is unmarked.  032018-MF
 #pilatus300 section is marked out for bluesky upgrade.  010819-RL
 time.sleep(1)
-pilatus300 = PilatusV33('XF:11BMB-ES{Det:SAXS}:', name='pilatus300')
-pilatus300.tiff.read_attrs = []
-pilatus300.stats3.total.kind = 'hinted'
-pilatus300.stats4.total.kind = 'hinted'
-STATS_NAMES = ['stats1', 'stats2', 'stats3', 'stats4', 'stats5']
-pilatus300.read_attrs = ['tiff'] + STATS_NAMES
-for stats_name in STATS_NAMES:
-    stats_plugin = getattr(pilatus300, stats_name)
-    stats_plugin.read_attrs = ['total']
-#pilatus300.cam.ensure_nonblocking()
+
+#if True:
+#if True:
+if False:
+    pilatus300 = Pilatus300V33('XF:11BMB-ES{Det:SAXS}:', name='pilatus300')
+    #pilatus300 = PilatusV33('XF:11BMB-ES{Det:SAXS}:', name='pilatus300')
+    pilatus300.tiff.read_attrs = []
+    pilatus300.stats3.total.kind = 'hinted'
+    pilatus300.stats4.total.kind = 'hinted'
+    STATS_NAMES = ['stats1', 'stats2', 'stats3', 'stats4', 'stats5']
+    pilatus300.read_attrs = ['tiff'] + STATS_NAMES
+    for stats_name in STATS_NAMES:
+        stats_plugin = getattr(pilatus300, stats_name)
+        stats_plugin.read_attrs = ['total']
+
+    pilatus300.cam.ensure_nonblocking()
+else:
+    pilatus300 = 'Pil300ISNOTWORKING'
 
 #pilatus800 section
-
-if False:
+if True:
+#if False:
     pilatus800 = Pilatus800V33('XF:11BMB-ES{Det:PIL800K}:', name='pilatus800')
     pilatus800.tiff.read_attrs = []
     pilatus800.stats3.total.kind = 'hinted'
@@ -405,6 +420,7 @@ else:
     pilatus800 = 'Pil800ISNOTWORKING'
 
 #pilatus2M section
+#if False:
 if True:
     pilatus2M = Pilatus2MV33('XF:11BMB-ES{Det:PIL2M}:', name='pilatus2M')
     pilatus2M.tiff.read_attrs = []
@@ -414,6 +430,7 @@ if True:
         stats_plugin = getattr(pilatus2M, stats_name)
         stats_plugin.read_attrs = ['total']
     pilatus2M.cam.ensure_nonblocking()
+    pilatus2M.tiff.ensure_blocking()
     pilatus2M.stats3.total.kind = 'hinted'
     pilatus2M.stats4.total.kind = 'hinted'
 
@@ -445,7 +462,8 @@ if True:
     for item in pilatus2M.cam.configuration_attrs:
         item_check = getattr(pilatus2M.cam, item)
         item_check.kind= 'omitted'
-
+else:
+    pilatus2M = 'Pil2MISNOTWORKING'
 
 
 

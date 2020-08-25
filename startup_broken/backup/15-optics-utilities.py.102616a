@@ -1,0 +1,74 @@
+from math import sin, cos, tan, asin, acos, atan, pi
+
+##### mono utilities #####
+hc_over_e = 12.39842
+dmm_dsp = 20.1 		## DMM bilayer pitch in [Ang], according to Rigaku metrology report
+
+def getE(q=0):
+    '''Returns E(keV) based on the current mono_bragg position (q=1 for quiet)'''
+    bragg = (pi/180.)*caget('XF:11BMA-OP{Mono:DMM-Ax:Bragg}Mtr.RBV')	## in [rad]
+    wavelen = 2. * dmm_dsp * sin(bragg)					## in [Ang]
+    E = hc_over_e/wavelen
+    if q == 0:
+        print('E = %.4g keV, Wavelength = %.4g Ang, DMM d-sp = %.4g Ang, Bragg = %.4g rad (%.4g deg)' % (E, wavelen, dmm_dsp, bragg, bragg*180./pi))
+    return(E)
+ 
+def moveE(eng):
+    '''Moves mono_bragg correspong to the specified E(keV)'''
+    wavelen = hc_over_e/eng		        ## in [Ang]
+    bragg = asin(wavelen/(2.*dmm_dsp))*180./pi	## in [deg]
+    print('mono_bragg will move to %.4g deg' % bragg)
+    yn = input('Are you sure? (y/n): ')
+    if yn == 'y' or yn == 'Y':
+        mov(mono_bragg, bragg)
+        print('mono_bragg was moved')
+    else:
+        print('No move was made')
+    getE()
+
+    
+##### toroidal mirror utilities #####
+mir_us_to_ds = 1.0669		## kinematic support pivot_to_pivot distance along Z in [m]
+mir_ib_to_ob = 0.6096		## kinematic support pivot_to_pivot distance along X in [m]
+
+def movr_mir_pitch(del_mrad):
+    '''Moves the pitch of the mirror support by specified angle in [mrad]'''
+    del_mm = 0.5 * mir_us_to_ds * del_mrad
+    movr(mir_usy,-del_mm)
+    movr(mir_dsyi,del_mm)
+    movr(mir_dsyo,del_mm)
+
+def movr_mir_roll(del_mrad):
+    '''Moves the roll of the mirror support by specified angle in [mrad]'''
+    del_mm = 0.5 * mir_ib_to_ob * del_mrad
+    movr(mir_dsyi,-del_mm)
+    movr(mir_dsyo,del_mm)
+
+def movr_mir_yaw(del_mrad):
+    '''Moves the yaw of the mirror support by specified angle in [mrad]'''
+    del_mm = 0.5 * mir_us_to_ds * del_mrad
+    movr(mir_usx,-del_mm)
+    movr(mir_dsx,del_mm)
+
+def movr_mir_y(del_mm):
+    '''Moves the mirror support vertically by specified distance in [mm]'''
+    movr(mir_usy,del_mm)
+    movr(mir_dsyi,del_mm)
+    movr(mir_dsyo,del_mm)
+
+def movr_mir_x(del_mm):
+    '''Moves the mirror support horizontally, normal to beam, by specified distance in [mm]'''
+    movr(mir_usx,del_mm)
+    movr(mir_dsx,del_mm)
+
+def ave_mir_y():
+    '''Returns the average height of the toroidal mirror in [mm] '''
+    usy = caget('XF:11BMA-OP{Mir:Tor-Ax:YU}Mtr.RBV')
+    dsyi = caget('XF:11BMA-OP{Mir:Tor-Ax:YDI}Mtr.RBV')
+    dsyo = caget('XF:11BMA-OP{Mir:Tor-Ax:YDO}Mtr.RBV')
+    ave_y = 0.5 * (usy + 0.5 * (dsyi + dsyo))
+    print('Average mirror support height = %.4f mm relative to nominal zero height (1400 mm)' % ave_y)
+    return(ave_y)
+
+
+
