@@ -420,11 +420,6 @@ class LivePlot_Custom(LivePlot):
         plt.matplotlib.rcParams.update(rcParams_update)
         
         super().__init__(y, x, legend_keys=legend_keys, xlim=xlim, ylim=ylim, ax=ax, fig=fig, **kwargs_update)
-        
-        #self.ax.figure.canvas.manager.toolbar.pan()
-        self.ax.figure.canvas.mpl_connect('scroll_event', self.scroll_event )
-        
-        
     def start(self, doc):
         
         # Make all the 'older' lines greyed-out
@@ -441,12 +436,15 @@ class LivePlot_Custom(LivePlot):
                 lw = 1.0
             lw = max(lw*0.5, 0.2)
             line.set_linewidth(lw)
-            
+
         super().start(doc)
-        
-        
+
+        #self.ax.figure.canvas.manager.toolbar.pan()
+        self.ax.figure.canvas.mpl_connect('scroll_event', self.scroll_event )
+
+
     def update_plot(self):
-        
+
         ymin = min(self.y_data)
         ymax = max(self.y_data)
         yspan = ymax-ymin
