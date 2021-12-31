@@ -97,7 +97,7 @@ from ophyd.areadetector import EpicsSignalWithRBV
 
 # Increase the timeout for EpicsSignal.get()
 # This beamline was occasionally getting ReadTimeoutErrors
-EpicsSignal.set_defaults(timeout=10)
+EpicsSignal.set_defaults(timeout=10, connection_timeout=10)
 
 # We have commented this because we would like to identify the PVs that are causing problems.
 # Then the controls group can investigate why it is not working as expected.
