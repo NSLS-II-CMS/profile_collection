@@ -16,7 +16,10 @@
 #tags_default = ['CFN Soft-Bio']
 
 
-config_load()
+try:
+    config_load()
+except FileNotFoundError:
+    ...
 
 
 if False:
