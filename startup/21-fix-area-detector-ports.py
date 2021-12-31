@@ -1,10 +1,10 @@
-for cam_number, fs in zip([1,2,3,4,5], [fs1, fs2, fs3, fs4, fs5]):
+for fs in [fs1, fs2, fs3, fs4, fs5]:
     G, port_dict = fs.get_asyn_digraph()
-    cam = port_dict['cam{:02}'.format(cam_number)]
+    cam_port = fs.cam.port_name.get()
     for v in port_dict.values():
         try:
-            if v.nd_array_port.get() == 'CAM':
-                v.nd_array_port.set('cam{:02}'.format(cam_number))
+            if v.nd_array_port.get() == "CAM":
+                v.nd_array_port.put(cam_port)
         except AttributeError:
             pass
     fs.validate_asyn_ports()
