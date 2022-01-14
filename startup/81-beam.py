@@ -72,6 +72,15 @@ class BeamlineDetector(object):
             
 class CMS_SAXS_Detector(BeamlineDetector):
 
+    def __init__(self, detector, **md):
+        
+        try: 
+            self.detector = pilatus2m
+        except:
+            print('pilatus2m is not defined)')
+        
+        self.md = md
+
     def setCalibration(self, direct_beam, distance, detector_position=None, pixel_size=0.172):
         
         self.direct_beam = direct_beam
@@ -102,25 +111,47 @@ class CMS_SAXS_Detector(BeamlineDetector):
 
         md_return['distance_m'] = self.distance
     
-        md_return['ROI1_X_min'] = caget('XF:11BMB-ES{}:ROI1:MinX'.format(pilatus_Epicsname))
-        md_return['ROI1_X_size'] = caget('XF:11BMB-ES{}:ROI1:SizeX'.format(pilatus_Epicsname))
-        md_return['ROI1_Y_min'] = caget('XF:11BMB-ES{}:ROI1:MinY'.format(pilatus_Epicsname))
-        md_return['ROI1_Y_size'] = caget('XF:11BMB-ES{}:ROI1:SizeY'.format(pilatus_Epicsname))
+        md_return['ROI1_X_min'] = self.detector.roi1.min_xyz.get().min_x
+        md_return['ROI1_X_size'] = self.detector.roi1.size.get().x
+        md_return['ROI1_Y_min'] = self.detector.roi1.min_xyz.get().min_y
+        md_return['ROI1_Y_size'] = self.detector.roi1.size.get().y
 
-        md_return['ROI2_X_min'] = caget('XF:11BMB-ES{}:ROI2:MinX'.format(pilatus_Epicsname))
-        md_return['ROI2_X_size'] = caget('XF:11BMB-ES{}:ROI2:SizeX'.format(pilatus_Epicsname))
-        md_return['ROI2_Y_min'] = caget('XF:11BMB-ES{}:ROI2:MinY'.format(pilatus_Epicsname))
-        md_return['ROI2_Y_size'] = caget('XF:11BMB-ES{}:ROI2:SizeY'.format(pilatus_Epicsname))
+        md_return['ROI2_X_min'] = self.detector.roi2.min_xyz.get().min_x
+        md_return['ROI2_X_size'] = self.detector.roi2.size.get().x
+        md_return['ROI2_Y_min'] = self.detector.roi2.min_xyz.get().min_y
+        md_return['ROI2_Y_size'] = self.detector.roi2.size.get().y
 
-        md_return['ROI3_X_min'] = caget('XF:11BMB-ES{}:ROI3:MinX'.format(pilatus_Epicsname))
-        md_return['ROI3_X_size'] = caget('XF:11BMB-ES{}:ROI3:SizeX'.format(pilatus_Epicsname))
-        md_return['ROI3_Y_min'] = caget('XF:11BMB-ES{}:ROI3:MinY'.format(pilatus_Epicsname))
-        md_return['ROI3_Y_size'] = caget('XF:11BMB-ES{}:ROI3:SizeY'.format(pilatus_Epicsname))
+        md_return['ROI3_X_min'] = self.detector.roi3.min_xyz.get().min_x
+        md_return['ROI3_X_size'] = self.detector.roi3.size.get().x
+        md_return['ROI3_Y_min'] = self.detector.roi3.min_xyz.get().min_y
+        md_return['ROI3_Y_size'] = self.detector.roi3.size.get().y
 
-        md_return['ROI4_X_min'] = caget('XF:11BMB-ES{}:ROI4:MinX'.format(pilatus_Epicsname))
-        md_return['ROI4_X_size'] = caget('XF:11BMB-ES{}:ROI4:SizeX'.format(pilatus_Epicsname))
-        md_return['ROI4_Y_min'] = caget('XF:11BMB-ES{}:ROI4:MinY'.format(pilatus_Epicsname))
-        md_return['ROI4_Y_size'] = caget('XF:11BMB-ES{}:ROI4:SizeY'.format(pilatus_Epicsname))
+        md_return['ROI4_X_min'] = self.detector.roi4.min_xyz.get().min_x
+        md_return['ROI4_X_size'] = self.detector.roi4.size.get().x
+        md_return['ROI4_Y_min'] = self.detector.roi4.min_xyz.get().min_y
+        md_return['ROI4_Y_size'] = self.detector.roi4.size.get().y
+
+
+
+        # md_return['ROI1_X_min'] = caget('XF:11BMB-ES{}:ROI1:MinX'.format(pilatus_Epicsname))
+        # md_return['ROI1_X_size'] = caget('XF:11BMB-ES{}:ROI1:SizeX'.format(pilatus_Epicsname))
+        # md_return['ROI1_Y_min'] = caget('XF:11BMB-ES{}:ROI1:MinY'.format(pilatus_Epicsname))
+        # md_return['ROI1_Y_size'] = caget('XF:11BMB-ES{}:ROI1:SizeY'.format(pilatus_Epicsname))
+
+        # md_return['ROI2_X_min'] = caget('XF:11BMB-ES{}:ROI2:MinX'.format(pilatus_Epicsname))
+        # md_return['ROI2_X_size'] = caget('XF:11BMB-ES{}:ROI2:SizeX'.format(pilatus_Epicsname))
+        # md_return['ROI2_Y_min'] = caget('XF:11BMB-ES{}:ROI2:MinY'.format(pilatus_Epicsname))
+        # md_return['ROI2_Y_size'] = caget('XF:11BMB-ES{}:ROI2:SizeY'.format(pilatus_Epicsname))
+
+        # md_return['ROI3_X_min'] = caget('XF:11BMB-ES{}:ROI3:MinX'.format(pilatus_Epicsname))
+        # md_return['ROI3_X_size'] = caget('XF:11BMB-ES{}:ROI3:SizeX'.format(pilatus_Epicsname))
+        # md_return['ROI3_Y_min'] = caget('XF:11BMB-ES{}:ROI3:MinY'.format(pilatus_Epicsname))
+        # md_return['ROI3_Y_size'] = caget('XF:11BMB-ES{}:ROI3:SizeY'.format(pilatus_Epicsname))
+
+        # md_return['ROI4_X_min'] = caget('XF:11BMB-ES{}:ROI4:MinX'.format(pilatus_Epicsname))
+        # md_return['ROI4_X_size'] = caget('XF:11BMB-ES{}:ROI4:SizeX'.format(pilatus_Epicsname))
+        # md_return['ROI4_Y_min'] = caget('XF:11BMB-ES{}:ROI4:MinY'.format(pilatus_Epicsname))
+        # md_return['ROI4_Y_size'] = caget('XF:11BMB-ES{}:ROI4:SizeY'.format(pilatus_Epicsname))
         
         # Include the user-specified metadata
         md_return.update(md)
@@ -170,29 +201,46 @@ class CMS_WAXS_Detector(BeamlineDetector):
         md_return['x0_pix'] = round( x0 + (position_current_x-position_defined_x)/self.pixel_size , 2 )
         md_return['y0_pix'] = round( y0 + (position_current_y-position_defined_y)/self.pixel_size , 2 )
         
-        #TODO:WAXS PV
-        
+        md_return['ROI1_X_min'] = self.detector.roi1.min_xyz.get().min_x
+        md_return['ROI1_X_size'] = self.detector.roi1.size.get().x
+        md_return['ROI1_Y_min'] = self.detector.roi1.min_xyz.get().min_y
+        md_return['ROI1_Y_size'] = self.detector.roi1.size.get().y
+
+        md_return['ROI2_X_min'] = self.detector.roi2.min_xyz.get().min_x
+        md_return['ROI2_X_size'] = self.detector.roi2.size.get().x
+        md_return['ROI2_Y_min'] = self.detector.roi2.min_xyz.get().min_y
+        md_return['ROI2_Y_size'] = self.detector.roi2.size.get().y
+
+        md_return['ROI3_X_min'] = self.detector.roi3.min_xyz.get().min_x
+        md_return['ROI3_X_size'] = self.detector.roi3.size.get().x
+        md_return['ROI3_Y_min'] = self.detector.roi3.min_xyz.get().min_y
+        md_return['ROI3_Y_size'] = self.detector.roi3.size.get().y
+
+        md_return['ROI4_X_min'] = self.detector.roi4.min_xyz.get().min_x
+        md_return['ROI4_X_size'] = self.detector.roi4.size.get().x
+        md_return['ROI4_Y_min'] = self.detector.roi4.min_xyz.get().min_y
+        md_return['ROI4_Y_size'] = self.detector.roi4.size.get().y        
         md_return['distance_m'] = self.distance
         
-        md_return['ROI1_X_min'] = caget('XF:11BMB-ES{}:ROI1:MinX'.format(pilatus_Epicsname))
-        md_return['ROI1_X_size'] = caget('XF:11BMB-ES{}:ROI1:SizeX'.format(pilatus_Epicsname))
-        md_return['ROI1_Y_min'] = caget('XF:11BMB-ES{}:ROI1:MinY'.format(pilatus_Epicsname))
-        md_return['ROI1_Y_size'] = caget('XF:11BMB-ES{}:ROI1:SizeY'.format(pilatus_Epicsname))
+        # md_return['ROI1_X_min'] = caget('XF:11BMB-ES{}:ROI1:MinX'.format(pilatus_Epicsname))
+        # md_return['ROI1_X_size'] = caget('XF:11BMB-ES{}:ROI1:SizeX'.format(pilatus_Epicsname))
+        # md_return['ROI1_Y_min'] = caget('XF:11BMB-ES{}:ROI1:MinY'.format(pilatus_Epicsname))
+        # md_return['ROI1_Y_size'] = caget('XF:11BMB-ES{}:ROI1:SizeY'.format(pilatus_Epicsname))
 
-        md_return['ROI2_X_min'] = caget('XF:11BMB-ES{}:ROI2:MinX'.format(pilatus_Epicsname))
-        md_return['ROI2_X_size'] = caget('XF:11BMB-ES{}:ROI2:SizeX'.format(pilatus_Epicsname))
-        md_return['ROI2_Y_min'] = caget('XF:11BMB-ES{}:ROI2:MinY'.format(pilatus_Epicsname))
-        md_return['ROI2_Y_size'] = caget('XF:11BMB-ES{}:ROI2:SizeY'.format(pilatus_Epicsname))
+        # md_return['ROI2_X_min'] = caget('XF:11BMB-ES{}:ROI2:MinX'.format(pilatus_Epicsname))
+        # md_return['ROI2_X_size'] = caget('XF:11BMB-ES{}:ROI2:SizeX'.format(pilatus_Epicsname))
+        # md_return['ROI2_Y_min'] = caget('XF:11BMB-ES{}:ROI2:MinY'.format(pilatus_Epicsname))
+        # md_return['ROI2_Y_size'] = caget('XF:11BMB-ES{}:ROI2:SizeY'.format(pilatus_Epicsname))
 
-        md_return['ROI3_X_min'] = caget('XF:11BMB-ES{}:ROI3:MinX'.format(pilatus_Epicsname))
-        md_return['ROI3_X_size'] = caget('XF:11BMB-ES{}:ROI3:SizeX'.format(pilatus_Epicsname))
-        md_return['ROI3_Y_min'] = caget('XF:11BMB-ES{}:ROI3:MinY'.format(pilatus_Epicsname))
-        md_return['ROI3_Y_size'] = caget('XF:11BMB-ES{}:ROI3:SizeY'.format(pilatus_Epicsname))
+        # md_return['ROI3_X_min'] = caget('XF:11BMB-ES{}:ROI3:MinX'.format(pilatus_Epicsname))
+        # md_return['ROI3_X_size'] = caget('XF:11BMB-ES{}:ROI3:SizeX'.format(pilatus_Epicsname))
+        # md_return['ROI3_Y_min'] = caget('XF:11BMB-ES{}:ROI3:MinY'.format(pilatus_Epicsname))
+        # md_return['ROI3_Y_size'] = caget('XF:11BMB-ES{}:ROI3:SizeY'.format(pilatus_Epicsname))
 
-        md_return['ROI4_X_min'] = caget('XF:11BMB-ES{}:ROI4:MinX'.format(pilatus_Epicsname))
-        md_return['ROI4_X_size'] = caget('XF:11BMB-ES{}:ROI4:SizeX'.format(pilatus_Epicsname))
-        md_return['ROI4_Y_min'] = caget('XF:11BMB-ES{}:ROI4:MinY'.format(pilatus_Epicsname))
-        md_return['ROI4_Y_size'] = caget('XF:11BMB-ES{}:ROI4:SizeY'.format(pilatus_Epicsname))
+        # md_return['ROI4_X_min'] = caget('XF:11BMB-ES{}:ROI4:MinX'.format(pilatus_Epicsname))
+        # md_return['ROI4_X_size'] = caget('XF:11BMB-ES{}:ROI4:SizeX'.format(pilatus_Epicsname))
+        # md_return['ROI4_Y_min'] = caget('XF:11BMB-ES{}:ROI4:MinY'.format(pilatus_Epicsname))
+        # md_return['ROI4_Y_size'] = caget('XF:11BMB-ES{}:ROI4:SizeY'.format(pilatus_Epicsname))
         
         # Include the user-specified metadata
         md_return.update(md)
@@ -1016,7 +1064,8 @@ class CMSBeam(object):
         """
         
         # Current angle of monochromator multilayer crystal
-        Bragg_deg = caget(self.mono_bragg_pv)
+        # Bragg_deg = caget(self.mono_bragg_pv)
+        Bragg_deg = mono_bragg.position
         Bragg_rad = np.radians(Bragg_deg)
         
         wavelength_A = 2.*self.dmm_dsp*np.sin(Bragg_rad)
@@ -1040,7 +1089,8 @@ class CMSBeam(object):
         """
         
         # Current angle of monochromator multilayer crystal
-        Bragg_deg = caget(self.mono_bragg_pv)
+        # Bragg_deg = caget(self.mono_bragg_pv)
+        Bragg_deg = mono_bragg.position
         Bragg_rad = np.radians(Bragg_deg)
         
         wavelength_A = 2.*self.dmm_dsp*np.sin(Bragg_rad)
@@ -1074,14 +1124,28 @@ class CMSBeam(object):
         
         return self.energy(verbosity=0)
     
-    
+    def setEnergy_YF(self, energy_keV, verbosity=3):
+        """
+        Set the x-ray beam to the specified energy (by changing the
+        monochromator angle.
+        """
+        
+        energy_eV = energy_keV*1000.
+        wavelength_m = self.hc_over_e/energy_eV
+        wavelength_A = wavelength_m*1.e10
+        
+        self.setWavelength(wavelength_A, verbosity=verbosity)
+        
+        return self.energy(verbosity=0)
+
     def setWavelength(self, wavelength_A, verbosity=3):
         """
         Set the x-ray beam to the specified wavelength (by changing the
         monochromator angle.
         """
         
-        Bragg_deg_initial = caget(self.mono_bragg_pv)
+        # Bragg_deg_initial = caget(self.mono_bragg_pv)
+        Bragg_deg = mono_bragg.position
         wavelength_m = wavelength_A*1.e-10
         Bragg_rad = np.arcsin(wavelength_A/(2.*self.dmm_dsp))
         Bragg_deg = np.degrees(Bragg_rad)
@@ -1094,6 +1158,7 @@ class CMSBeam(object):
             #mono_bragg.move = Bragg_deg
             mono_bragg.move(Bragg_deg)
             
+
             if verbosity>=1:
                 print('mono_bragg moved from {:.4f} deg to {:.4f} deg'.format(Bragg_deg_initial, Bragg_deg))
         
@@ -1102,6 +1167,34 @@ class CMSBeam(object):
             
         return self.wavelength(verbosity=verbosity)
 
+    def setWavelength_YF(self, wavelength_A, verbosity=3):
+        """
+        Set the x-ray beam to the specified wavelength (by changing the
+        monochromator angle.
+        """
+        
+        # Bragg_deg_initial = caget(self.mono_bragg_pv)
+        Bragg_deg = mono_bragg.position
+        wavelength_m = wavelength_A*1.e-10
+        Bragg_rad = np.arcsin(wavelength_A/(2.*self.dmm_dsp))
+        Bragg_deg = np.degrees(Bragg_rad)
+        
+        print('mono_bragg will move to {:.4f}g deg'.format(Bragg_deg))
+        response = input('    Are you sure? (y/[n]) ')
+        if response is 'y' or response is 'Y':
+            
+            #mov(mono_bragg, Bragg_deg)
+            #mono_bragg.move = Bragg_deg
+            # mono_bragg.move(Bragg_deg)
+            yield from bps.mov(mono_bragg, Bragg_deg)
+            
+            if verbosity>=1:
+                print('mono_bragg moved from {:.4f} deg to {:.4f} deg'.format(Bragg_deg_initial, Bragg_deg))
+        
+        elif verbosity>=1:
+            print('No move was made.')
+            
+        return self.wavelength(verbosity=verbosity)
     
     # Slits
     ########################################
@@ -1111,8 +1204,8 @@ class CMSBeam(object):
         Returns the current beam size (rough estimate).
         The return is (size_horizontal, size_vertical) (in mm).
         """
-        size_h = self.beam_defining_slit.xg.user_readback.value
-        size_v = self.beam_defining_slit.yg.user_readback.value
+        size_h = self.beam_defining_slit.xg.position
+        size_v = self.beam_defining_slit.yg.position
         
         if verbosity>=3:
             print('Beam size:')
@@ -1138,6 +1231,23 @@ class CMSBeam(object):
         
         self.beam_defining_slit.yg.user_setpoint.value = vertical
     
+    def setSize_YF(self, horizontal, vertical, verbosity=3):
+        """
+        Sets the beam size.
+        """
+        
+        h, v = self.size(verbosity=0)
+        
+        if verbosity>=3:
+            print('Changing horizontal beam size from {:.3f} mm to {:.3f} mm'.format(h, horizontal))
+        yield from bps.mov( self.beam_defining_slit.xg, horizontal)
+        # self.beam_defining_slit.xg.user_setpoint.value = horizontal
+        
+        if verbosity>=3:
+            print('Changing vertical beam size from {:.3f} mm to {:.3f} mm'.format(v, vertical))
+        yield from bps.mov( self.beam_defining_slit.yg, vertical)
+        
+        # self.beam_defining_slit.yg.user_setpoint.value = vertical
     
     def divergence(self, verbosity=3):
         """
@@ -1148,9 +1258,12 @@ class CMSBeam(object):
         
         distance_m = 10.0 # distance from source to slits
         
-        horizontal_mm = caget('FE:C11B-OP{Slt:12-Ax:X}t2.C')
-        vertical_mm = caget('FE:C11B-OP{Slt:12-Ax:Y}t2.C')
+        # horizontal_mm = caget('FE:C11B-OP{Slt:12-Ax:X}t2.C')
+        # vertical_mm = caget('FE:C11B-OP{Slt:12-Ax:Y}t2.C')
         
+        horizontal_mm = FE_x.position
+        vertical_mm = FE_y.position
+
         horizontal_mrad = horizontal_mm/distance_m
         vertical_mrad = vertical_mm/distance_m
         
@@ -1202,7 +1315,46 @@ class CMSBeam(object):
                 print('Changing vertical divergence from {:.3f} mrad to {:.3f} mrad.'.format(v, vertical))
             caput('FE:C11B-OP{Slt:12-Ax:Y}size', vertical_mm)
         
+    def setDivergence_YF(self, horizontal, vertical, verbosity=3):
+        """
+        Set beamline divergence (in mrad).
+        This is controlled using the Front End (FE) slits.
+        """
+        
+        h, v = self.divergence(verbosity=0)
 
+        distance_m = 10.0 # distance from source to slits
+        
+        horizontal_mm = horizontal*distance_m
+        vertical_mm = vertical*distance_m
+        
+        if horizontal<0:
+            if verbosity>=1:
+                print("Horizontal divergence less than zero ({}) doesn't make sense.".format(horizontal))
+            
+        elif horizontal>1.5:
+            if verbosity>=1:
+                print("Horizontal divergence should be less than 1.5 mrad.")
+                
+        else:
+            if verbosity>=3:
+                print('Changing horizontal divergence from {:.3f} mrad to {:.3f} mrad.'.format(h, horizontal))
+            # caput('FE:C11B-OP{Slt:12-Ax:X}size', horizontal_mm)
+            yield from bps.mov(FE_x, horizontal_mm)
+        
+        if vertical<0:
+            if verbosity>=1:
+                print("Vertical divergence less than zero ({}) doesn't make sense.".format(vertical))
+            
+        elif vertical>0.15:
+            if verbosity>=1:
+                print("Vertical divergence should be less than 0.15 mrad.")
+                
+        else:
+            if verbosity>=3:
+                print('Changing vertical divergence from {:.3f} mrad to {:.3f} mrad.'.format(v, vertical))
+            # caput('FE:C11B-OP{Slt:12-Ax:Y}size', vertical_mm)
+            yield from bps.mov(FE_y, vertical_mm)
     
     # Experimental Shutter
     ########################################
@@ -1304,8 +1456,40 @@ class CMSBeam(object):
     #     else:
     #         if verbosity>=4:
     #             print('Beam off (shutter already closed).')
-                
+    # def blade1_is_on(self, verbosity=3):
+    #     '''Returns true if the beam is on (experimental shutter open).'''
+        
+    #     blade1 = caget('XF:11BMB-OP{PSh:2}Pos:1-Sts')
+        
+    #     if blade1==1:
+    #         if verbosity>=4:
+    #             print('Beam on (shutter open).')
+            
+    #         return True
+        
+    #     else:
+    #         if verbosity>=4:
+    #             print('Beam off (shutter closed).')
+            
+    #         return False
 
+    # def blade2_is_on(self, verbosity=3):
+    #     '''Returns true if the beam is on (experimental shutter open).'''
+        
+    #     blade2 = caget('XF:11BMB-OP{PSh:2}Pos:2-Sts')
+        
+    #     if blade2==1:
+    #         if verbosity>=4:
+    #             print('Beam on (shutter open).')
+            
+    #         return True
+        
+    #     else:
+    #         if verbosity>=4:
+    #             print('Beam off (shutter closed).')
+            
+    #         return False
+    
     def is_on(self, verbosity=3):
         '''Returns 1 if the beam is on (experimental shutter open).'''
         if verbosity>=3:
@@ -1328,7 +1512,25 @@ class CMSBeam(object):
                     print('Beam on (shutter opened).')
                 else:
                     print("Beam off (shutter didn't open).")
-    
+
+    def on_YF(self, verbosity=3, wait_time=0.1, poling_period=0.10, retry_time=2.0, max_retries=5):
+        '''Turn on the beam (open experimental shutter).
+        update: 090517, RL: change the wait_time from 0.005 to 0.1, change sleep to time.sleep'''
+        
+        if self.is_on(verbosity=0):
+            if verbosity>=4:
+                print('Beam on (shutter already open.)')
+                
+        else:
+            
+            yield from shutter_on(verbosity=0)
+
+            if verbosity>=4:
+                if self.is_on(verbosity=0):
+                    print('Beam on (shutter opened).')
+                else:
+                    print("Beam off (shutter didn't open).")
+
     def off(self, verbosity=3, wait_time=0.1, poling_period=0.10, retry_time=2.0, max_retries=5):
         '''Turn off the beam (close experimental shutter).
         update: 090517, RL: change the wait_time from 0.005 to 0.1, change sleep to time.sleep'''
@@ -1347,39 +1549,24 @@ class CMSBeam(object):
             if verbosity>=4:
                 print('Beam off (shutter already closed).')
                 
-    def blade1_is_on(self, verbosity=3):
-        '''Returns true if the beam is on (experimental shutter open).'''
+    def off_YF(self, verbosity=3, wait_time=0.1, poling_period=0.10, retry_time=2.0, max_retries=5):
+        '''Turn off the beam (close experimental shutter).
+        update: 090517, RL: change the wait_time from 0.005 to 0.1, change sleep to time.sleep'''
         
-        blade1 = caget('XF:11BMB-OP{PSh:2}Pos:1-Sts')
-        
-        if blade1==1:
-            if verbosity>=4:
-                print('Beam on (shutter open).')
+        if self.is_on(verbosity=0):
             
-            return True
-        
-        else:
-            if verbosity>=4:
-                print('Beam off (shutter closed).')
-            
-            return False
+            yield from shutter_off(verbosity=0)
 
-    def blade2_is_on(self, verbosity=3):
-        '''Returns true if the beam is on (experimental shutter open).'''
-        
-        blade2 = caget('XF:11BMB-OP{PSh:2}Pos:2-Sts')
-        
-        if blade2==1:
             if verbosity>=4:
-                print('Beam on (shutter open).')
-            
-            return True
-        
+                if self.is_on(verbosity=0):
+                    print("Beam on (shutter didn't close).")
+                else:
+                    print('Beam off (shutter closed).')
+                
         else:
             if verbosity>=4:
-                print('Beam off (shutter closed).')
-            
-            return False
+                print('Beam off (shutter already closed).')
+
                 
 
 
@@ -1387,6 +1574,7 @@ class CMSBeam(object):
     ########################################
 
     def transmission(self, verbosity=3):
+        ###TODO:
         """
         Returns the current beam transmission through the attenuator/filter box.
         To change the transmission, use 'setTransmission'.
@@ -1517,7 +1705,63 @@ class CMSBeam(object):
             filters_final = [ caget('XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts'.format(ifoil)) for ifoil in range(1, 8+1) ]
             print('  final:      {} T = {:.6g}'.format(filters_final, self.calc_transmission_filters(filters_final, verbosity=0)))
 
+    def set_attenuation_filters_YF(self, filter_settings, verbosity=3):
+        """
+        Sets the positions (in/out) for each of the foils in the attenuator/
+        filter box. The input 'filter_settings' should be an array of length
+        8, where each element is either a zero (foil removed) or a 1 (foil
+        blocking beam).
+        """
+        #define the list of the foils
+        foil_series = [EpicsSignal('XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts'.format(ifoil)) for ifoil in range(1, 8+1))]
+
+        if verbosity>=4:
+            print('Filters:')
+            # The states of the foils in the filter box
+            
+            # filters_initial = [ caget('XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts'.format(ifoil)) for ifoil in range(1, 8+1) ]
+            filters_initial = [item.get() for item in foil_series]
+            print('  initial:    {} T = {:.6g}'.format(filters_initial, self.calc_transmission_filters(filters_initial, verbosity=0)))
+            print('  requested:  {} T = {:.6g}'.format(filter_settings, self.calc_transmission_filters(filter_settings, verbosity=0)))
         
+        if len(filter_settings) != 8:
+            print('States for all eight foils must be specified.')
+            
+        else:
+            
+            for i, state in enumerate(filter_settings):
+                
+                ifoil = i+1
+                
+                if state==1:
+                    # Put foil #ifoil into the beam
+                    foil_series[i].put(state)
+                    #TODO, double-check the moving command
+                    # caput( 'XF:11BMB-OP{{Fltr:{:d}}}Cmd:In-Cmd'.format(ifoil) , 1 )
+                    
+                elif state==0:
+                    # Remove foil #ifoil
+                    foil_series[i].put(state)
+                    # caput( 'XF:11BMB-OP{{Fltr:{:d}}}Cmd:Out-Cmd'.format(ifoil) , 1 )
+                    
+                else:
+                    if verbosity>=3:
+                        # state_actual = caget( 'XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts'.format(ifoil) )
+                        state_actual = [item.get() for item in foil_series]
+                        state_actual_str = 'IN' if state_actual is 1 else 'OUT'
+                        print('WARNING: Filter state {} not recognized. Filter {:d} is {:s}.'.format(state, ifoil, state_actual_str))
+                    
+
+        
+            time.sleep(1.) # Wait for filter box to settle
+            
+        if verbosity>=4:
+            # filters_final = [ caget('XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts'.format(ifoil)) for ifoil in range(1, 8+1) ]
+
+            filters_final = [item.get() for item in foil_series]
+            print('  final:      {} T = {:.6g}'.format(filters_final, self.calc_transmission_filters(filters_final, verbosity=0)))
+
+
     def setTransmission(self, transmission, retries=3, tolerance=0.7, verbosity=3):
         """
         Sets the transmission through the attenuator/filter box.
@@ -1698,7 +1942,38 @@ class CMSBeam(object):
 
         else:
             return self.absorberCalcTransmission(slot)
+
+    def setAbsorber_YF(self, slot, retries=3, tolerance=0.5, verbosity=3):
+        """
+        Set the aborber of Nb foils for XRR measurements.
+        There are 6 layers of foil which gives the attenuation rate ~5-6% at 13.5kev.
+        """
         
+        energy_keV = self.energy(verbosity=0)
+        
+        if energy_keV < 6.0 or energy_keV > 18.0:
+            print('Transmission data not available at the current X-ray energy ({.2f} keV).'.format(energy_keV))
+        elif slot < 0 or slot > 6:
+            print('Absorber cannot move beyond [0, 6]')
+                          
+        else:
+            
+            #move to slot # for correct attenuation.
+            # armr.move(self.armr_absorber_o+slot*6)  # 6 mm wide per slot
+            yield from bps.mov(armr, self.armr_absorber_o+slot*6)  
+
+        # Check that absorber was actually correctly moved
+        if abs(armr.position-(self.armr_absorber_o+slot*6)) > tolerance:
+            if retries>0:
+                #time.sleep(0.5)
+                # Try again
+                return self.absorberCalcTransmission(slot), self.setAbsorber(slot, retries=retries-1, tolerance=tolerance, verbosity=verbosity)
+            
+            else:
+                print("WARNING: transmission didn't update correctly (request: {}; actual: {})".format(slot, self.transmission(verbosity=0)))        
+
+        else:
+            return self.absorberCalcTransmission(slot)        
         
     # Flux estimates at various points along the beam
     ########################################
@@ -1924,7 +2199,7 @@ class CMS_Beamline(Beamline):
         #self.SAXS = CMS_SAXS_Detector(pilatus300)
         self.SAXS = CMS_SAXS_Detector(pilatus2M)
         self.WAXS = CMS_WAXS_Detector(pilatus800)
-        self.MAXS = CMS_SAXS_Detector(pilatus300)
+        self.MAXS = CMS_WAXS_Detector(pilatus8002)
         
         from epics import PV
         
@@ -2023,7 +2298,43 @@ class CMS_Beamline(Beamline):
         # Check if gate valves are open
         if self.beam.GVdsbig.state() is not 'out' and verbosity>=1:
             print('Warning: Sample chamber gate valve (large, downstream) is not open.')
+
+    def modeAlignment_YF(self, verbosity=3):
+        
+        self.current_mode = 'undefined'
+        
+        # TODO: Check what mode (TSAXS, GISAXS) and respond accordingly
+        # TODO: Check if gate valves are open and flux is okay (warn user)
+        # TODO: Check list: change attenuator for different energy, change the bsx position with beamcenter accordingly
+        
+        
+        yield from self.beam.off_YF()
+        self.beam.setTransmission(1e-8)  #1e-6 for 13.5kev, 1e-8 for 17kev
+        while beam.transmission() > 3e-8:
+            time.sleep(0.5)
+            self.beam.setTransmission(1e-8)
             
+        #mov(bsx, -10.95)
+        yield from bps.mv(bsx, self.bsx_pos+5)
+            
+        #detselect(pilatus300, suffix='_stats4_total')
+        #caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime', 0.5)
+        #caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquirePeriod', 0.6)
+
+        detselect(pilatus_name, suffix='_stats4_total')
+        yield from pilatus_name.setExposureTime(0.5)
+        #Comment out by RL, 071617
+        #caput('XF:11BMB-ES{}:cam1:AcquireTime'.format(pilatus_Epicsname), 0.5)
+        #caput('XF:11BMB-ES{}:cam1:AcquirePeriod'.format(pilatus_Epicsname), 0.6)
+        #caput('XF:11BMB-ES{Det:PIL2M}:cam1:AcquirePeriod', 0.6)
+       
+        #TODO: Update ROI based on current SAXSx, SAXSy and the md in cms ob'XF:11BMB-VA{Chm:Smpl-VV:1_Soft}'ject
+        
+        self.current_mode = 'alignment'
+        
+        #self.beam.bim6.reading()
+
+
 
     def modeAlignment(self, verbosity=3):
         
@@ -2060,6 +2371,35 @@ class CMS_Beamline(Beamline):
         
         #self.beam.bim6.reading()
 
+    def modeMeasurement_YF(self, verbosity=3):   
+        
+        self.current_mode = 'undefined'
+        
+        yield from self.beam.off_YF()
+        
+        #mov(bsx, -15.95)
+        yield from bps.mv(bsx, self.bsx_pos)
+
+        if abs(bsx.user_readback.value - self.bsx_pos)>0.1:
+            print('WARNING: Beamstop did not return to correct position!')
+            return
+        
+        yield from self.beam.setTransmission(1)
+        
+        #detselect(pilatus300)
+        #detselect([pilatus300, psccd])
+        detselect(pilatus_name)
+        #detselect(psccd)
+        
+        #if RE.state is not 'idle':
+        #    RE.abort()
+
+       
+        self.current_mode = 'measurement'
+        
+        # Check if gate valves are open
+        if self.beam.GVdsbig.state() is not 'out' and verbosity>=1:
+            print('Warning: Sample chamber gate valve (large, downstream) is not open.')
 
     def modeMeasurement(self, verbosity=3):   
         
@@ -2844,7 +3184,7 @@ class CMS_Beamline(Beamline):
         md_current['motor_bsy'] = bsy.user_readback.value
         md_current['motor_bsphi'] = bsphi.user_readback.value
         
-        # md_current.update(self.SAXS.get_md(prefix='detector_SAXS_'))
+        md_current.update(self.SAXS.get_md(prefix='detector_SAXS_'))
         
         md_current.update(md)
         
@@ -3027,10 +3367,7 @@ class CMS_Beamline(Beamline):
         
 
 class CMS_Beamline_GISAXS(CMS_Beamline):
-
-    def __init__(self, **kwargs):
-        
-        super().__init__(**kwargs)    
+    
     
     def modeAlignment(self, verbosity=3):
         
@@ -3165,13 +3502,56 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         
         #detselect(pilatus300, suffix='_stats4_total')
 
+        pilatus_name.roi4.min_xyz.min_x.put(100)
+
         caput('XF:11BMB-ES{}:ROI4:MinX'.format(pilatus_Epicsname), int(x0-size[0]/2))
         caput('XF:11BMB-ES{}:ROI4:SizeX'.format(pilatus_Epicsname), int(size[0]))
         caput('XF:11BMB-ES{}:ROI4:MinY'.format(pilatus_Epicsname), int(y0-size[1]/2))
         caput('XF:11BMB-ES{}:ROI4:SizeY'.format(pilatus_Epicsname), int(size[1]))
         
         detselect(pilatus_name, suffix='_stats4_total')        
+
+    def setDirectBeamROI_YF(self, size=[10,4], verbosity=3):
+        '''Update the ROI (stats4) for the direct beam on the Pilatus
+        detector. This (should) update correctly based on the current SAXSx, SAXSy.
         
+        The size argument controls the size (in pixels) of the ROI itself
+        (in the format [width, height]). A size=[6,4] is reasonable.
+        The size is changed to [10, 4] for possible beam drift during a user run (changed at 08/16/17)'''
+        
+        if pilatus_name.name == 'pilatus2M':
+            detector = self.SAXS
+            # These positions are updated based on current detector position
+            det_md = detector.get_md()
+            x0 = det_md['detector_SAXS_x0_pix']
+            y0 = det_md['detector_SAXS_y0_pix']        
+        if pilatus_name.name == 'pilatus800':
+            detector = self.WAXS
+
+            # These positions are updated based on current detector position
+            det_md = detector.get_md()
+            x0 = det_md['detector_WAXS_x0_pix']
+            y0 = det_md['detector_WAXS_y0_pix']
+        
+        #caput('XF:11BMB-ES{Det:SAXS}:ROI4:MinX', int(x0-size[0]/2))
+        #caput('XF:11BMB-ES{Det:SAXS}:ROI4:SizeX', int(size[0]))
+        #caput('XF:11BMB-ES{Det:SAXS}:ROI4:MinY', int(y0-size[1]/2))
+        #caput('XF:11BMB-ES{Det:SAXS}:ROI4:SizeY', int(size[1]))
+        
+        #detselect(pilatus300, suffix='_stats4_total')
+
+        yield from bps.mov(pilatus_name.roi4.min_xyz.min_x, int(x0-size[0]/2))
+        yield from bps.mov(pilatus_name.roi4.size.x, int(size[0]))
+        yield from bps.mov(pilatus_name.roi4.min_xyz.min_y, int(y0-size[0]/2))
+        yield from bps.mov(pilatus_name.roi4.size.y, int(size[1]))
+
+        # caput('XF:11BMB-ES{}:ROI4:MinX'.format(pilatus_Epicsname), int(x0-size[0]/2))
+        # caput('XF:11BMB-ES{}:ROI4:SizeX'.format(pilatus_Epicsname), int(size[0]))
+        # caput('XF:11BMB-ES{}:ROI4:MinY'.format(pilatus_Epicsname), int(y0-size[1]/2))
+        # caput('XF:11BMB-ES{}:ROI4:SizeY'.format(pilatus_Epicsname), int(size[1]))
+        
+        detselect(pilatus_name, suffix='_stats4_total')    
+
     def setReflectedBeamROI(self, total_angle=0.16, size=[10,2], verbosity=3):
         '''Update the ROI (stats3) for the reflected beam on the Pilatus300k
         detector. This (should) update correctly based on the current SAXSx, SAXSy.
@@ -3223,6 +3603,52 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         caput('XF:11BMB-ES{}:ROI3:MinY'.format(pilatus_Epicsname), y_pos)
         caput('XF:11BMB-ES{}:ROI3:SizeY'.format(pilatus_Epicsname), int(size[1]))
         
+        detselect(pilatus_name, suffix='_stats3_total')
+
+    def setReflectedBeamROI_YF(self, total_angle=0.16, size=[10,2], verbosity=3):
+        '''Update the ROI (stats3) for the reflected beam on the Pilatus300k
+        detector. This (should) update correctly based on the current SAXSx, SAXSy.
+        
+        The size argument controls the size (in pixels) of the ROI itself
+        (in the format [width, height]). A size=[6,2] is reasonable.'''
+        
+        if pilatus_name.name == 'pilatus2M':
+            detector = self.SAXS
+            # These positions are updated based on current detector position
+            det_md = detector.get_md()
+            x0 = det_md['detector_SAXS_x0_pix']
+            y0 = det_md['detector_SAXS_y0_pix']        
+        if pilatus_name.name == 'pilatus800':
+            detector = self.WAXS
+
+            # These positions are updated based on current detector position
+            det_md = detector.get_md()
+            x0 = det_md['detector_WAXS_x0_pix']
+            y0 = det_md['detector_WAXS_y0_pix']
+        
+        d = detector.distance*1000.0 # mm
+        pixel_size = detector.pixel_size # mm
+        
+        y_offset_mm = np.tan(np.radians(total_angle))*d
+        y_offset_pix = y_offset_mm/pixel_size
+        
+        #for pilatus800k
+        # if pilatus_name = pilatus800:
+        #     y_pos = int( y0 - size[1]/2 - y_offset_pix )
+        
+        #for pilatus2M, placed up-side down
+        #y_pos = int( y0 - size[1]/2 + y_offset_pix )
+
+        #for pilatus2M, with pattern rotated 180deg. changed at 052918
+        # if pilatus_name = pilatus2m:
+        #     y_pos = int( y0 - size[1]/2 - y_offset_pix )
+        y_pos = int( y0 - size[1]/2 - y_offset_pix )
+        
+        yield from bps.mov(pilatus_name.roi3.min_xyz.min_x, int(x0-size[0]/2))
+        yield from bps.mov(pilatus_name.roi3.size.x, int(size[0]))
+        yield from bps.mov(pilatus_name.roi3.min_xyz.min_y, y_pos)
+        yield from bps.mov(pilatus_name.roi3.size.y, int(size[1]))
+
         detselect(pilatus_name, suffix='_stats3_total')
 
     def setSpecularReflectivityROI(self, total_angle=0.16, size=[10,10], default_SAXSy=None, verbosity=3):
@@ -3323,6 +3749,114 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         caput('XF:11BMB-ES{}:ROI2:MinY'.format(pilatus_Epicsname), y_pos)
         caput('XF:11BMB-ES{}:ROI2:SizeY'.format(pilatus_Epicsname), int(size[1]))
         
+        detselect(pilatus_name, suffix='_stats1_total')
+
+    def setSpecularReflectivityROI_YF(self, total_angle=0.16, size=[10,10], default_SAXSy=None, verbosity=3):
+        '''Update the ROIs (stats1, stats2) for the specular reflected beam on the Pilatus
+        detector. This (should) update correctly based on the current SAXSx, SAXSy.
+        
+        The size argument controls the size (in pixels) of the ROI itself
+        (in the format [width, height]). 
+        
+        stats1 is centered on the specular reflected beam and has the size specified in 
+        the size argument.
+        
+        stats2 is centered on the specular reflected beam and has the size that is twice
+        as wide as specified in the size argument, for capturing background.
+        
+        The background-subtracted intensity for specular reflection is equal to: 
+        2 * stats1 - stats2 
+        '''
+         
+        detector = self.SAXS
+        #self.setMonitor()
+        
+        if default_SAXSy is not None: 
+            if abs(default_SAXSy - SAXSy.position) > 0.01: 
+                SAXSy.move(default_SAXSy)
+                print('SAXS detector has been shifted to default SAXSy = {:.3f} mm.'.format(SAXSy.position)) 
+        
+        # These positions are updated based on current detector position
+        det_md = detector.get_md()
+        x0 = det_md['detector_SAXS_x0_pix']
+        y0 = det_md['detector_SAXS_y0_pix']
+        
+        d = detector.distance*1000.0 # mm
+        pixel_size = detector.pixel_size # mm
+        
+        y_offset_mm = np.tan(np.radians(total_angle))*d
+        y_offset_pix = y_offset_mm/pixel_size
+        
+        #for pilatus800k
+        if pilatus_name.name == 'pilatus800':
+            y_pos = int( y0 - size[1]/2 - y_offset_pix )
+        
+        #for pilatus2M, placed up-side down
+        #y_pos = int( y0 - size[1]/2 + y_offset_pix )
+
+        #for pilatus2M, with pattern rotated 180deg. changed at 052918
+        if pilatus_name.name == 'pilatus2M':
+            y_pos = int( y0 - size[1]/2 - y_offset_pix )
+        
+        #y pixels for intermodule gaps, for pilatus2M (195 pixels high module, 17 pixels high gap)
+        y_gap_2M = []
+        for i in np.arange(7): 
+            for j in np.arange(17): 
+                y_gap_2M.append((195+17)*(i+1)-17+j)
+         
+        #y pixels for Spectular Reflectivity ROI
+        y_roi = []
+        for i in np.arange(int(size[1]+1)):
+            y_roi.append(y_pos+i)
+         
+        #flag for whether the ROI falls on intermodule gap 
+        flag_ROIonGap = len(np.unique(y_gap_2M + y_roi)) < (len(y_gap_2M)+len(y_roi)) 
+         
+        #Move SAXSy if ROI falls on intermodule gap; if not, move on 
+        if flag_ROIonGap == True: 
+            y_shift = 17+size[1]+1	# intermodule gap is 17 pixels high 
+            y_shift_mm = pixel_size*y_shift # mm
+            SAXSy.move(SAXSy.position+y_shift_mm) 
+            print('SAXS detector has been shifted to SAXSy = {:.3f} mm (by {:.3f} mm or {} pixels) to avoid a gap.'.format(SAXSy.position,y_shift_mm,y_shift)) 
+         
+            # These positions are updated based on current detector position
+            det_md = detector.get_md()
+            x0 = det_md['detector_SAXS_x0_pix']
+            y0 = det_md['detector_SAXS_y0_pix']
+           
+            ##for pilatus2M, placed up-side down
+            #y_pos = int( y0 - size[1]/2 + y_offset_pix )
+
+            #for pilatus2M, with pattern rotated 180deg. changed at 052918
+            y_pos = int( y0 - size[1]/2 - y_offset_pix )
+        
+        #caput('XF:11BMB-ES{Det:SAXS}:ROI3:MinX', int(x0-size[0]/2))
+        #caput('XF:11BMB-ES{Det:SAXS}:ROI3:SizeX', int(size[0]))
+        #caput('XF:11BMB-ES{Det:SAXS}:ROI3:MinY', y_pos)
+        #caput('XF:11BMB-ES{Det:SAXS}:ROI3:SizeY', int(size[1]))
+        
+        #detselect(pilatus300, suffix='_stats3_total')
+            
+        # ROI1: Raw signal 
+        # caput('XF:11BMB-ES{}:ROI1:MinX'.format(pilatus_Epicsname), int(x0-size[0]/2))
+        # caput('XF:11BMB-ES{}:ROI1:SizeX'.format(pilatus_Epicsname), int(size[0]))
+        # caput('XF:11BMB-ES{}:ROI1:MinY'.format(pilatus_Epicsname), y_pos)
+        # caput('XF:11BMB-ES{}:ROI1:SizeY'.format(pilatus_Epicsname), int(size[1]))
+        yield from bps.mov(pilatus_name.roi1.min_xyz.min_x, int(x0-size[0]/2))
+        yield from bps.mov(pilatus_name.roi1.size.x, int(size[0]))
+        yield from bps.mov(pilatus_name.roi1.min_xyz.min_y, y_pos)
+        yield from bps.mov(pilatus_name.roi1.size.y, int(size[1]))
+
+
+        # ROI2: Raw signal+background (same as ROI1 for y, but twice as large for x) 
+        # caput('XF:11BMB-ES{}:ROI2:MinX'.format(pilatus_Epicsname), int(x0-size[0]))
+        # caput('XF:11BMB-ES{}:ROI2:SizeX'.format(pilatus_Epicsname), int(2*size[0]))
+        # caput('XF:11BMB-ES{}:ROI2:MinY'.format(pilatus_Epicsname), y_pos)
+        # caput('XF:11BMB-ES{}:ROI2:SizeY'.format(pilatus_Epicsname), int(size[1]))
+        yield from bps.mov(pilatus_name.roi2.min_xyz.min_x, int(x0-size[0]/2))
+        yield from bps.mov(pilatus_name.roi2.size.x, int(2*size[0]))
+        yield from bps.mov(pilatus_name.roi2.min_xyz.min_y, y_pos)
+        yield from bps.mov(pilatus_name.roi2.size.y, int(size[1]))
         detselect(pilatus_name, suffix='_stats1_total')
 
     def setSpecularReflectivityROI_SAXSyPOS(self, total_angle=0.16, size=[10,10], default_SAXSy=None, verbosity=3):
@@ -3760,7 +4294,7 @@ class CMS_Beamline_XR(CMS_Beamline_GISAXS):
         for i in np.arange(int(size[1]+1)):
             y_roi.append(y_pos+i)
          
-        #flag for whether the ROI falls on intermodule gap 
+        #flag for whether the ROI falls on intermodule gap k 
         flag_ROIonGap = len(np.unique(y_gap_800 + y_roi)) < (len(y_gap_800)+len(y_roi)) 
          
         #Move SAXSy if ROI falls on intermodule gap; if not, move on 

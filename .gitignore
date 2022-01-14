@@ -5,6 +5,10 @@ history.sqlite
 pid
 security
 static
+*.tgz
+backups*
+*.remove
+*.bak
 
 # https://github.com/bluesky/databroker/blob/master/.gitignore
 
