@@ -77,7 +77,7 @@ class CMS_SAXS_Detector(BeamlineDetector):
         try:
             self.detector = pilatus2m
         except:
-            print('pilatus2m is not defined)')
+            raise Exception('pilatus2m is not defined')
 
         self.md = md
 
@@ -108,24 +108,24 @@ class CMS_SAXS_Detector(BeamlineDetector):
 
         md_return['distance_m'] = self.distance
 
-        md_return['ROI1_X_min'] = yield from bps.rd(pilatus_name.roi1.min_xyz.min_x)
-        md_return['ROI1_X_size'] = yield from bps.rd(pilatus_name.roi1.size.x)
-        md_return['ROI1_Y_min'] = yield from bps.rd(pilatus_name.roi1.min_xyz.min_y)
-        md_return['ROI1_Y_size'] = yield from bps.rd(pilatus_name.roi1.size.y)
+        md_return['ROI1_X_min'] = yield from bps.rd(self.detector.roi1.min_xyz.min_x)
+        md_return['ROI1_X_size'] = yield from bps.rd(self.detector.roi1.size.x)
+        md_return['ROI1_Y_min'] = yield from bps.rd(self.detector.roi1.min_xyz.min_y)
+        md_return['ROI1_Y_size'] = yield from bps.rd(self.detector.roi1.size.y)
 
-        md_return['ROI2_X_min'] = yield from bps.rd(pilatus_name.roi2.min_xyz.min_x)
-        md_return['ROI2_X_size'] = yield from bps.rd(pilatus_name.roi2.size.x)
-        md_return['ROI2_Y_min'] = yield from bps.rd(pilatus_name.roi2.min_xyz.min_y)
-        md_return['ROI2_Y_size'] = yield from bps.rd(pilatus_name.roi2.size.y)
+        md_return['ROI2_X_min'] = yield from bps.rd(self.detector.roi2.min_xyz.min_x)
+        md_return['ROI2_X_size'] = yield from bps.rd(self.detector.roi2.size.x)
+        md_return['ROI2_Y_min'] = yield from bps.rd(self.detector.roi2.min_xyz.min_y)
+        md_return['ROI2_Y_size'] = yield from bps.rd(self.detector.roi2.size.y)
 
-        md_return['ROI3_X_min'] = yield from bps.rd(pilatus_name.roi3.min_xyz.min_x)
-        md_return['ROI3_X_size'] = yield from bps.rd(pilatus_name.roi3.size.x)
-        md_return['ROI3_Y_min'] = yield from bps.rd(pilatus_name.roi3.min_xyz.min_y)
-        md_return['ROI3_Y_size'] = yield from bps.rd(pilatus_name.roi3.size.y)
+        md_return['ROI3_X_min'] = yield from bps.rd(self.detector.roi3.min_xyz.min_x)
+        md_return['ROI3_X_size'] = yield from bps.rd(self.detector.roi3.size.x)
+        md_return['ROI3_Y_min'] = yield from bps.rd(self.detector.roi3.min_xyz.min_y)
+        md_return['ROI3_Y_size'] = yield from bps.rd(self.detector.roi3.size.y)
 
-        md_return['ROI4_X_min'] = yield from bps.rd(pilatus_name.roi4.min_xyz.min_x)
-        md_return['ROI4_X_size'] = yield from bps.rd(pilatus_name.roi4.size.x)
-        md_return['ROI4_Y_min'] = yield from bps.rd(pilatus_name.roi4.min_xyz.min_y)
+        md_return['ROI4_X_min'] = yield from bps.rd(self.detector.roi4.min_xyz.min_x)
+        md_return['ROI4_X_size'] = yield from bps.rd(self.detector.roi4.size.x)
+        md_return['ROI4_Y_min'] = yield from bps.rd(self.detector.roi4.min_xyz.min_y)
 
         # Include the user-specified metadata
         md_return.update(md)
@@ -173,49 +173,30 @@ class CMS_WAXS_Detector(BeamlineDetector):
             #md_return['x0_pix'] = round( x0 + (position_current_x-position_defined_x)/self.pixel_size , 2 )
             #md_return['y0_pix'] = round( y0 + (position_current_y-position_defined_y)/self.pixel_size , 2 )
         #if pilatus_name==pilatus800:
+
         md_return['x0_pix'] = round( x0 + (position_current_x-position_defined_x)/self.pixel_size , 2 )
         md_return['y0_pix'] = round( y0 + (position_current_y-position_defined_y)/self.pixel_size , 2 )
 
-        md_return['ROI1_X_min'] = self.detector.roi1.min_xyz.get().min_x
-        md_return['ROI1_X_size'] = self.detector.roi1.size.get().x
-        md_return['ROI1_Y_min'] = self.detector.roi1.min_xyz.get().min_y
-        md_return['ROI1_Y_size'] = self.detector.roi1.size.get().y
+        md_return['ROI1_X_min'] = yield from bps.rd(self.detector.roi1.min_xyz.get().min_x)
+        md_return['ROI1_X_size'] = yield from bps.rd(self.detector.roi1.size.get().x)
+        md_return['ROI1_Y_min'] = yield from bps.rd(self.detector.roi1.min_xyz.get().min_y)
+        md_return['ROI1_Y_size'] = yield from bps.rd(self.detector.roi1.size.get().y)
 
-        md_return['ROI2_X_min'] = self.detector.roi2.min_xyz.get().min_x
-        md_return['ROI2_X_size'] = self.detector.roi2.size.get().x
-        md_return['ROI2_Y_min'] = self.detector.roi2.min_xyz.get().min_y
-        md_return['ROI2_Y_size'] = self.detector.roi2.size.get().y
+        md_return['ROI2_X_min'] = yield from bps.rd(self.detector.roi2.min_xyz.get().min_x)
+        md_return['ROI2_X_size'] = yield from bps.rd(self.detector.roi2.size.get().x)
+        md_return['ROI2_Y_min'] = yield from bps.rd(self.detector.roi2.min_xyz.get().min_y)
+        md_return['ROI2_Y_size'] = yield from bps.rd(self.detector.roi2.size.get().y)
 
-        md_return['ROI3_X_min'] = self.detector.roi3.min_xyz.get().min_x
-        md_return['ROI3_X_size'] = self.detector.roi3.size.get().x
-        md_return['ROI3_Y_min'] = self.detector.roi3.min_xyz.get().min_y
-        md_return['ROI3_Y_size'] = self.detector.roi3.size.get().y
+        md_return['ROI3_X_min'] = yield from bps.rd(self.detector.roi3.min_xyz.get().min_x)
+        md_return['ROI3_X_size'] = yield from bps.rd(self.detector.roi3.size.get().x)
+        md_return['ROI3_Y_min'] = yield from bps.rd(self.detector.roi3.min_xyz.get().min_y)
+        md_return['ROI3_Y_size'] = yield from bps.rd(self.detector.roi3.size.get().y)
 
-        md_return['ROI4_X_min'] = self.detector.roi4.min_xyz.get().min_x
-        md_return['ROI4_X_size'] = self.detector.roi4.size.get().x
-        md_return['ROI4_Y_min'] = self.detector.roi4.min_xyz.get().min_y
-        md_return['ROI4_Y_size'] = self.detector.roi4.size.get().y
+        md_return['ROI4_X_min'] = yield from bps.rd(self.detector.roi4.min_xyz.get().min_x)
+        md_return['ROI4_X_size'] = yield from bps.rd(self.detector.roi4.size.get().x)
+        md_return['ROI4_Y_min'] = yield from bps.rd(self.detector.roi4.min_xyz.get().min_y)
+        md_return['ROI4_Y_size'] = yield from bps.rd(self.detector.roi4.size.get().y)
         md_return['distance_m'] = self.distance
-
-        # md_return['ROI1_X_min'] = caget('XF:11BMB-ES{}:ROI1:MinX'.format(pilatus_Epicsname))
-        # md_return['ROI1_X_size'] = caget('XF:11BMB-ES{}:ROI1:SizeX'.format(pilatus_Epicsname))
-        # md_return['ROI1_Y_min'] = caget('XF:11BMB-ES{}:ROI1:MinY'.format(pilatus_Epicsname))
-        # md_return['ROI1_Y_size'] = caget('XF:11BMB-ES{}:ROI1:SizeY'.format(pilatus_Epicsname))
-
-        # md_return['ROI2_X_min'] = caget('XF:11BMB-ES{}:ROI2:MinX'.format(pilatus_Epicsname))
-        # md_return['ROI2_X_size'] = caget('XF:11BMB-ES{}:ROI2:SizeX'.format(pilatus_Epicsname))
-        # md_return['ROI2_Y_min'] = caget('XF:11BMB-ES{}:ROI2:MinY'.format(pilatus_Epicsname))
-        # md_return['ROI2_Y_size'] = caget('XF:11BMB-ES{}:ROI2:SizeY'.format(pilatus_Epicsname))
-
-        # md_return['ROI3_X_min'] = caget('XF:11BMB-ES{}:ROI3:MinX'.format(pilatus_Epicsname))
-        # md_return['ROI3_X_size'] = caget('XF:11BMB-ES{}:ROI3:SizeX'.format(pilatus_Epicsname))
-        # md_return['ROI3_Y_min'] = caget('XF:11BMB-ES{}:ROI3:MinY'.format(pilatus_Epicsname))
-        # md_return['ROI3_Y_size'] = caget('XF:11BMB-ES{}:ROI3:SizeY'.format(pilatus_Epicsname))
-
-        # md_return['ROI4_X_min'] = caget('XF:11BMB-ES{}:ROI4:MinX'.format(pilatus_Epicsname))
-        # md_return['ROI4_X_size'] = caget('XF:11BMB-ES{}:ROI4:SizeX'.format(pilatus_Epicsname))
-        # md_return['ROI4_Y_min'] = caget('XF:11BMB-ES{}:ROI4:MinY'.format(pilatus_Epicsname))
-        # md_return['ROI4_Y_size'] = caget('XF:11BMB-ES{}:ROI4:SizeY'.format(pilatus_Epicsname))
 
         # Include the user-specified metadata
         md_return.update(md)
