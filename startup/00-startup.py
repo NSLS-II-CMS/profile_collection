@@ -1,15 +1,15 @@
 # import logging
 # import caproto
-# handler = logging.FileHandler('pilatus-trigger-log.txt')     
+# handler = logging.FileHandler('pilatus-trigger-log.txt')
 # from caproto._log import LogFormatter, color_log_format, log_date_format
-# handler.setFormatter(                                                                                                                                                               
-#     LogFormatter(color_log_format, datefmt=log_date_format))     
-# caproto_log = logging.getLogger('caproto')                                                                                                                                                    
+# handler.setFormatter(
+#     LogFormatter(color_log_format, datefmt=log_date_format))
+# caproto_log = logging.getLogger('caproto')
 # caproto_log.handlers.clear()
-# caproto_log.addHandler(handler)       
+# caproto_log.addHandler(handler)
 # logging.getLogger('caproto.ch').setLevel('DEBUG')
 import nslsii
-nslsii.configure_base(get_ipython().user_ns, 'cms', publish_documents_with_kafka=True)
+nslsii.configure_base(get_ipython().user_ns, 'temp', publish_documents_with_kafka=False)
 
 from bluesky.magics import BlueskyMagics
 from bluesky.preprocessors import pchain
@@ -31,7 +31,7 @@ from pyOlog.ophyd_tools import *
 # def print_scan_ids(name, start_doc):
 #     print("Transient Scan ID: {0} @ {1}".format(start_doc['scan_id'],time.strftime("%Y/%m/%d %H:%M:%S")))
 #     print("Persistent Unique Scan ID: '{0}'".format(start_doc['uid']))
-# 
+#
 # RE.subscribe(print_scan_ids, 'start')
 
 # - HACK #1 -  patch EpicsSignal.get to retry when timeouts happen stolen from HXN
