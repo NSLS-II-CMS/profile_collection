@@ -1731,7 +1731,7 @@ class CMSBeam(object):
         blocking beam).
         """
         #define the list of the foils
-        foil_series = [EpicsSignal('XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts'.format(ifoil)) for ifoil in range(1, 8+1))]
+        foil_series = [EpicsSignal('XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts'.format(ifoil)) for ifoil in range(1, 8+1)]
 
         if verbosity>=4:
             print('Filters:')
