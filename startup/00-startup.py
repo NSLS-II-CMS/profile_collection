@@ -21,6 +21,9 @@ from bluesky.callbacks.broker import verify_files_saved
 
 from pyOlog.ophyd_tools import *
 
+# Added this variable temporarily to bypass some code that doesn't run without the beamline.
+testing = True
+
 # Uncomment the following lines to turn on verbose messages for
 # debugging.
 # import logging
