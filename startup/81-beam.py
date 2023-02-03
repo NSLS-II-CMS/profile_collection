@@ -94,14 +94,11 @@ class CMS_SAXS_Detector(BeamlineDetector):
 
     def get_md(self, prefix='detector_SAXS_', **md):
 
-        ###TODO: change all ROI settings without caget.
-
         md_return = self.md.copy()
 
         x0, y0 = self.direct_beam
         position_defined_x, position_defined_y = self.detector_position
         position_current_x, position_current_y = SAXSx.user_readback.value, SAXSy.user_readback.value
-
 
         md_return['name'] = self.detector.name
         md_return['epics_name'] = '{Det:PIL2M}'
@@ -111,60 +108,24 @@ class CMS_SAXS_Detector(BeamlineDetector):
 
         md_return['distance_m'] = self.distance
 
-        # md_return['ROI1_X_min'] = caget('XF:11BMB-ES{}:ROI1:MinX'.format(pilatus_Epicsname))
-        # md_return['ROI1_X_size'] = caget('XF:11BMB-ES{}:ROI1:SizeX'.format(pilatus_Epicsname))
-        # md_return['ROI1_Y_min'] = caget('XF:11BMB-ES{}:ROI1:MinY'.format(pilatus_Epicsname))
-        # md_return['ROI1_Y_size'] = caget('XF:11BMB-ES{}:ROI1:SizeY'.format(pilatus_Epicsname))
+        md_return['ROI1_X_min'] = yield from bps.rd(pilatus_name.roi1.min_xyz.min_x)
+        md_return['ROI1_X_size'] = yield from bps.rd(pilatus_name.roi1.size.x)
+        md_return['ROI1_Y_min'] = yield from bps.rd(pilatus_name.roi1.min_xyz.min_y)
+        md_return['ROI1_Y_size'] = yield from bps.rd(pilatus_name.roi1.size.y)
 
-        # md_return['ROI2_X_min'] = caget('XF:11BMB-ES{}:ROI2:MinX'.format(pilatus_Epicsname))
-        # md_return['ROI2_X_size'] = caget('XF:11BMB-ES{}:ROI2:SizeX'.format(pilatus_Epicsname))
-        # md_return['ROI2_Y_min'] = caget('XF:11BMB-ES{}:ROI2:MinY'.format(pilatus_Epicsname))
-        # md_return['ROI2_Y_size'] = caget('XF:11BMB-ES{}:ROI2:SizeY'.format(pilatus_Epicsname))
+        md_return['ROI2_X_min'] = yield from bps.rd(pilatus_name.roi2.min_xyz.min_x)
+        md_return['ROI2_X_size'] = yield from bps.rd(pilatus_name.roi2.size.x)
+        md_return['ROI2_Y_min'] = yield from bps.rd(pilatus_name.roi2.min_xyz.min_y)
+        md_return['ROI2_Y_size'] = yield from bps.rd(pilatus_name.roi2.size.y)
 
-        # md_return['ROI3_X_min'] = caget('XF:11BMB-ES{}:ROI3:MinX'.format(pilatus_Epicsname))
-        # md_return['ROI3_X_size'] = caget('XF:11BMB-ES{}:ROI3:SizeX'.format(pilatus_Epicsname))
-        # md_return['ROI3_Y_min'] = caget('XF:11BMB-ES{}:ROI3:MinY'.format(pilatus_Epicsname))
-        # md_return['ROI3_Y_size'] = caget('XF:11BMB-ES{}:ROI3:SizeY'.format(pilatus_Epicsname))
+        md_return['ROI3_X_min'] = yield from bps.rd(pilatus_name.roi3.min_xyz.min_x)
+        md_return['ROI3_X_size'] = yield from bps.rd(pilatus_name.roi3.size.x)
+        md_return['ROI3_Y_min'] = yield from bps.rd(pilatus_name.roi3.min_xyz.min_y)
+        md_return['ROI3_Y_size'] = yield from bps.rd(pilatus_name.roi3.size.y)
 
-        # md_return['ROI4_X_min'] = caget('XF:11BMB-ES{}:ROI4:MinX'.format(pilatus_Epicsname))
-        # md_return['ROI4_X_size'] = caget('XF:11BMB-ES{}:ROI4:SizeX'.format(pilatus_Epicsname))
-        # md_return['ROI4_Y_min'] = caget('XF:11BMB-ES{}:ROI4:MinY'.format(pilatus_Epicsname))
-        # md_return['ROI4_Y_size'] = caget('XF:11BMB-ES{}:ROI4:SizeY'.format(pilatus_Epicsname))
-
-        md_return['ROI1_X_min'] = pilatus_name.roi1.min_xyz.get().min_x
-        md_return['ROI1_X_size'] = pilatus_name.roi1.size.get().x
-        md_return['ROI1_Y_min'] = pilatus_name.roi1.min_xyz.get().min_y
-        md_return['ROI1_Y_size'] = pilatus_name.roi1.size.get().y
-
-        md_return['ROI2_X_min'] = pilatus_name.roi2.min_xyz.get().min_x
-        md_return['ROI2_X_size'] = pilatus_name.roi2.size.get().x
-        md_return['ROI2_Y_min'] = pilatus_name.roi2.min_xyz.get().min_y
-        md_return['ROI2_Y_size'] = pilatus_name.roi2.size.get().y
-
-        md_return['ROI3_X_min'] = pilatus_name.roi3.min_xyz.get().min_x
-        md_return['ROI3_X_size'] = pilatus_name.roi3.size.get().x
-        md_return['ROI3_Y_min'] = pilatus_name.roi3.min_xyz.get().min_y
-        md_return['ROI3_Y_size'] = pilatus_name.roi3.size.get().y
-
-        md_return['ROI4_X_min'] = pilatus_name.roi4.min_xyz.get().min_x
-        md_return['ROI4_X_size'] = pilatus_name.roi4.size.get().x
-        md_return['ROI4_Y_min'] = pilatus_name.roi4.min_xyz.get().min_y
-        md_return['ROI4_Y_size'] = pilatus_name.roi4.size.get().y
-
-        # md_return['ROI2_X_min'] = caget('XF:11BMB-ES{}:ROI2:MinX'.format(pilatus_Epicsname))
-        # md_return['ROI2_X_size'] = caget('XF:11BMB-ES{}:ROI2:SizeX'.format(pilatus_Epicsname))
-        # md_return['ROI2_Y_min'] = caget('XF:11BMB-ES{}:ROI2:MinY'.format(pilatus_Epicsname))
-        # md_return['ROI2_Y_size'] = caget('XF:11BMB-ES{}:ROI2:SizeY'.format(pilatus_Epicsname))
-
-        # md_return['ROI3_X_min'] = caget('XF:11BMB-ES{}:ROI3:MinX'.format(pilatus_Epicsname))
-        # md_return['ROI3_X_size'] = caget('XF:11BMB-ES{}:ROI3:SizeX'.format(pilatus_Epicsname))
-        # md_return['ROI3_Y_min'] = caget('XF:11BMB-ES{}:ROI3:MinY'.format(pilatus_Epicsname))
-        # md_return['ROI3_Y_size'] = caget('XF:11BMB-ES{}:ROI3:SizeY'.format(pilatus_Epicsname))
-
-        # md_return['ROI4_X_min'] = caget('XF:11BMB-ES{}:ROI4:MinX'.format(pilatus_Epicsname))
-        # md_return['ROI4_X_size'] = caget('XF:11BMB-ES{}:ROI4:SizeX'.format(pilatus_Epicsname))
-        # md_return['ROI4_Y_min'] = caget('XF:11BMB-ES{}:ROI4:MinY'.format(pilatus_Epicsname))
-        # md_return['ROI4_Y_size'] = caget('XF:11BMB-ES{}:ROI4:SizeY'.format(pilatus_Epicsname))
+        md_return['ROI4_X_min'] = yield from bps.rd(pilatus_name.roi4.min_xyz.min_x)
+        md_return['ROI4_X_size'] = yield from bps.rd(pilatus_name.roi4.size.x)
+        md_return['ROI4_Y_min'] = yield from bps.rd(pilatus_name.roi4.min_xyz.min_y)
 
         # Include the user-specified metadata
         md_return.update(md)
@@ -174,6 +135,7 @@ class CMS_SAXS_Detector(BeamlineDetector):
             md_return = { '{:s}{:s}'.format(prefix, key) : value for key, value in md_return.items() }
 
         return md_return
+
 
 class CMS_WAXS_Detector(BeamlineDetector):
 
@@ -649,7 +611,6 @@ class IonChamber_CMS(Monitor):
         self.beam = beam
 
         # PVs
-        import epics
         self.v1 = epics.PV('XF:11BMB-BI{IM:3}:IC1_MON')
         self.v2 = epics.PV('XF:11BMB-BI{IM:3}:IC2_MON')
         self.h1 = epics.PV('XF:11BMB-BI{IM:3}:IC3_MON')
@@ -757,7 +718,6 @@ class Scintillator_CMS(Monitor):
         self.beam = beam
 
         # PVs
-        import epics
         self.sec = epics.PV('XF:11BMB-BI{IM:4}:GET_PERIOD')    # integration time in [sec]
         self.cts = epics.PV('XF:11BMB-BI{IM:4}:C1_1')    # raw counts
 
@@ -835,7 +795,6 @@ class DiamondDiode_CMS(Monitor):
         self.beam = beam
 
         # PVs
-        import epics
         self.i0 = epics.PV('XF:11BMB-BI{BPM:1}Cur:I0-I')    # upper left
         self.i1 = epics.PV('XF:11BMB-BI{BPM:1}Cur:I1-I')    # upper right
         self.i2 = epics.PV('XF:11BMB-BI{BPM:1}Cur:I2-I')    # lower left
