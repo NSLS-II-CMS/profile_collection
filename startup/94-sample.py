@@ -1161,7 +1161,7 @@ class Sample_Generic(CoordinateSystem):
             #base.addSample(self)
 
         # Signals
-        self.xf_11bmb_es_det_saxs_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV')
+        self.axf_11bmb_es_det_saxs_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV')
         self.xf_11bmb_es_det_pil2m_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:PIL2M}:cam1:FileNumber_RBV')
         self.xf_11bmb_es_det_saxs_cam1_acquiretime = EpicsSignalRO('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime')
         self.xf_11bmb_es_det_pil2m_cam1_acquiretime = EpicsSignalRO('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime')
@@ -1604,9 +1604,9 @@ class Sample_Generic(CoordinateSystem):
         md_current = { k : v for k, v in RE.md.items() } # Global md
 
         if get_beamline().detector[0].name is 'pilatus300':
-            md_current['detector_sequence_ID'] = yield from bps.rd(self.xf_11bmb_es_det_saxs_cam1_filenumber_rbv)
+            md_current['detector_sequence_ID'] = caget('XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV')
         elif get_beamline().detector[0].name is 'pilatus2M':
-            md_current['detector_sequence_ID'] = yield from bps.rd(self.xf_11bmb_es_det_pil2m_cam1_filenumber_rbv)
+            md_current['detector_sequence_ID'] = caget('XF:11BMB-ES{Det:PIL2M}:cam1:FileNumber_RBV')
 
         md_current.update(get_beamline().get_md())
 
@@ -1647,25 +1647,17 @@ class Sample_Generic(CoordinateSystem):
 
         # Trigger acquisition manually
         caput('XF:11BMB-ES{}:cam1:Acquire'.format(pilatus_Epicsname), 1)
-        acquires = {'pilatus300': self.xf_11bmb_es_det_saxs_cam1_acquire,
-                    'pilatus2M': self.xf_11bmb_es_det_pil2m_cam1_acquire,
-                    'pilatus880k': self.xf_11bmb_es_det_pil800k_cam1_acquire}
-        yield from bps.mv(acquires[get_beamline().detector[0].name], 1)
 
         if verbosity>=2:
             start_time = time.time()
-
-            acquiring = yield from bps.rd(acquires[get_beamline().detector[0].name])
-            while acquiring and (time.time()-start_time)<(exposure_time+20):
+            while caget('XF:11BMB-ES{}:cam1:Acquire'.format(pilatus_Epicsname))==1 and (time.time()-start_time)<(exposure_time+20):
                 percentage = 100*(time.time()-start_time)/exposure_time
                 print( 'Exposing {:6.2f} s  ({:3.0f}%)      \r'.format((time.time()-start_time), percentage), end='')
-                acquiring = yield from bps.rd(acquires[get_beamline().detector[0].name])
                 time.sleep(poling_period)
         else:
             time.sleep(exposure_time)
 
-        acquiring = yield from bps.rd(acquires[get_beamline().detector[0].name])
-        if verbosity>=3 and acquiring:
+        if verbosity>=3 and caget('XF:11BMB-ES{}:cam1:Acquire'.format(pilatus_Epicsname))==1:
             print('Warning: Detector still not done acquiring.')
 
         get_beamline().beam.off()
