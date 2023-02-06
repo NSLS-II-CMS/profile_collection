@@ -3125,7 +3125,7 @@ class Sample_Generic(CoordinateSystem):
     # Control methods
     ########################################
     def setTemperature(self, temperature, output_channel='1', verbosity=3):
-        signal = getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp')
+        signal = getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp')
         if verbosity>=2:
             current_temperature = yield from bps.rd(signal)
             print('  Changing temperature setpoint from {:.3f}°C  to {:.3f}°C'.format(signal, temperature))
@@ -3140,7 +3140,7 @@ class Sample_Generic(CoordinateSystem):
                 readback = -273.15
             return readback
 
-        setpoint = yield from bps.rd(getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
         readback = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_chan_{temperature_probe}_t_c_i'))
 
         if verbosity>=3:
@@ -3216,7 +3216,7 @@ class Sample_Generic(CoordinateSystem):
             temp_data.to_csv(INT_FILENAME)
 
     def temperature_setpoint(self, output_channel='1', verbosity=3):
-        setpoint = yield from bps.rd(getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
         return setpoint_temperature
 
     def monitor_scheme(self, scheme):
@@ -3568,19 +3568,19 @@ class Holder(Stage):
     # Control methods
     ########################################
     def setTemperature(self, temperature, output_channel='1', verbosity=3):
-        original_temp = yield from bps.rd(getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        original_temp = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
         if verbosity>=2:
             print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C'))
-        yield from bps.mv(getattr(self,'self.xf_11bm_es_env_01_out_{output_channel}_t_sp', temperature+273.15)
+        yield from bps.mv(getattr(self,'xf_11bm_es_env_01_out_{output_channel}_t_sp', temperature+273.15)
 
     def temperature(self, temperature_probe='A', output_channel='1', verbosity=3):
-        setpoint = yield from bps.rd(getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
         readback = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_chan_{temperature_probe}_t_c_i'))
         print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format(readback,setpoint(output_channel-273.15))
         return readback
 
     def temperature_setpoint(self, output_channel='1', verbosity=3):
-        setpoint = yield from bps.rd(getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
         return setpoint
 
 
