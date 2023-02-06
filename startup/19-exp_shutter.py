@@ -1,6 +1,6 @@
 ##### Experimental shutters #####
 #updated by RL, 20210901
-# These shutters are controlled by sending a TTL pulse via Ecat controller. 
+# These shutters are controlled by sending a TTL pulse via Ecat controller.
 
 trigger_new_pv = EpicsSignal('XF:11BM-ES{Shutter}')
 shutter_sts1_pv = EpicsSignal('XF:11BM-ES{Psh_blade1}Pos')
@@ -27,12 +27,12 @@ def shutter_off(verbosity=3):
     while shutter_state(verbosity=0) != 0:
         yield from bps.mv(trigger_new_pv, 0)
         time.sleep(0.01)
-        
+
     if verbosity>=3:
         shutter_state(verbosity=verbosity)
 
 def shutter_state(verbosity=3):
-    if shutter_sts1_pv.get()==1 & shutter_sts2_pv.get()==1:
+    if int(shutter_sts1_pv.get())==1 & int(shutter_sts2_pv.get())==1:
         status = 1
         if verbosity>=3:
             print('Shutter is OPEN.')
@@ -45,14 +45,14 @@ def shutter_state(verbosity=3):
     return status
 
 # old control, abandoned in 2021C3
-# These shutters are controlled by sending a 5V pulse via QEM output on the Delta Tau controller MC06 
-# (the same unit that controls slits S5). Both the opening and closing of the shutter are triggered 
-# by the rise of the pulse. 
+# These shutters are controlled by sending a 5V pulse via QEM output on the Delta Tau controller MC06
+# (the same unit that controls slits S5). Both the opening and closing of the shutter are triggered
+# by the rise of the pulse.
 #
-# Note: 
-# - PV for the QEM output on MC06 is: 
+# Note:
+# - PV for the QEM output on MC06 is:
 #	XF:11BMB-CT{MC:06}Asyn.AOUT
-# - This PV is located under Slit 5/Asyn --> asynRecord/More... --> asynOctet interface I/O --> ASCII 
+# - This PV is located under Slit 5/Asyn --> asynRecord/More... --> asynOctet interface I/O --> ASCII
 # - 'M112=1' sets the state to high
 # - 'M112=0' sets the state to low
 # - 'M111=1' launches the change in state
@@ -62,9 +62,9 @@ def shutter_state(verbosity=3):
 #global xshutter_state
 xshutter_state=0		## TODO: read the shutter state and set this accordingly
 
-## Open shutter 
+## Open shutter
 def xshutter_trigger():
-    sleep_time = 0.005 
+    sleep_time = 0.005
     caput('XF:11BMB-CT{MC:06}Asyn.AOUT','M112=1')
     sleep(sleep_time)
     caput('XF:11BMB-CT{MC:06}Asyn.AOUT','M111=1')
@@ -92,7 +92,7 @@ def xshutter(inout,q=0):
 
     if inout=='o' or inout=='open' or inout==1:
         if xshutter_state==0:
-            xshutter_trigger()   
+            xshutter_trigger()
             xshutter_state = 1
             if q==0:
                 print('Experimental shutter opened')
@@ -104,7 +104,7 @@ def xshutter(inout,q=0):
 
     if inout=='c' or inout=='close' or inout==0:
         if xshutter_state==1:
-            xshutter_trigger()   
+            xshutter_trigger()
             xshutter_state = 0
             if q==0:
                 print('Experimental shutter closed')

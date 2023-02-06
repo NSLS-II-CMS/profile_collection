@@ -1698,7 +1698,6 @@ class Sample_Generic(CoordinateSystem):
         '''Internal function that is called to actually trigger a measurement.'''
         '''TODO: **md doesnot work in RE(count). '''
 
-
         if 'measure_type' not in md:
             md['measure_type'] = 'expose'
         #self.log('{} for {}.'.format(md['measure_type'], self.name), **md)
@@ -2434,7 +2433,6 @@ class Sample_Generic(CoordinateSystem):
             Extra information about this particular measurement (which is typically
             included in the savename/filename).
         '''
-
         if exposure_time is not None:
             self.set_attribute('exposure_time', exposure_time)
         #else:
@@ -2460,7 +2458,7 @@ class Sample_Generic(CoordinateSystem):
         md_current.update(md)
 
 
-        self.expose(exposure_time, extra=extra, verbosity=verbosity, **md_current)
+        yield from self.expose(exposure_time, extra=extra, verbosity=verbosity, **md_current)
         #self.expose(exposure_time, extra=extra, verbosity=verbosity, **md)
 
         self.md['measurement_ID'] += 1
