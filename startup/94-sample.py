@@ -1641,7 +1641,8 @@ class Sample_Generic(CoordinateSystem):
         elif get_beamline().detector[0].name == 'pilatus2M':
             md_current['detector_sequence_ID'] = yield from bps.rd(self.xf_11bmb_es_det_pil2m_cam1_filenumber_rbv)
 
-        md_current.update(get_beamline().get_md())
+        new_md = yield from get_beamline().get_md()
+        md_current.update(new_md)
 
         md_current.update(md)
 
@@ -1724,7 +1725,7 @@ class Sample_Generic(CoordinateSystem):
         #md.update(md_current)
 
         #uids = RE(count(get_beamline().detector, 1), **md)
-        uids = RE(count(get_beamline().detector), **md)
+        uids = yield from count(get_beamline().detector, md=md)
         #yield from (count(get_beamline().detector), **md)
 
         #get_beamline().beam.off()
@@ -1741,8 +1742,7 @@ class Sample_Generic(CoordinateSystem):
             while percentage < pct_threshold:
                 print('sth is wrong .... percentage = {} < {}%'.format(percentage, pct_threshold))
                 start_time = time.time()
-                uids = RE(count(get_beamline().detector), **md)
-                #yield from (count(get_beamline().detector), **md)
+                uids = yield from count(get_beamline().detector, md=md)
 
                 #get_beamline().beam.off()
                 #print('shutter is off')
@@ -1820,7 +1820,7 @@ class Sample_Generic(CoordinateSystem):
 
         print('3', time.time()-start_time)
         #uids = RE(count(get_beamline().detector, 1), **md)
-        uids = RE(count(get_beamline().detector), **md)
+        uids = yield from count(get_beamline().detector, md=md)
         #yield from (count(get_beamline().detector), **md)
         print('4', time.time()-start_time)
 
@@ -2326,7 +2326,7 @@ class Sample_Generic(CoordinateSystem):
 
         else:
             # Just do a normal measurement
-            self.measure_single(exposure_time=exposure_time, extra=extra, measure_type=measure_type, verbosity=verbosity, **md)
+            yield from self.measure_single(exposure_time=exposure_time, extra=extra, measure_type=measure_type, verbosity=verbosity, **md)
 
 
     def measureRock(self, incident_angle=None, exposure_time=None, extra=None, measure_type='measure', rock_motor=None, rock_motor_limits=0.1, verbosity=3, stitchback=False, poling_period=0.2, **md):
@@ -2450,12 +2450,13 @@ class Sample_Generic(CoordinateSystem):
             raise ValueError("ERROR: No detectors defined in cms.detector")
 
         md_current = self.get_md()
-        md_current.update(self.get_measurement_md())
+        new_md = yield from self.get_measurement_md()
+        md_current.update(new_md)
         md_current['sample_savename'] = savename
         md_current['measure_type'] = measure_type
         #md_current['filename'] = '{:s}_{:04d}.tiff'.format(savename, md_current['detector_sequence_ID'])
         #md_current['filename'] = '{:s}_{:04d}.tiff'.format(savename, RE.md['scan_id'])
-        md_current['filename'] = '{:s}_{:06d}'.format(savename, RE.md['scan_id'])
+        md_current['filename'] = '{:s}_{:06d}'.format(savename, RE.md.get('scan_id',-1))
         md_current.update(md)
 
 
@@ -2509,7 +2510,8 @@ class Sample_Generic(CoordinateSystem):
 
         md_current.update(self.get_measurement_md())
         #md_current['filename'] = '{:s}_{:04d}.tiff'.format(savename, md_current['detector_sequence_ID'])
-        md_current['filename'] = '{:s}_{:04d}.tiff'.format(savename, RE.md['scan_id'])
+        # TODO: Garrett, may need to remove the get to raise exception.
+        md_current['filename'] = '{:s}_{:04d}.tiff'.format(savename, RE.md.get('scan_id',-1))
         md_current.update(md)
 
         #print('3') #0.032s
@@ -3750,7 +3752,7 @@ if True:
     #sam.naming(['name', 'extra', 'clock', 'th', 'exposure_time', 'id'])
     #sam.thsetOrigin(0.5)
     #sam.marks()
-
+    cms.SAXS.setCalibration([780, 1680-605], 5.03, [-60, -73]) # 13.5 keV
     #hol = CapillaryHolder(base=stg)
     #hol.addSampleSlot( Sample_Generic('test_sample_01'), 1.0 )
     #hol.addSampleSlot( Sample_Generic('test_sample_02'), 3.0 )

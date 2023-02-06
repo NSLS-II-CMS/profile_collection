@@ -3137,8 +3137,8 @@ class CMS_Beamline(Beamline):
         # md_current['motor_bsy'] = bsy.user_readback.value
         # md_current['motor_bsphi'] = bsphi.user_readback.value
 
-        md_current.update(self.SAXS.get_md(prefix='detector_SAXS_'))
-
+        saxs_md = yield from self.SAXS.get_md()
+        md_current.update(saxs_md)
         md_current.update(md)
 
         # Add an optional prefix
