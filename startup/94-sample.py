@@ -2812,17 +2812,12 @@ class Sample_Generic(CoordinateSystem):
         get_beamline().beam.on()
         #RE(relative_scan(gs.DETS, motor, start, stop, num_frames+1, per_step=per_step, md=md_current))
         RE(relative_scan(cms.detector, motor, start, stop, num_frames+1, per_step=per_step,md=md_current), LiveTable([motor, 'motor_setpoint']))
-
-        # if verbosity>=3 and caget('XF:11BMB-ES{Det:SAXS}:cam1:Acquire')==1:
         stage = 1
         for detector in cms.detector:
             if detector.cam.acquire.get() == 1:
-            # if verbosity>=3 and caget('XF:11BMB-ES{Det:SAXS}:cam1:Acquire')==1:
 
                 print('Warning: Detector {} still not done acquiring.'.format(detector.name))
-        # elif verbosity>=3 and caget('XF:11BMB-ES{Det:PIL2M}:cam1:Acquire')==1:
-        #     print('Warning: Detector Pilatus2M still not done acquiring.')
-        #get_beamline().beam._test_off(wait_time=0.1)
+
         get_beamline().beam.off()
         self.md['measurement_ID'] += 1
 
@@ -2935,18 +2930,10 @@ class Sample_Generic(CoordinateSystem):
         subdir = ''
 
         if detector.name == 'pilatus300' or  detector.name == 'pilatus8002' :
-            # chars = caget('XF:11BMB-ES{Det:SAXS}:TIFF1:FullFileName_RBV')
-            # filename = ''.join(chr(char) for char in chars)[:-1]
-            # filename_part1 = ''.join(chr(char) for char in chars)[:-13]
 
             filename = detector.tiff.full_file_name.get() #RL, 20210831
 
             print('pilatus300k data handling')
-            # Alternate method to get the last filename
-            #filename = '{:s}/{:s}.tiff'.format( detector.tiff.file_path.get(), detector.tiff.file_name.get()  )
-
-            #if verbosity>=3:
-            #    print('  Data saved to: {}'.format(filename))
 
             if subdirs:
                 subdir = '/maxs/raw/'
@@ -2954,7 +2941,6 @@ class Sample_Generic(CoordinateSystem):
             #if md['measure_type'] is not 'snap':
             if True:
 
-                # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime'))
                 self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
                 # Create symlink
                 #link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -2979,10 +2965,6 @@ class Sample_Generic(CoordinateSystem):
                             print('  Data {} linked as: {}'.format(filename_new, link_name_new))
 
         elif detector.name ==  'pilatus2M':
-            # chars = caget('XF:11BMB-ES{Det:PIL2M}:TIFF1:FullFileName_RBV')
-            # filename = ''.join(chr(char) for char in chars)[:-1]
-            # filename_part1 = ''.join(chr(char) for char in chars)[:-13]
-
 
             filename = detector.tiff.full_file_name.get() #RL, 20210831
             filename_part1 = detector.tiff.file_path.get() + detector.tiff.file_name.get()
@@ -3027,18 +3009,8 @@ class Sample_Generic(CoordinateSystem):
                         if num_frame == 0 or num_frame == np.max(num_frames):
                             print('  Data {} linked as: {}'.format(filename_new, link_name_new))
 
-        #elif detector.name is  'pilatus800':
-            #chars = caget('XF:11BMB-ES{Det:PIL800K}:TIFF1:FullFileName_RBV')
-            #filename = ''.join(chr(char) for char in chars)[:-1]
-            #filename_part1 = ''.join(chr(char) for char in chars)[:-13]
-
         elif detector.name == 'pilatus800':
             foldername = '/nsls2/xf11bm/'
-
-            # chars = caget('XF:11BMB-ES{Det:PIL800K}:TIFF1:FullFileName_RBV')
-            # filename = ''.join(chr(char) for char in chars)[:-1]
-            # filename = foldername + filename
-            # filename_part1 = foldername + ''.join(chr(char) for char in chars)[:-13]
 
             filename = pilatus800.tiff.full_file_name.get() #RL, 20210831
             filename_part1 = pilatus800.tiff.file_path.get() + pilatus800.tiff.file_name.get()
@@ -3057,7 +3029,6 @@ class Sample_Generic(CoordinateSystem):
             #if md['measure_type'] is not 'snap':
             if True:
 
-                # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:PIL800K}:cam1:AcquireTime'))
                 self.set_attribute('exposure_time', pilatus800.cam.acquire_time.get()) #RL, 20210831
 
                 # Create symlink
@@ -3122,7 +3093,6 @@ class Sample_Generic(CoordinateSystem):
         #if md['measure_type'] is not 'snap':
         if True:
 
-            # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime'))
             self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
             # Create symlink
             #link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -3648,23 +3618,27 @@ class Holder(Stage):
             #print('Temperature functions not implemented in {}'.format(self.__class__.__name__))
         if output_channel == '1':
             if verbosity>=2:
-                print('  Changing temperature setpoint from {:.3f}°C  to {:.3f}°C'.format(caget('XF:11BM-ES{Env:01-Out:1}T-SP')-273.15, temperature))
-            caput('XF:11BM-ES{Env:01-Out:1}T-SP', temperature+273.15)
+                original_temp = yield from bps.rd(self.xf_11bm_es_env_01_out_1_t_sp)
+                print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C'))
+            yield from bps.mv(self.xf_11bm_es_env_01_out_1_t_sp, temperature+273.15)
 
         if output_channel == '2':
             if verbosity>=2:
-                print('  Changing temperature setpoint from {:.3f}°C  to {:.3f}°C'.format(caget('XF:11BM-ES{Env:01-Out:2}T-SP')-273.15, temperature))
-            caput('XF:11BM-ES{Env:01-Out:2}T-SP', temperature+273.15)
+                original_temp = yield from bps.rd(self.xf_11bm_es_env_01_out_2_t_sp)
+                print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C'))
+            yield from bps.mv(self.xf_11bm_es_env_01_out_2_t_sp, temperature+273.15)
 
         if output_channel == '3':
             if verbosity>=2:
-                print('  Changing temperature setpoint from {:.3f}°C  to {:.3f}°C'.format(caget('XF:11BM-ES{Env:01-Out:3}T-SP')-273.15, temperature))
-            caput('XF:11BM-ES{Env:01-Out:3}T-SP', temperature+273.15)
+                original_temp = yield from bps.rd(self.xf_11bm_es_env_01_out_3_t_sp)
+                print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C'))
+            yield from bps.mv(self.xf_11bm_es_env_01_out_3_t_sp, temperature+273.15)
 
         if output_channel == '4':
             if verbosity>=2:
-                print('  Changing temperature setpoint from {:.3f}°C  to {:.3f}°C'.format(caget('XF:11BM-ES{Env:01-Out:4}T-SP')-273.15, temperature))
-            caput('XF:11BM-ES{Env:01-Out:4}T-SP', temperature+273.15)
+                original_temp = yield from bps.rd(self.xf_11bm_es_env_01_out_4_t_sp)
+                print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C'))
+            yield from bps.mv(self.xf_11bm_es_env_01_out_4_t_sp, temperature+273.15)
 
 
     def temperature(self, temperature_probe='A', output_channel='1', verbosity=3):
