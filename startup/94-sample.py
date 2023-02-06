@@ -1664,17 +1664,13 @@ class Sample_Generic(CoordinateSystem):
 
         if exposure_time is not None:
             # Prep detector
-            #caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime', exposure_time)
-            #caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquirePeriod', exposure_time+0.1)
-            #caput('XF:11BMB-ES{}:cam1:AcquireTime'.format(pilatus_Epicsname), exposure_time)
-            #caput('XF:11BMB-ES{}:cam1:AcquirePeriod'.format(pilatus_Epicsname), exposure_time+0.1)
 
             if get_beamline().detector[0].name is 'pilatus300':
-                caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime', exposure_time)
-                caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquirePeriod', exposure_time+0.1)
+                yield from bps.mv(self.xf_11bmb_es_det_saxs_cam1_acquiretime, exposure_time)
+                yield from bps.mv(self.xf_11bmb_es_det_saxs_cam1_acquireperiod, exposure_time+0.1)
             elif get_beamline().detector[0].name is 'pilatus2M':
-                caput('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime', exposure_time)
-                caput('XF:11BMB-ES{Det:PIL2M}:cam1:AcquirePeriod', exposure_time+0.1)
+                yield from bps.mv(self.xf_11bmb_es_det_pil2m_cam1_acquiretime, exposure_time)
+                yield from bps.mv(self.xf_11bmb_es_det_pil2m_cam1_acquireperiod, exposure_time+0.1)
 
         get_beamline().beam.on()
 
