@@ -1161,7 +1161,7 @@ class Sample_Generic(CoordinateSystem):
             #base.addSample(self)
 
         # Signals
-        self.axf_11bmb_es_det_saxs_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV')
+        self.xf_11bmb_es_det_saxs_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV')
         self.xf_11bmb_es_det_pil2m_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:PIL2M}:cam1:FileNumber_RBV')
         self.xf_11bmb_es_det_saxs_cam1_acquiretime = EpicsSignalRO('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime')
         self.xf_11bmb_es_det_pil2m_cam1_acquiretime = EpicsSignalRO('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime')
@@ -1185,6 +1185,13 @@ class Sample_Generic(CoordinateSystem):
         self.xf_11bm_es_env_01_out_2_t_sp = EpicsSignal('XF:11BM-ES{Env:01-Out:2}T-SP')
         self.xf_11bm_es_env_01_out_3_t_sp = EpicsSignal('XF:11BM-ES{Env:01-Out:3}T-SP')
         self.xf_11bm_es_env_01_out_4_t_sp = EpicsSignal('XF:11BM-ES{Env:01-Out:4}T-SP')
+
+        # Acquire lookup.
+        self.acquires = {'pilatus300': self.xf_11bmb_es_det_saxs_cam1_acquiretime ,
+                         'pilatus2M': self.xf_11bmb_es_det_pil2m_cam1_acquire,
+                         'pilatus800': self.xf_11bmb_es_det_pil800k_cam1_acquire,
+                         'pilatus8002': self.xf_11bmb_es_det_pil800k_cam1_acquire}
+
 
         self.reset_clock()
 
@@ -1600,13 +1607,12 @@ class Sample_Generic(CoordinateSystem):
 
     def get_measurement_md(self, prefix=None, **md):
 
-        #md_current = {}
         md_current = { k : v for k, v in RE.md.items() } # Global md
 
         if get_beamline().detector[0].name is 'pilatus300':
-            md_current['detector_sequence_ID'] = caget('XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV')
+            md_current['detector_sequence_ID'] = yield from bps.rd(self.xf_11bmb_es_det_saxs_cam1_filenumber_rbv)
         elif get_beamline().detector[0].name is 'pilatus2M':
-            md_current['detector_sequence_ID'] = caget('XF:11BMB-ES{Det:PIL2M}:cam1:FileNumber_RBV')
+            md_current['detector_sequence_ID'] = yield from bps.rd(self.xf_11bmb_es_det_pil2m_cam1_filenumber_rbv)
 
         md_current.update(get_beamline().get_md())
 
@@ -1650,14 +1656,17 @@ class Sample_Generic(CoordinateSystem):
 
         if verbosity>=2:
             start_time = time.time()
-            while caget('XF:11BMB-ES{}:cam1:Acquire'.format(pilatus_Epicsname))==1 and (time.time()-start_time)<(exposure_time+20):
+            acquiring = yield from bps.rd(self.acquires[get_beamline().detector[0].name])
+            while acquiring and (time.time()-start_time)<(exposure_time+20):
                 percentage = 100*(time.time()-start_time)/exposure_time
                 print( 'Exposing {:6.2f} s  ({:3.0f}%)      \r'.format((time.time()-start_time), percentage), end='')
                 time.sleep(poling_period)
+                acquiring = yield from bps.rd(self.acquires[get_beamline().detector[0].name])
         else:
             time.sleep(exposure_time)
 
-        if verbosity>=3 and caget('XF:11BMB-ES{}:cam1:Acquire'.format(pilatus_Epicsname))==1:
+        acquiring = yield from bps.rd(self.acquires[get_beamline().detector[0].name])
+        if verbosity>=3 and acquiring:
             print('Warning: Detector still not done acquiring.')
 
         get_beamline().beam.off()
