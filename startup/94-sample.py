@@ -1614,6 +1614,24 @@ class Sample_Generic(CoordinateSystem):
         else:
             return max(exposure_times)
 
+    def wait_for_detectors(self, wait_max=False, start_time=None, period=0.1):
+        max_exposure_time = yield from self.max_exposure_time()
+        timeout = time.time() + max_exposure_time + 20
+        if not wait_max:
+            status = True
+            while status and (time.time() < timeout):
+                if start_time is not None:
+                    percentage = 100*(time.time()-start_time)/max_exposure_time
+                    print( 'Exposing {:6.2f} s  ({:3.0f}%)      \r'.format((time.time()-start_time), percentage), end='')
+                time.sleep(period)
+                acquires = []
+                for detector in get_beamline().detector:
+                    acquire = yield from bps.rd(detector.cam.acquire)
+                    acquires.append(acquire)
+                status = any(acquires)
+        else:
+            time.sleep(max_exposure_time)
+
     # Measurement methods
     ########################################
 
@@ -1698,22 +1716,8 @@ class Sample_Generic(CoordinateSystem):
             exposure_time = abs(exposure_time)
             #for detector in gs.DETS:
             for detector in get_beamline().detector:
-                if exposure_time != detector.cam.acquire_time.get():  #caget('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime'):
-                    RE(detector.setExposureTime(exposure_time, verbosity=verbosity))
-                #if detector.name is 'pilatus800' and exposure_time != detector.cam.acquire_time.get():  #caget('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime'):
-                    #RE(detector.setExposureTime(exposure_time, verbosity=verbosity))
-                #if detector.name is 'pilatus300' and exposure_time != detector.cam.acquire_time.get():
-                    #detector.setExposureTime(exposure_time, verbosity=verbosity)
-                    ##extra wait time when changing the exposure time.
-                    ##time.sleep(2)
-                    #############################################
-                    ##extra wait time for adjusting pilatus2M
-                    ##this extra wait time has to be added. Otherwise, the exposure will be skipped when the exposure time is increased
-                    ##Note by 091918
-                    #############################################
-                    #time.sleep(2)
-                #elif detector.name is 'PhotonicSciences_CMS':
-                    #detector.setExposureTime(exposure_time, verbosity=verbosity)
+                if exposure_time != detector.cam.acquire_time.get():
+                    yield from detector.setExposureTime(exposure_time, verbosity=verbosity)
 
         # Do acquisition
         get_beamline().beam.on()
@@ -1737,26 +1741,7 @@ class Sample_Generic(CoordinateSystem):
 
         # Wait for detectors to be ready
         max_exposure_time = self.max_exposure_time()
-
-        if verbosity>=2:
-
-            status = 0
-            while (status==0) and (time.time()-start_time)<(max_exposure_time+20):
-                percentage = 100*(time.time()-start_time)/max_exposure_time
-                print( 'Exposing {:6.2f} s  ({:3.0f}%)      \r'.format((time.time()-start_time), percentage), end='')
-
-
-                time.sleep(poling_period)
-
-                status = 1
-                for detector in get_beamline().detector:
-                    if detector.cam.acquire.get()==1:
-                        status *= 0
-
-            # print('counting .... percentage = {}'.format(percentage))
-
-        else:
-            time.sleep(max_exposure_time)
+        yield from self.wait_for_detectors(start_time=start_time, period=poling_period)
 
         #special solution for 2022_1/TKoga2
         if verbosity>=5:
@@ -1772,20 +1757,10 @@ class Sample_Generic(CoordinateSystem):
                 #print('shutter is off')
 
                 # Wait for detectors to be ready
-                max_exposure_time = self.max_exposure_time()
+                max_exposure_time = yield from self.max_exposure_time()
 
                 percentage = 100*(time.time()-start_time)/max_exposure_time
                 print('After re-exposing .... percentage = {} '.format(percentage))
-
-        # if verbosity>=3 and caget('XF:11BMB-ES{Det:PIL800K}:cam1:Acquire')==1:
-        #     print('Warning: Detector pilatus300 still not done acquiring.')
-
-        # #if verbosity>=3 and caget('XF:11BMB-ES{Det:SAXS}:cam1:Acquire')==1:
-        #     #print('Warning: Detector pilatus300 still not done acquiring.')
-
-        # if verbosity>=3 and caget('XF:11BMB-ES{Det:PIL2M}:cam1:Acquire')==1:
-        #     print('Warning: Detector pilatus2M still not done acquiring.')
-
 
         get_beamline().beam.off()
 
@@ -1834,22 +1809,8 @@ class Sample_Generic(CoordinateSystem):
             exposure_time = abs(exposure_time)
             #for detector in gs.DETS:
             for detector in get_beamline().detector:
-                if exposure_time != detector.cam.acquire_time.get():  #caget('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime'):
+                if exposure_time != detector.cam.acquire_time.get():
                     RE(detector.setExposureTime(exposure_time, verbosity=verbosity))
-                #if detector.name is 'pilatus800' and exposure_time != detector.cam.acquire_time.get():  #caget('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime'):
-                    #RE(detector.setExposureTime(exposure_time, verbosity=verbosity))
-                #if detector.name is 'pilatus300' and exposure_time != detector.cam.acquire_time.get():
-                    #detector.setExposureTime(exposure_time, verbosity=verbosity)
-                    ##extra wait time when changing the exposure time.
-                    ##time.sleep(2)
-                    #############################################
-                    ##extra wait time for adjusting pilatus2M
-                    ##this extra wait time has to be added. Otherwise, the exposure will be skipped when the exposure time is increased
-                    ##Note by 091918
-                    #############################################
-                    #time.sleep(2)
-                #elif detector.name is 'PhotonicSciences_CMS':
-                    #detector.setExposureTime(exposure_time, verbosity=verbosity)
         print('2', time.time()-start_time)
 
         # Do acquisition
@@ -1896,13 +1857,6 @@ class Sample_Generic(CoordinateSystem):
             time.sleep(max_exposure_time)
         print('7', time.time()-start_time)
 
-        #if verbosity>=3 and caget('XF:11BMB-ES{Det:SAXS}:cam1:Acquire')==1:
-            #print('Warning: Detector pilatus300 still not done acquiring.')
-
-        #if verbosity>=3 and caget('XF:11BMB-ES{Det:PIL2M}:cam1:Acquire')==1:
-        #    print('Warning: Detector pilatus2M still not done acquiring.')
-
-
         get_beamline().beam.off()
         print('8', time.time()-start_time)
 
@@ -1942,7 +1896,6 @@ class Sample_Generic(CoordinateSystem):
         #if md['measure_type'] is not 'snap':
         if True:
 
-            # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime'))
             self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
 
             # Create symlink
@@ -1970,8 +1923,6 @@ class Sample_Generic(CoordinateSystem):
         subdir = ''
 
         if detector.name is 'pilatus300' or detector.name is 'pilatus8002':
-            # chars = caget('XF:11BMB-ES{Det:SAXS}:TIFF1:FullFileName_RBV')
-            # filename = ''.join(chr(char) for char in chars)[:-1]
             filename = detector.tiff.full_file_name.get() #RL, 20210831
 
             # Alternate method to get the last filename
@@ -1988,7 +1939,6 @@ class Sample_Generic(CoordinateSystem):
             #if md['measure_type'] is not 'snap':
             if True:
 
-                # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime'))
                 self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
 
                 # Create symlink
@@ -2014,17 +1964,7 @@ class Sample_Generic(CoordinateSystem):
 
             foldername = '/nsls2/xf11bm/'
 
-            # chars = caget('XF:11BMB-ES{Det:PIL2M}:TIFF1:FullFileName_RBV')
-
-            # filename = ''.join(chr(char) for char in chars)[:-1]
-            #filename = foldername + filename
             filename = detector.tiff.full_file_name.get() #RL, 20210831
-
-            #chars = caget('XF:11BMB-ES{Det:PIL2M}:TIFF1:FullFileName_RBV')
-            #filename = ''.join(chr(char) for char in chars)[:-1]
-
-            # Alternate method to get the last filename
-            #filename = '{:s}/{:s}.tiff'.format( detector.tiff.file_path.get(), detector.tiff.file_name.get()  )
 
             if verbosity>=3:
                 print('  Data saved to: {}'.format(filename))
@@ -2037,7 +1977,6 @@ class Sample_Generic(CoordinateSystem):
             #if md['measure_type'] is not 'snap':
             if True:
 
-                # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime'))
                 self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
 
                 # Create symlink
@@ -2062,14 +2001,7 @@ class Sample_Generic(CoordinateSystem):
         elif detector.name is 'pilatus800':
             foldername = '/nsls2/xf11bm/'
 
-            # chars = caget('XF:11BMB-ES{Det:PIL800K}:TIFF1:FullFileName_RBV')
-            # chars = pilatus800.tiff.full_file_name.get() #RL, 20210831
-
-            # filename = ''.join(chr(char) for char in chars)[:-1]
-            # filename = foldername + filename
             filename = detector.tiff.full_file_name.get() #RL, 20210831
-            # Alternate method to get the last filename
-            #filename = '{:s}/{:s}.tiff'.format( detector.tiff.file_path.get(), detector.tiff.file_name.get()  )
 
             if verbosity>=3:
                 print('  Data saved to: {}'.format(filename))
@@ -2081,7 +2013,6 @@ class Sample_Generic(CoordinateSystem):
             #if md['measure_type'] is not 'snap':
             if True:
 
-                # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:PIL800K}:cam1:AcquireTime'))
                 self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
 
                 # Create symlink
@@ -2463,7 +2394,7 @@ class Sample_Generic(CoordinateSystem):
         if exposure_time is not None:
             #for detector in gs.DETS:
             for detector in get_beamline().detector:
-                if exposure_time != detector.cam.acquire_time.get():  #caget('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime'):
+                if exposure_time != detector.cam.acquire_time.get():
                     RE(detector.setExposureTime(exposure_time, verbosity=verbosity))
                 #if detector.name is 'pilatus300' and exposure_time != detector.cam.acquire_time.get():
                     #detector.setExposureTime(exposure_time, verbosity=verbosity)
@@ -2490,48 +2421,9 @@ class Sample_Generic(CoordinateSystem):
         #uids = RE(count(get_beamline().detector, 1), **md)
         uids = RE(rock_scan, **md_current)
 
-
-
         # Wait for detectors to be ready
-        max_exposure_time = self.max_exposure_time()
-
-        if verbosity>=2:
-            status = 0
-            while (status==0) and (time.time()-start_time)<(max_exposure_time+20):
-                percentage = 100*(time.time()-start_time)/max_exposure_time
-                print( 'Exposing {:6.2f} s  ({:3.0f}%)      \r'.format((time.time()-start_time), percentage), end='')
-                time.sleep(poling_period)
-
-                status = 1
-                for detector in get_beamline().detector:
-                    if detector.cam.acquire.get():
-                        status *= 0
-
-                    # if detector.name is 'pilatus300':
-                    #     if caget('XF:11BMB-ES{Det:SAXS}:cam1:Acquire')==1:
-                    #         status *= 0
-                    # elif detector.name is 'pilatus2M':
-                    #     if caget('XF:11BMB-ES{Det:PIL2M}:cam1:Acquire')==1:
-                    #         status *= 0
-                    # elif detector.name is 'pilatus800':
-                    #     if caget('XF:11BMB-ES{Det:PIL800K}:cam1:Acquire')==1:
-                    #         status *= 0
-                    # elif detector.name is 'PhotonicSciences_CMS':
-                    #     if not detector.detector_is_ready(verbosity=0):
-                    #         status *= 0
-            print('')
-
-
-        else:
-            time.sleep(max_exposure_time)
-
-        # if verbosity>=3 and caget('XF:11BMB-ES{Det:SAXS}:cam1:Acquire')==1:
-        #     print('Warning: Detector pilatus300 still not done acquiring.')
-        # if verbosity>=3 and caget('XF:11BMB-ES{Det:PIL2M}:cam1:Acquire')==1:
-        #     print('Warning: Detector pilatus2M still not done acquiring.')
-        # if verbosity>=3 and caget('XF:11BMB-ES{Det:PIL800K}:cam1:Acquire')==1:
-        #     print('Warning: Detector pilatus800 still not done acquiring.')
-
+        max_exposure_time = yield from self.max_exposure_time()
+        yield from self.wait_for_detectors(start_time=start_time, period=poling_period))
 
         get_beamline().beam.off()
 
@@ -2683,48 +2575,8 @@ class Sample_Generic(CoordinateSystem):
         #print('shutter is off')
 
         # Wait for detectors to be ready
-        max_exposure_time = self.max_exposure_time()
-
-        print('4') #4.3193
-        print(self.clock())
-
-        if verbosity>=2:
-            status = 0
-            print('status1 = ', status)
-
-            while (status==0) and (time.time()-start_time)<(max_exposure_time+20):
-                percentage = 100*(time.time()-start_time)/max_exposure_time
-                print( 'Exposing {:6.2f} s  ({:3.0f}%)      \r'.format((time.time()-start_time), percentage), end='')
-                print('status2 = ', status)
-
-                time.sleep(poling_period)
-
-                status = 1
-                for detector in get_beamline().detector:
-                    if detector.name is 'pilatus300' or 'pilatus2M':
-                        print('status2.5 = ', status)
-                        if caget('XF:11BMB-ES{}:cam1:Acquire'.format(pilatus_Epicsname))==1:
-                            status = 0
-                            print('status3 = ', status)
-                        print('status3.5 = ', status)
-
-                    elif detector.name is 'PhotonicSciences_CMS':
-                        if not detector.detector_is_ready(verbosity=0):
-                            status = 0
-                print('5') #3.0
-                print(self.clock())
-            print('6') #3.0
-            print(self.clock())
-
-
-        else:
-            time.sleep(max_exposure_time)
-
-        #print('5') #4.4193
-        #print(self.clock())
-
-        if verbosity>=3 and caget('XF:11BMB-ES{}:cam1:Acquire'.format(pilatus_Epicsname))==1:
-            print('Warning: Detector still not done acquiring.')
+        max_exposure_time = yield from self.max_exposure_time()
+        yield from self.wait_for_detectors(start_time=start_time, poling_period=poling_period)
 
         if shutteronoff == True:
             get_beamline().beam.off()
