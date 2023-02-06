@@ -3216,21 +3216,7 @@ class Sample_Generic(CoordinateSystem):
             temp_data.to_csv(INT_FILENAME)
 
     def temperature_setpoint(self, output_channel='1', verbosity=3):
-        #if verbosity>=1:
-            #print('Temperature functions not implemented in {}'.format(self.__class__.__name__))
-
-        if output_channel == '1':
-            setpoint_temperature = caget('XF:11BM-ES{Env:01-Out:1}T-SP')
-
-        if output_channel == '2':
-            setpoint_temperature = caget('XF:11BM-ES{Env:01-Out:2}T-SP')
-
-        if output_channel == '3':
-            setpoint_temperature = caget('XF:11BM-ES{Env:01-Out:3}T-SP')
-
-        if output_channel == '4':
-            setpoint_temperature = caget('XF:11BM-ES{Env:01-Out:4}T-SP')
-
+        setpoint = yield from bps.rd(getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp'))
         return setpoint_temperature
 
     def monitor_scheme(self, scheme):
@@ -3608,44 +3594,14 @@ class Holder(Stage):
 
 
     def temperature(self, temperature_probe='A', output_channel='1', verbosity=3):
-
-        if temperature_probe == 'A':
-            current_temperature = yield from bps.rd(self.xf_11bm_es_env_01_chan_a_t_c_i)
-            if verbosity>=3:
-                print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format( current_temperature, self.temperature_setpoint(output_channel=output_channel)-273.15 ) )
-
-        if temperature_probe == 'B':
-            current_temperature = yield from bps.rd(self.xf_11bm_es_env_01_chan_b_t_c_i)
-            if verbosity>=3:
-                print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format( current_temperature, self.temperature_setpoint(output_channel=output_channel)-273.15 ) )
-
-        if temperature_probe == 'C':
-            current_temperature = yield from bps.rd(self.xf_11bm_es_env_01_chan_c_t_c_i)
-            if verbosity>=3:
-                print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format( current_temperature, self.temperature_setpoint(output_channel=output_channel)-273.15 ) )
-
-        if temperature_probe == 'D':
-            current_temperature = yield from bps.rd(self.xf_11bm_es_env_01_chan_d_t_c_i)
-            if verbosity>=3:
-                print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format( current_temperature, self.temperature_setpoint(output_channel=output_channel)-273.15 ) )
-
-        return current_temperature
+        setpoint = yield from bps.rd(getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        readback = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_chan_{temperature_probe}_t_c_i'))
+        print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format(readback,setpoint(output_channel-273.15))
+        return readback
 
     def temperature_setpoint(self, output_channel='1', verbosity=3):
-        if output_channel == '1':
-            setpoint_temperature = caget('XF:11BM-ES{Env:01-Out:1}T-SP')
-            setpoint_temperature = yield from bps.rd(self.xf_11bm_es_env_01_out_1_t_sp)
-
-        if output_channel == '2':
-            setpoint_temperature = yield from bps.rd(self.xf_11bm_es_env_01_out_2_t_sp)
-
-        if output_channel == '3':
-            setpoint_temperature = yield from bps.rd(self.xf_11bm_es_env_01_out_3_t_sp)
-
-        if output_channel == '4':
-            setpoint_temperature = yield from bps.rd(self.xf_11bm_es_env_01_out_4_t_sp)
-
-        return setpoint_temperature
+        setpoint = yield from bps.rd(getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        return setpoint
 
 
 
