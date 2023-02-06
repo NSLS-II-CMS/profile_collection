@@ -3568,30 +3568,10 @@ class Holder(Stage):
     # Control methods
     ########################################
     def setTemperature(self, temperature, output_channel='1', verbosity=3):
-        if output_channel == '1':
-            if verbosity>=2:
-                original_temp = yield from bps.rd(self.xf_11bm_es_env_01_out_1_t_sp)
-                print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C'))
-            yield from bps.mv(self.xf_11bm_es_env_01_out_1_t_sp, temperature+273.15)
-
-        if output_channel == '2':
-            if verbosity>=2:
-                original_temp = yield from bps.rd(self.xf_11bm_es_env_01_out_2_t_sp)
-                print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C'))
-            yield from bps.mv(self.xf_11bm_es_env_01_out_2_t_sp, temperature+273.15)
-
-        if output_channel == '3':
-            if verbosity>=2:
-                original_temp = yield from bps.rd(self.xf_11bm_es_env_01_out_3_t_sp)
-                print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C'))
-            yield from bps.mv(self.xf_11bm_es_env_01_out_3_t_sp, temperature+273.15)
-
-        if output_channel == '4':
-            if verbosity>=2:
-                original_temp = yield from bps.rd(self.xf_11bm_es_env_01_out_4_t_sp)
-                print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C'))
-            yield from bps.mv(self.xf_11bm_es_env_01_out_4_t_sp, temperature+273.15)
-
+        original_temp = yield from bps.rd(getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        if verbosity>=2:
+            print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C'))
+        yield from bps.mv(getattr(self,'self.xf_11bm_es_env_01_out_{output_channel}_t_sp', temperature+273.15)
 
     def temperature(self, temperature_probe='A', output_channel='1', verbosity=3):
         setpoint = yield from bps.rd(getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp'))
