@@ -3743,7 +3743,7 @@ def get_default_stage():
 if True:
     # For testing:
     # %run -i /opt/ipython_profiles/profile_collection/startup/94-sample.py
-    sam = SampleGISAXS_Generic('testing_of_code')
+    sam = Sample_Generic('testing_of_code')
     sam.mark('here')
     #sam.mark('XY_field', 'x', 'y')
     #sam.mark('specified', x=1, th=0.1)
@@ -3751,13 +3751,10 @@ if True:
     #sam.thsetOrigin(0.5)
     #sam.marks()
 
+    #hol = CapillaryHolder(base=stg)
+    #hol.addSampleSlot( Sample_Generic('test_sample_01'), 1.0 )
+    #hol.addSampleSlot( Sample_Generic('test_sample_02'), 3.0 )
+    #hol.addSampleSlot( Sample_Generic('test_sample_03'), 5.0 )
 
-    hol = CapillaryHolder(base=stg)
-    hol.addSampleSlot( SampleGISAXS_Generic('test_sample_01'), 1.0 )
-    hol.addSampleSlot( SampleGISAXS_Generic('test_sample_02'), 3.0 )
-    hol.addSampleSlot( SampleGISAXS_Generic('test_sample_03'), 5.0 )
-
-    sam = hol.getSample(1)
+    #sam = hol.getSample(1)
     detselect(pilatus2M)
-
-
