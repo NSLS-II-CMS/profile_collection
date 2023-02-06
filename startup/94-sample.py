@@ -1636,9 +1636,9 @@ class Sample_Generic(CoordinateSystem):
 
         md_current = { k : v for k, v in RE.md.items() } # Global md
 
-        if get_beamline().detector[0].name is 'pilatus300':
+        if get_beamline().detector[0].name == 'pilatus300':
             md_current['detector_sequence_ID'] = yield from bps.rd(self.xf_11bmb_es_det_saxs_cam1_filenumber_rbv)
-        elif get_beamline().detector[0].name is 'pilatus2M':
+        elif get_beamline().detector[0].name == 'pilatus2M':
             md_current['detector_sequence_ID'] = yield from bps.rd(self.xf_11bmb_es_det_pil2m_cam1_filenumber_rbv)
 
         md_current.update(get_beamline().get_md())
@@ -1664,10 +1664,10 @@ class Sample_Generic(CoordinateSystem):
 
         if exposure_time is not None:
             # Prep detector
-            if get_beamline().detector[0].name is 'pilatus300':
+            if get_beamline().detector[0].name == 'pilatus300':
                 yield from bps.mv(self.xf_11bmb_es_det_saxs_cam1_acquiretime, exposure_time)
                 yield from bps.mv(self.xf_11bmb_es_det_saxs_cam1_acquireperiod, exposure_time+0.1)
-            elif get_beamline().detector[0].name is 'pilatus2M':
+            elif get_beamline().detector[0].name == 'pilatus2M':
                 yield from bps.mv(self.xf_11bmb_es_det_pil2m_cam1_acquiretime, exposure_time)
                 yield from bps.mv(self.xf_11bmb_es_det_pil2m_cam1_acquireperiod, exposure_time+0.1)
 
@@ -1861,7 +1861,7 @@ class Sample_Generic(CoordinateSystem):
 
         subdir = ''
         if subdirs:
-            if detector.name is 'pilatus300' or  detector.name is 'pilatus8002' :
+            if detector.name == 'pilatus300' or  detector.name == 'pilatus8002' :
                 subdir = '/maxs/raw/'
                 detname = 'maxs'
             elif detector.name is  'pilatus2M':
@@ -1913,7 +1913,7 @@ class Sample_Generic(CoordinateSystem):
 
         subdir = ''
 
-        if detector.name is 'pilatus300' or detector.name is 'pilatus8002':
+        if detector.name == 'pilatus300' or detector.name == 'pilatus8002':
             filename = detector.tiff.full_file_name.get() #RL, 20210831
 
             # Alternate method to get the last filename
@@ -1951,7 +1951,7 @@ class Sample_Generic(CoordinateSystem):
                 if verbosity>=3:
                     print('  Data linked as: {}'.format(link_name))
 
-        elif detector.name is 'pilatus2M':
+        elif detector.name == 'pilatus2M':
 
             foldername = '/nsls2/xf11bm/'
 
@@ -1989,7 +1989,7 @@ class Sample_Generic(CoordinateSystem):
                 if verbosity>=3:
                     print('  Data linked as: {}'.format(link_name))
 
-        elif detector.name is 'pilatus800':
+        elif detector.name == 'pilatus800':
             foldername = '/nsls2/xf11bm/'
 
             filename = detector.tiff.full_file_name.get() #RL, 20210831
@@ -2414,7 +2414,7 @@ class Sample_Generic(CoordinateSystem):
 
         # Wait for detectors to be ready
         max_exposure_time = yield from self.max_exposure_time()
-        yield from self.wait_for_detectors(start_time=start_time, period=poling_period))
+        yield from self.wait_for_detectors(start_time=start_time, period=poling_period)
 
         get_beamline().beam.off()
 
@@ -3550,13 +3550,13 @@ class Holder(Stage):
     def setTemperature(self, temperature, output_channel='1', verbosity=3):
         original_temp = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
         if verbosity>=2:
-            print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C'))
-        yield from bps.mv(getattr(self,'xf_11bm_es_env_01_out_{output_channel}_t_sp', temperature+273.15)
+            print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C')
+        yield from bps.mv(getattr(self,'xf_11bm_es_env_01_out_{output_channel}_t_sp'), temperature+273.15)
 
     def temperature(self, temperature_probe='A', output_channel='1', verbosity=3):
         setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
         readback = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_chan_{temperature_probe}_t_c_i'))
-        print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format(readback,setpoint(output_channel-273.15))
+        print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format(readback,setpoint-273.15))
         return readback
 
     def temperature_setpoint(self, output_channel='1', verbosity=3):
