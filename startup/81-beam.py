@@ -609,7 +609,11 @@ class IonChamber_CMS(Monitor):
 
     def reading(self, verbosity=3):
 
-        total = self.h1.value + self.h2.value + self.v1.value + self.v2.value
+        h1 = yield from bps.rd(self.h1)
+        h2 = yield from bps.rd(self.h2)
+        v1 = yield from bps.rd(self.v1)
+        v2 = yield from bps.rd(self.v2)
+        total = sum([h1,h2,v1,v2])
 
         if verbosity>=3:
             print('Reading for {:s} ({:s})'.format(self.name, self.description))
@@ -649,11 +653,15 @@ class IonChamber_CMS(Monitor):
         if self.reading(verbosity=0) < 5e-10:
             return 0.0
 
-        h1 = self.current_to_flux(self.h1.value)
-        h2 = self.current_to_flux(self.h2.value)
+        h1 = yield from bps.rd(self.h1)
+        h2 = yield from bps.rd(self.h2)
+        v1 = yield from bps.rd(self.v1)
+        v2 = yield from bps.rd(self.v2)
+        h1 = self.current_to_flux(h1)
+        h2 = self.current_to_flux(h2)
         h_total = h1 + h2
-        v1 = self.current_to_flux(self.v1.value)
-        v2 = self.current_to_flux(self.v2.value)
+        v1 = self.current_to_flux(v1)
+        v2 = self.current_to_flux(v2)
         v_total = v1 + v2
 
         total = h_total + v_total
@@ -698,12 +706,12 @@ class Scintillator_CMS(Monitor):
 
     def reading(self, verbosity=3):
 
-        if self.sec.value == 0.0:
+        sec = yield from bps.rd(self.sec)
+        if sec == 0.0:
             print('Counting time set to zero. Check CSS settings for FMB Oxford C400.')
             return 0
         else:
-            sec = self.sec.value
-            cts = self.cts.value
+            cts = yield from bps.rd(self.cts)
             cps = cts/sec
 
         if verbosity>=3:
@@ -738,11 +746,11 @@ class Scintillator_CMS(Monitor):
 
 
     def flux(self, verbosity=3):
-
-        if self.reading(verbosity=0) < 5e-10:
+        reading = yield from self.reading(verbosity=0)
+        if reading < 5e-10:
             return 0.0
 
-        flux = self.cps_to_flux(self.reading(verbosity=0))
+        flux = self.cps_to_flux(reading)
 
 
         if verbosity>=3:
@@ -796,7 +804,12 @@ class DiamondDiode_CMS(Monitor):
         #total = self.i0.value + self.i1.value + self.i2.value + self.i3.value
         ## 07/12/2017  Total dark current with beam off is ~9.3e-10 A.
         dark_current = 9.3e-10
-        total = self.i0.value + self.i1.value + self.i2.value + self.i3.value - dark_current
+        i0 = yield from bps.rd(self.i0)
+        i1 = yield from bps.rd(self.i1)
+        i2 = yield from bps.rd(self.i2)
+        i3 = yield from bps.rd(self.i3)
+
+        total = i0 + i1 + i2 + i3 - dark_current
 
         if verbosity>=3:
             print('Reading for {:s} ({:s})'.format(self.name, self.description))
@@ -842,7 +855,8 @@ class DiamondDiode_CMS(Monitor):
 
     def flux(self, verbosity=3):
 
-        if self.reading(verbosity=0) < 1e-11:
+        reading = yield self.reading(verbosity=0)
+        if reading < 1e-11:
             return 0.0
 
         right = self.current_to_flux(self.i1.value+self.i3.value)
@@ -1452,7 +1466,7 @@ class CMSBeam(object):
 
         else:
 
-            RE(shutter_on(verbosity=0))
+            yield from shutter_on(verbosity=0)
             if verbosity>=4:
                 if self.is_on(verbosity=0):
                     print('Beam on (shutter opened).')
@@ -1483,7 +1497,7 @@ class CMSBeam(object):
 
         if self.is_on(verbosity=0):
 
-            RE(shutter_off(verbosity=0))
+            yield from shutter_off(verbosity=0)
 
             if verbosity>=4:
                 if self.is_on(verbosity=0):

@@ -1604,12 +1604,12 @@ class Sample_Generic(CoordinateSystem):
     def max_exposure_time(self):
         exposure_times = []
         for detector in get_beamline().detector:
-            exposure_time = yield from bps.rd(self.acquiretimes[detector.name])
+            exposure_time = yield from bps.rd(self.acquire_times[detector.name])
             exposure_times.append(exposure_time)
         if not exposure_times:
             return 0.1
         else:
-            return max(exposure_times)
+            return max(0.01, max(exposure_times))
 
     def wait_for_detectors(self, wait_max=False, start_time=None, period=0.1):
         max_exposure_time = yield from self.max_exposure_time()
@@ -1697,7 +1697,6 @@ class Sample_Generic(CoordinateSystem):
     def expose(self, exposure_time=None, extra=None, handlefile=True, verbosity=3, poling_period=0.1, **md):
         '''Internal function that is called to actually trigger a measurement.'''
         '''TODO: **md doesnot work in RE(count). '''
-
         if 'measure_type' not in md:
             md['measure_type'] = 'expose'
         #self.log('{} for {}.'.format(md['measure_type'], self.name), **md)
