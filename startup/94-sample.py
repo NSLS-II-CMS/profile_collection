@@ -1664,7 +1664,6 @@ class Sample_Generic(CoordinateSystem):
 
         if exposure_time is not None:
             # Prep detector
-
             if get_beamline().detector[0].name is 'pilatus300':
                 yield from bps.mv(self.xf_11bmb_es_det_saxs_cam1_acquiretime, exposure_time)
                 yield from bps.mv(self.xf_11bmb_es_det_saxs_cam1_acquireperiod, exposure_time+0.1)
@@ -1675,8 +1674,7 @@ class Sample_Generic(CoordinateSystem):
         get_beamline().beam.on()
 
         # Trigger acquisition manually
-        caput('XF:11BMB-ES{}:cam1:Acquire'.format(pilatus_Epicsname), 1)
-
+        yield from bps.mv(acquires[pilatus_Epicsname], 1)
         if verbosity>=2:
             start_time = time.time()
             acquiring = yield from bps.rd(self.acquires[get_beamline().detector[0].name])
@@ -2899,24 +2897,10 @@ class Sample_Generic(CoordinateSystem):
             print('handling the file names')
             self.handle_fileseries(detector, num_frames=num_frames, extra=extra, verbosity=verbosity, **md)
 
-
-            # if detector.name is 'pilatus2M':
-            #     caput('XF:11BMB-ES{Det:PIL2M}:cam1:NumImages', 1)
-            # if detector.name is 'pilatus300' :
-            #     caput('XF:11BMB-ES{Det:SAXS}:cam1:NumImages', 1)
-            # if detector.name is 'pilatus800' :
-            #     caput('XF:11BMB-ES{Det:PIL800K}:cam1:NumImages', 1)
-
     def initialDetector(self):
                 #reset the num_frame back to 1
         for detector in get_beamline().detector:
             detector.cam.num_images.put(1)
-            # if detector.name is 'pilatus2M':
-            #     caput('XF:11BMB-ES{Det:PIL2M}:cam1:NumImages', 1)
-            # if detector.name is 'pilatus300' :
-            #     caput('XF:11BMB-ES{Det:SAXS}:cam1:NumImages', 1)
-            # if detector.name is 'pilatus800' :
-            #     caput('XF:11BMB-ES{Det:PIL800K}:cam1:NumImages', 1)
 
     def _old_handle_fileseries(self, detector, num_frames=None, extra=None, verbosity=3, subdirs=True, **md):
 
