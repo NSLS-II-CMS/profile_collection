@@ -1864,10 +1864,10 @@ class Sample_Generic(CoordinateSystem):
             if detector.name == 'pilatus300' or  detector.name == 'pilatus8002' :
                 subdir = '/maxs/raw/'
                 detname = 'maxs'
-            elif detector.name is  'pilatus2M':
+            elif detector.name == 'pilatus2M':
                 subdir = '/saxs/raw/'
                 detname = 'saxs'
-            elif detector.name is  'pilatus800':
+            elif detector.name == 'pilatus800':
                 subdir = '/waxs/raw/'
                 detname = 'waxs'
             else:
@@ -2074,7 +2074,7 @@ class Sample_Generic(CoordinateSystem):
               'ygaps' : try to cover the vertical gaps in the Pilatus detector
         '''
 
-        if tiling is 'xygaps':
+        if tiling == 'xygaps':
             if cms.detector == [pilatus2M]:
 
                 SAXSy_o = SAXSy.user_readback.value
@@ -2143,7 +2143,7 @@ class Sample_Generic(CoordinateSystem):
                 if WAXSy.user_readback.value != WAXSy_o:
                     WAXSy.move(WAXSy_o)
 
-        elif tiling is 'ygaps':
+        elif tiling == 'ygaps':
             if cms.detector == [pilatus2M]:
 
                 SAXSy_o = SAXSy.user_readback.value
@@ -2232,7 +2232,7 @@ class Sample_Generic(CoordinateSystem):
               'ygaps' : try to cover the vertical gaps in the Pilatus detector
         '''
 
-        if tiling is 'xygaps':
+        if tiling == 'xygaps':
             SAXSy_o = SAXSy.user_readback.value
             SAXSx_o = SAXSx.user_readback.value
             WAXSy_o = WAXSy.user_readback.value
@@ -2289,7 +2289,7 @@ class Sample_Generic(CoordinateSystem):
             if SAXSy.user_readback.value != SAXSy_o:
                 SAXSy.move(SAXSy_o)
 
-        elif tiling is 'ygaps':
+        elif tiling == 'ygaps':
             SAXSy_o = SAXSy.user_readback.value
             SAXSx_o = SAXSx.user_readback.value
             WAXSy_o = WAXSy.user_readback.value
