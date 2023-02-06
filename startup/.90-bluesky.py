@@ -4,15 +4,15 @@ def detselect(detector_object, suffix='_stats4_total'):
     if isinstance(detector_object, (list, tuple)):
         #gs.DETS = detector_object
         #gs.PLOT_Y = detector_object[0].name + suffix
-        #gs.TABLE_COLS = [gs.PLOT_Y]
+        #gs.TABLE_COLS = [gs.PLOT_Y] 
         cms.detector = detector_object
         cms.PLOT_Y = detector_object[0].name + suffix
-        cms.TABLE_COLS = [cms.PLOT_Y]
+        cms.TABLE_COLS = [cms.PLOT_Y] 
 
     else:
         cms.detector = [detector_object]
         cms.PLOT_Y = detector_object.name + suffix
-        cms.TABLE_COLS = [cms.PLOT_Y]
+        cms.TABLE_COLS = [cms.PLOT_Y] 
     return cms.detector
     #only return the detector name than the long list with
     #all attributes since bluesky upgrade in cycle 201802
@@ -24,7 +24,9 @@ def detselect(detector_object, suffix='_stats4_total'):
 
 
 
-##### I/O devices
+##### I/O devices 
+from epics import (caget, caput)
+
 def pneumatic(inout,pv_r,pv_in,pv_out,ss1,quiet):
     if inout == 1:
         caput(pv_in,1)
@@ -38,7 +40,7 @@ def pneumatic(inout,pv_r,pv_in,pv_out,ss1,quiet):
         else:
             ss2 = 'is OUT'
     if quiet==0:
-        print(ss1+' '+ss2)
+        print(ss1+' '+ss2) 
 
 
 ## Fluorescence screen 1 (FOE)
@@ -77,9 +79,9 @@ def io_bim5(inout,q=0):
 ## Attenuation filter box
 def io_atten(pos,inout,q=0):
     if pos >= 1 and pos <= 8:
-        pv_r = 'XF:11BMB-OP{Fltr:' + str(int(pos)) + '}Pos-Sts'
-        pv_in = 'XF:11BMB-OP{Fltr:' + str(int(pos)) + '}Cmd:In-Cmd'
-        pv_out = 'XF:11BMB-OP{Fltr:' + str(int(pos)) + '}Cmd:Out-Cmd'
+        pv_r = 'XF:11BMB-OP{Fltr:' + str(int(pos)) + '}Pos-Sts'        
+        pv_in = 'XF:11BMB-OP{Fltr:' + str(int(pos)) + '}Cmd:In-Cmd'        
+        pv_out = 'XF:11BMB-OP{Fltr:' + str(int(pos)) + '}Cmd:Out-Cmd'        
         ss1 = 'Atten filter ' + str(int(pos))
         pneumatic(inout,pv_r,pv_in,pv_out,ss1,q)
     else:
@@ -89,7 +91,7 @@ from math import (exp, log)
 
 def get_atten_trans():
     E = getE(q=1)		# Current E [keV]
-
+    
     if E < 6.0 or E > 18.0:
         print('Transmission data not available at the current X-ray enegy.')
 
@@ -101,16 +103,16 @@ def get_atten_trans():
         N_Al = N[0] + 2*N[1] + 4*N[2] + 8*N[3]
         N_Nb = N[4] + 2*N[5] + 4*N[6] + 8*N[7]
 
-        d_Nb = 0.1	# Thickness [mm] of one Nb foil
-        d_Al = 0.25	# Thickness [mm] of one Al foil
+        d_Nb = 0.1	# Thickness [mm] of one Nb foil 
+        d_Al = 0.25	# Thickness [mm] of one Al foil 
 
         # Absorption length [mm] based on fits to LBL CXRO data for 6 < E < 19 keV
         l_Nb = 1.4476e-3 - 5.6011e-4 * E + 1.0401e-4 * E*E + 8.7961e-6 * E*E*E
         l_Al = 5.2293e-3 - 1.3491e-3 * E + 1.7833e-4 * E*E + 1.4001e-4 * E*E*E
 
         # transmission factors
-        tr_Nb = exp(-N_Nb*d_Nb/l_Nb)
-        tr_Al = exp(-N_Al*d_Al/l_Al)
+        tr_Nb = exp(-N_Nb*d_Nb/l_Nb) 
+        tr_Al = exp(-N_Al*d_Al/l_Al) 
         tr_tot = tr_Nb*tr_Al
 
         print('%dx 0.25mm Al (%.1e) and %dx 0.10mm Nb (%.1e)' % (N_Al, tr_Al, N_Nb, tr_Nb))
@@ -120,7 +122,7 @@ def get_atten_trans():
 
 def set_atten_trans(tr):
     E = getE(q=1)		# Current E [keV]
-
+    
     if E < 6.0 or E > 18.0:
         print('Transmission data not available at the current X-ray enegy.')
 
@@ -128,15 +130,15 @@ def set_atten_trans(tr):
         print('Requested attenuator transmission is not valid.')
 
     else:
-        d_Nb = 0.1	# Thickness [mm] of one Nb foil
-        d_Al = 0.25	# Thickness [mm] of one Al foil
+        d_Nb = 0.1	# Thickness [mm] of one Nb foil 
+        d_Al = 0.25	# Thickness [mm] of one Al foil 
 
         # Absorption length [mm] based on fits to LBL CXRO data for 6 < E < 19 keV
         l_Nb = 1.4476e-3 - 5.6011e-4 * E + 1.0401e-4 * E*E + 8.7961e-6 * E*E*E
         l_Al = 5.2293e-3 - 1.3491e-3 * E + 1.7833e-4 * E*E + 1.4001e-4 * E*E*E
-
-        d_l_Nb = d_Nb/l_Nb
-        d_l_Al = d_Al/l_Al
+ 
+        d_l_Nb = d_Nb/l_Nb 
+        d_l_Al = d_Al/l_Al 
 
         # Number of foils to be inserted (picks a set that gives smallest deviation from requested transmission)
         dev=[]
@@ -180,7 +182,7 @@ def single_valve(cmd,pv_r,pv_op,pv_cl,ss1,quiet):
         caput(pv_cl,1)
         ss2 = 'valve has been closed'
     if quiet==0:
-        print(ss1+' '+ss2)
+        print(ss1+' '+ss2) 
 
 ### 2-stage valves
 def dual_valve(cmd,pv_r_soft,pv_op_soft,pv_cl_soft,pv_r,pv_op,pv_cl,ss1,quiet):
@@ -211,7 +213,7 @@ def dual_valve(cmd,pv_r_soft,pv_op_soft,pv_cl_soft,pv_r,pv_op,pv_cl,ss1,quiet):
         caput(pv_cl_soft,1)
         ss2 = 'valve has been closed'
     if quiet==0:
-        print(ss1+' '+ss2)
+        print(ss1+' '+ss2) 
 
 
 ## Isolation valve - incident path
@@ -303,10 +305,10 @@ def pump_fp(onoff, q=0):
     if onoff == 1:
         caput(pv_w,0)
         time.sleep(0.2)
-        caput(pv_w,1)
+        caput(pv_w,1)	
         ss='Flightpath pump has been turned ON'
     elif onoff == 0:
-        caput(pv_w,0)
+        caput(pv_w,0)	
         ss='Flightpath pump has been turned OFF'
     else:
         if caget(pv_r)==1:
@@ -322,12 +324,11 @@ def pump_chm(onoff, q=0):
     pv_w = 'XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd'
     if onoff == 1:
         caput(pv_w,0)
-        yield from bps.mv(EpicsSignal(pv_w))
         time.sleep(0.2)
-        caput(pv_w,1)
+        caput(pv_w,1)	
         ss='Chamber pump has been turned ON'
     elif onoff == 0:
-        caput(pv_w,0)
+        caput(pv_w,0)	
         ss='Chamber pump has been turned OFF'
     else:
         if caget(pv_r)==1:
@@ -338,7 +339,8 @@ def pump_chm(onoff, q=0):
         print(ss)
 
 
-PROFILE_ROOT = os.path.dirname(__file__)
+#PROFILE_ROOT = os.path.dirname(__file__)
+PROFILE_ROOT = '/nsls2/data/cms/legacy/xf11bm/ipython_profiles/profile_collection/startup'
 CMS_CONFIG_FILENAME =  os.path.join(PROFILE_ROOT, '.cms_config')
 
 ## CMS config file
@@ -349,136 +351,109 @@ def config_update():
     beam.armr_absorber_out = armr.position
 
     #collect the current positions of motors
-
+    
     current_config = {'bsx_pos': cms.bsx_pos,
         #'armr_absorber_o':beam.armr_absorber_o,
-        '_delta_y_hover': robot._delta_y_hover,
-        '_delta_y_slot': robot._delta_y_slot,
-        '_delta_garage_x': robot._delta_garage_x,
-        '_delta_garage_y': robot._delta_garage_y,
-        '_position_safe': [robot._position_safe],
-        '_position_sample_gripped': [robot._position_sample_gripped],
-        '_position_hold': [robot._position_hold],
+        '_delta_y_hover': robot._delta_y_hover, 
+        '_delta_y_slot': robot._delta_y_slot, 
+        '_delta_garage_x': robot._delta_garage_x, 
+        '_delta_garage_y': robot._delta_garage_y, 
+        '_position_safe': [robot._position_safe], 
+        '_position_sample_gripped': [robot._position_sample_gripped], 
+        '_position_hold': [robot._position_hold], 
         '_position_garage': [robot._position_garage],
-        '_position_stg_exchange': [robot._position_stg_exchange],
-        '_position_stg_safe': [robot._position_stg_safe],
+        '_position_stg_exchange': [robot._position_stg_exchange], 
+        '_position_stg_safe': [robot._position_stg_safe], 
         'time':time.ctime() }
-
+    
     current_config_DF = pds.DataFrame(data=current_config, index=[1])
-
+    
     #load the previous config file
     cms_config = pds.read_csv(CMS_CONFIG_FILENAME, index_col=0)
-    cms_config_update = cms_config.append(current_config_DF, ignore_index=True)
-
+    cms_config_update = cms_config.append(current_config_DF, ignore_index=True)    
+    
     #save to file
     cms_config_update.to_csv(CMS_CONFIG_FILENAME)
-
+    
     config_load()
-
+    
 def config_load():
 
     #collect the current positions of motors
     cms_config = pds.read_csv(CMS_CONFIG_FILENAME, index_col=0)
     cms.bsx_pos = cms_config.bsx_pos.values[-1]
     #beam.armr_absorber_o = cms_config.armr_absorber_o.values[-1]
-
+   
     #robot positions --- with single value
     robot._delta_y_hover = cms_config._delta_y_hover.values[-1]
     robot._delta_y_slot = cms_config._delta_y_slot.values[-1]
-    robot._delta_garage_x = cms_config._delta_garage_x.values[-1]
+    robot._delta_garage_x = cms_config._delta_garage_x.values[-1] 
     robot._delta_garage_y = cms_config._delta_garage_y.values[-1]
-
+    
     #robot positions --- with multiple values in (x, y, r, z, phi)
-
+    
     #tmp = cms_config._position_safe.values[-1]
     #robot._position_safe = [float(pos) for pos in tmp[1:-1].split(',')]
 
     robot._position_safe = [float(pos) for pos in cms_config._position_safe.values[-1][1:-1].split(',')]
 
-    #robot._position_safe = cms_config._position_safe.values[-1]
-    robot._position_sample_gripped = [float(pos) for pos in cms_config._position_sample_gripped.values[-1][1:-1].split(',')]
-    robot._position_hold = [float(pos) for pos in cms_config._position_hold.values[-1][1:-1].split(',')]
+    #robot._position_safe = cms_config._position_safe.values[-1] 
+    robot._position_sample_gripped = [float(pos) for pos in cms_config._position_sample_gripped.values[-1][1:-1].split(',')] 
+    robot._position_hold = [float(pos) for pos in cms_config._position_hold.values[-1][1:-1].split(',')] 
     robot._position_garage = [float(pos) for pos in cms_config._position_garage.values[-1][1:-1].split(',')]
     robot._position_stg_exchange = [float(pos) for pos in cms_config._position_stg_exchange.values[-1][1:-1].split(',')]
     robot._position_stg_safe = [float(pos) for pos in cms_config._position_stg_safe.values[-1][1:-1].split(',')]
+    
 
-
-## output the scan data and save them in user_folder/data.
-def data_output(experiment_cycle=None, experiment_alias_directory=None):
-
+## output the scan data and save them in user_folder/data. 
+def data_output(experiment_cycle=None, experiment_alias_directory=None): 
+    
     """
     To output the scan data with the scan_id as name
-    Please first create "data" folder under user_folder.
+    Please first create "data" folder under user_folder. 
     """
-
+    
     #headers = db(experiment_cycle='2017_3', experiment_group= 'I. Herman (Columbia U.) group', experiment_alias_directory='/nsls2/xf11bm/data/2017_3/IHerman' )
     if experiment_cycle is not None:
         headers = db( experiment_cycle=experiment_cycle, experiment_alias_directory=experiment_alias_directory)
     else:
         headers = db( experiment_alias_directory=experiment_alias_directory)
-
+        
     for header in headers:
-
-        dtable = header.table()
+        
+        dtable = header.table() 
         dtable.to_csv('{}/data/{}.csv'.format(header.get('start').get('experiment_alias_directory') , header.get('start').get('scan_id')))
+        
 
-
-# def data_output_series(mdkeys, experiment_cycle=None, experiment_alias_directory=None):
-
-#     """
-#     To output the scan data with the scan_id as name
-#     Please first create "data" folder under user_folder.
-#     #updated by RL 01/06/23
-#     md is the list of the output metadata.
-#     i.e. md = ['clock', 'roi4']
-#     """
-
-#     #headers = db(experiment_cycle='2017_3', experiment_group= 'I. Herman (Columbia U.) group', experiment_alias_directory='/nsls2/xf11bm/data/2017_3/IHerman' )
-#     if experiment_cycle is not None:
-#         headers = db( experiment_cycle=experiment_cycle, experiment_alias_directory=experiment_alias_directory)
-#     else:
-#         headers = db( experiment_alias_directory=experiment_alias_directory)
-
-
-
-
-#     for header in headers:
-
-#         dtable = header.table()
-#         for key in mdkeys:
-#             # dtable.to_csv('{}/data/{}.csv'.format(header.get('start').get('experiment_alias_directory') , header.get('start').get('scan_id')))
-#             dtable.to_csv('{}/data/{}.csv'.format(header.get('start').get('experiment_alias_directory') , header.get('start').get('scan_id')))
-
-
-## output the scan data and save them in user_folder/data.
-def data_output_seires(id_range):
-
+## output the scan data and save them in user_folder/data. 
+def data_output_seires(id_range): 
+    
     """
     To output the scan data with the scan_id as name
-    Please first create "data" folder under user_folder.
+    Please first create "data" folder under user_folder. 
     id_range = np.arange(55123, 56354)
     """
-
+       
     for ii in id_range:
-
+        
         header = db[scan_id]
-        dtable = header.table()
+        dtable = header.table() 
         dtable.to_csv('{}/data/{}.csv'.format(header.get('start').get('experiment_alias_directory') , header.get('start').get('scan_id')))
-
+        
 #def XRR_data_output(experiment_ids=None)
-
+    
     #headers = db( experiement_ids )
-    #for header in headers:
+    #for header in headers: 
         #dtable = header.table()
-
-def metadata_output(output_file, SAF=None, experiment_alias_directory=None):
-
+        
+def metadata_output(output_file, SAF=None, experiment_alias_directory=None): 
+    
     """
     To output the scan data with the scan_id as name
-    Please first create "data" folder under user_folder.
+    Please first create "data" folder under user_folder. 
     SAF: SAF number, like '302914'
     """
-
+    
     #headers = db(experiment_cycle='2017_3', experiment_group= 'I. Herman (Columbia U.) group', experiment_alias_directory='/nsls2/xf11bm/data/2017_3/IHerman' )
     #if experiment_cycle is not None:
         #headers = db( experiment_cycle=experiment_cycle, experiment_alias_directory=experiment_alias_directory)
@@ -486,27 +461,27 @@ def metadata_output(output_file, SAF=None, experiment_alias_directory=None):
         #headers = db( experiment_alias_directory=experiment_alias_directory)
 
 
-    headers= db(experiment_SAF_number=SAF)
+    headers= db(experiment_SAF_number=SAF) 
     output_data = pds.DataFrame()
-
-
+    
+    
     for header in headers:
-
+        
         if 'sample_name' in header.start and 'sample_x' in header.start and 'sample_clock' in header.start:
 
             current_data = {'a_scan_id':header.start['scan_id'],
                             'b_sample_name': header.start['sample_name'],
-                            'c_clock':header.start['sample_clock'],
+                            'c_clock':header.start['sample_clock'], 
                             'd_pos_x': header.start['sample_x'],
                             'e_pos_th': header.start['sample_th'],
                             'f_temperature': header.start['sample_temperature_A']
-                            }
+                            }    
             current = pds.DataFrame(data=current_data, index=[1])
 
-        output_data = output_data.append(current_data, ignore_index=True)
-
+        output_data = output_data.append(current_data, ignore_index=True)    
+        
         #output_data = output_data.iloc[0:0]
-
+    
     output_data.to_csv(output_file)
 
 
@@ -516,21 +491,21 @@ def rock_motor_per_step(detector, motor, step, rock_motor = None, rock_motor_lim
     '''
     rock/swing a motor contineously while taking images
     use 'per_step' function in scan plan to rock the motor
-
+    
     detector: pilatus2M or pilatus300
     motor: this motor is NOT used for measurement. use a motor not related to sample/measurement
     step: this step is NOT useed for measurement. set as 1 for single exposure
     rock_motor: the motor to rock.
     rock_motor_limits: the relative rocking position for rock_motor.
-
-
+    
+    
     '''
-
+    
     devices = detector + [motor]
     rewindable = all_safe_rewind(devices)  # if devices can be re-triggered
 
     current = rock_motor.position
-
+ 
     #define rock to swing rock_motor
     #def rock():
         #yield from mvr(rock_motor, rock_motor_limits)
@@ -538,10 +513,10 @@ def rock_motor_per_step(detector, motor, step, rock_motor = None, rock_motor_lim
     def rock(current=current):
         yield from mv(rock_motor, current + rock_motor_limits)
         yield from mv(rock_motor, current + -rock_motor_limits)
-
+    
     def inner_rock_and_read():
 
-        #yield from trigger(detector)
+        #yield from trigger(detector)    
         #status = yield from trigger(detector[0])
         status = detector[0].trigger()
         while not status.done:
@@ -563,8 +538,8 @@ def rock_motor_per_step(detector, motor, step, rock_motor = None, rock_motor_lim
 #Here is how ot use the rock plan
 #our_scan=list_scan([pilatus2M], srot, [1,1], per_step = functools.partial(rock_motor_per_step, rock_motor=strans2, rock_motor_limits=2) )
 
-
-
-
-
-
+        
+    
+    
+    
+    

@@ -1,0 +1,801 @@
+# def print_scan_ids(name, start_doc):
+def _epicssignal_get(self, *, as_string=None, connection_timeout=1.0, **kwargs):
+        def __init__(self, directory):
+            def finalize(zfile, cache, dump):
+        def directory(self):
+        def __setitem__(self, key, value):
+        def __getitem__(self, key):
+        def __delitem__(self, key):
+        def __repr__(self):
+        def _dump(obj):
+        def _load(file):
+        def flush(self):
+        def reload(self):
+def wbs():
+def wsam():
+def wWAXS():
+def wSAXS():
+def wMAXS():
+def wGONIO():
+def getE(q=0):
+def moveE(eng):
+def moveE_force(eng):
+def movr_mir_pitch(del_mrad):
+def movr_mir_roll(del_mrad):
+def movr_mir_yaw(del_mrad):
+def movr_mir_y(del_mm):
+def movr_mir_x(del_mm):
+def ave_mir_y():
+def shutter_on(verbosity=3):
+def shutter_off(verbosity=3):
+def shutter_state(verbosity=3):
+def xshutter_trigger():
+def xshutter_trigger_RE(verbosity=3):
+def xshutter(inout,q=0):
+    def __init__(self, *args, **kwargs):
+    def ensure_nonblocking(self):
+#     def setExposureTime(self, exposure_time, verbosity=3):
+    def __init__(self, *args, **kwargs):
+    def ensure_nonblocking(self):
+#     def setExposureTime(self, exposure_time, verbosity=3):
+    def setExposureTime(self, exposure_time, verbosity=3):
+    def setExposurePeriod(self, exposure_period, verbosity=3):
+    def setExposureNumber(self, exposure_number, verbosity=3):
+    def setExposureTime(self, exposure_time, verbosity=3):
+    def setExposurePeriod(self, exposure_period, verbosity=3):
+    def setExposureNumber(self, exposure_number, verbosity=3):
+    def setExposureTime(self, exposure_time, verbosity=3):
+    def setExposureTime(self, exposure_time, verbosity=3):
+    def setExposurePeriod(self, exposure_period, verbosity=3):
+    def setExposureNumber(self, exposure_number, verbosity=3):
+    def stage(self):
+def get_stage_sigs(dev, dd):
+def stage_unstage_forever_plan(det):
+def trigger_forever_plan(det):
+def count_forever_plan(det):
+def stage_unstage_once_plan(det):
+def count_no_save_plan(det):
+def xp_set(seconds):
+def xp(seconds):
+    #def image(self):
+    def __init__(self, prefix='', *args, read_attrs=None, configuration_attrs=None,
+    def setExposureTime(self, exposure_time, verbosity=3):
+    def stage(self, *args, poling_period=0.1, **kwargs):
+    def trigger(self):
+    #def unstage(self):
+    def connect_socket(self):
+    def disconnect_socket(self):
+    def send_socket(self, msg):
+    def send_get_reply(self, msg, verbosity=3):
+    def read_socket(self, timeout_s=3, verbosity=3):
+    def detector_status(self, verbosity=3):
+    def detector_is_ready(self, verbosity=3):
+    def detector_abort(self, verbosity=3):
+    def detector_binning(self, binx=2, biny=2, verbosity=3):
+    def detector_trigger(self, verbosity=3):
+    def detector_temperature(self, verbosity=3):
+    def detector_set_exposure_time(self, exposure_time, verbosity=3):
+    #def detector_get_exposure_time(self, verbosity=3):
+    def detector_expose(self, verbosity=3):
+    def detector_save(self, filename, verbosity=3):
+    def detector_measure(self, exposure_time=None, savename='_current', verbosity=3, poling_period=0.1):
+    def __init__(self, *args, factor, **kwargs):
+    def inverse(self, value):
+    def forward(self, value):
+    def describe(self):
+    def __init__(self, *args, wait_time=None, **kwargs):
+    def read(self, *args, **kwargs):
+    def __init__(self, *args, wait_time=None, integrate_num=1, integrate_delay=0.01, **kwargs):
+    def read(self, *args, **kwargs):
+def curr_to_flux(amp):
+def get_bim3(q=0):
+def get_bim4(q=0):
+def get_bim5(q=0):
+#    def __init__(self, prefix='', *args, read_attrs=None, configuration_attrs=None,
+    def __init__(self, prefix='', *args, read_attrs=None, configuration_attrs=None,
+    def connect_socket(self):
+    def disconnect_socket(self):
+    def send_socket(self, msg):
+    def send_get_reply(self, msg, verbosity=3):
+    def read_socket(self, timeout_s=3, verbosity=3):
+    def reset_Agilent34970A(self, verbosity = 3):
+    def reset_HP34901(self, verbosity = 3):
+    def readDCV(self, channel, verbosity = 1):
+    def setDAC(self, channel, voltage, verbosity = 1):
+    def readDAC(self, channel, verbosity = 1):
+    def writeByteDIO(self, channel, value, verbosity = 1):
+    def readByteDIO(self, channel, verbosity = 1):
+    def __init__(self, prefix='', *args, read_attrs=None, configuration_attrs=None,
+    def connect_socket(self):
+    def disconnect_socket(self):
+    def send_socket(self, msg):
+    def send_get_reply(self, msg, verbosity=3):
+    def read_socket(self, timeout_s=3, verbosity=3):
+    def selectChannel(self, channel, verbosity = 1):
+    def readOhm(self, channel, verbosity = 1):
+    def readDCV(self, channel, verbosity = 1):
+    def readThermister30kohm(self, channel, verbosity = 1):
+    def readThermister100kohm(self, channel, verbosity = 1):
+    def readPt100(self, channel, verbosity = 1):
+    def __init__(self, name='TTL_control', description="", pv=None, **args):
+    def readPort(self, unit, port, verbosity=2):
+    def readPorts(self, unit, verbosity=2):
+    def setPort(self, unit, port, onoff, verbosity=2):
+    def setPortOn(self, unit, port, verbosity=2):
+    def setPortOff(self, unit, port, verbosity=2):
+    def __init__(self, prefix='', *args, read_attrs=None, configuration_attrs=None,
+    def connect_socket(self):
+    def disconnect_socket(self):
+    def send_socket(self, msg):
+    def send_get_reply(self, msg, verbosity=3):
+    def read_socket(self, timeout_s=3, verbosity=3):
+    def setTemp(self, degC, verbosity = 1):
+    def readTemp(self, verbosity = 1):
+    def __init__(self, prefix='', *args, read_attrs=None, configuration_attrs=None,
+    def connect_socket(self):
+    def disconnect_socket(self):
+    def send_socket(self, msg):
+    def send_get_reply(self, msg, verbosity=3):
+    def read_socket(self, timeout_s=3, verbosity=3):
+    def setTemp(self, degC, verbosity = 1):
+    def readTemp(self, verbosity = 1):
+def flow_off():
+def flow_max():
+def flow_on(voltage=1):
+    #def __init__(self, ii):
+    def __init__(self, ii):
+    def __init__(self, ii):
+    def __init__(self, ii):
+    def __init__(self, ii):
+    def __init__(self, ii):
+    def __init__(self, ii):
+    def __init__(self, prefix='', *args, read_attrs=None, configuration_attrs=None,name='ioLogik', parent=None, **kwargs):
+    def read(self, port):
+    def set(self, port, val, verbosity=3):
+    def setOn(self, port):
+    def setOff(self, port):
+    def readRH(self, AI_chan, temperature=25.0, voltage_supply=5.0, coeff_slope=0.030, coeff_offset=0.787, verbosity=3):
+    def __init__(self):
+    def setDevice(self, device='A1'):
+    def setFlow(self, device, rate, tolerence=1, verbosity=3):
+    def flow(self, device, verbosity=3):
+    def setMode(self, device, mode, verbosity=3):
+    def mode(self, device, verbosity=3):
+    def readMode(self, device, verbosity=3):
+    def scaleFactor(self, device, verbosity=3):
+    def setScaleFactor(self, device, val, verbosity=3):
+    def deviceRange(self, device, verbosity=3):
+    def setDeviceRange(self, device, val, verbosity=3):
+    def __init__(self, print_code='PTA> '):
+    def linear_regression(self, data, verbosity=3):
+    def laserOn(self):
+    def laserOff(self):
+    def laserPulse(self, duration):
+    def off(self):
+    def getVoltage(self, verbosity=3):
+    def getLaserPower(self, verbosity=3):
+    def setLaserPower(self, power_W, verbosity=3):
+    def _use_calibration_NoFlow(self, verbosity=3):
+    def _use_calibration_N2(self, verbosity=3):
+    def getTemperature(self, verbosity=3):
+    def setTemperature(self, T_target, verbosity=3):
+    def controlTemperature(self, T_target, adjust_strength=0.5, delay_time=0.1, adjust_clip=1, verbosity=3):
+    def jumpTemperature(self, T_target, T_current=30, dwell_time=None, ramp_usage_factor=0.80, ramp_power=50, rate_initial=None, verbosity=3):
+    def msg(self, txt, priority=1, indent=0, indent_char='  '):
+    #def date_stamp(self, priority=1, indent=0):
+    def start_timing(self, predicted_duration):
+    def end_timing(self):
+    def is_timing(self):
+    def get_run_timing(self):
+    def get_remain_timing(self):
+    def timing_txt(self):
+    def timing_msg(self, priority=2, indent=0 ):
+    def timing_prediction_txt(self, predicted_duration):
+    def single_sweep(self, length, velocity, delay_at_end=0.1):
+    def single_sweep_laser(self, length,  velocity, start=None, delay_at_end=0.1):
+    def double_sweep(self, length, velocity, delay_at_end=0.1):
+    def double_sweep_laser(self, length, velocity, start=None, delay_at_end=0.1):
+    def anneal_cyclic(self, length, velocity, num_cycles, delay_at_end=0.1):
+    def anneal_cyclic_laser(self, length, velocity, num_cycles, start=None, delay_at_end=0.1, x_step=0.05, measure_method=None, measures=None, cycles_done=0):
+    def LZA_measure(self, extra=None, incident_angles=None, exposure_time=10, x_step=0.05):
+    def single_sweep_measure(self, length=4, velocity=0.1, delay_at_end=0.1, exposure_time=1, extra=None):
+    def thermal_gradient_T_conversion(self, position, power_fractional=1.00, T_ambient=25):
+    def thermal_gradient_getAlignment(self, position):
+    def thermal_gradient_measure(self, exposure_time=10, power_fractional=1.00, x_offset=0, x_step=-0.05, already_heated=0):
+    def xabs(self, position, velocity=None, wait=True):
+    def xr(self, amount, velocity=None, wait=True):
+    def laserxabs(self, position, velocity=None, wait=True):
+    def laserx_speedreset(self):
+    def laserxr(self, amount, velocity=None, wait=True):
+   #def laserxabs(self, position):
+    #def laserxr(self, amount):
+    def laseryabs(self, position):
+    def laseryr(self, amount):
+    def loadSample(self):
+    def startSample(self):
+    def centerLaser(self):
+    def checkLaser(self, duration=2, power_W=5):
+    def stop(self, *args):
+    def set(self, value):
+    #def set(self, value):
+def tri_plan(tri, value):
+    def bob(self):
+    def bob(self):
+    def __init__(self):
+    def bob(self):
+    def __init__(self):
+    def bob(self):
+    def bob(self. val):
+    def __init__(self):
+    def bob(self):
+    def bob(self, val):
+    def __init__(self):
+    def bob(self):
+    def __init__(self):
+    def set(self, value):
+    def __init__(self, detector, **md):
+    def get_md(self, prefix='detector_', **md):
+    def setCalibration(self, direct_beam, distance, detector_position=None, pixel_size=0.172):
+    def get_md(self, prefix='detector_SAXS_', **md):
+    def __init__(self, detector, **md):
+    def setCalibration(self, direct_beam, distance, detector_position=None, pixel_size=0.172):
+    def get_md(self, prefix='detector_WAXS_', **md):
+    def __init__(self, name, zposition, description="", pv=None, **args):
+    def state(self):
+    def transmission(self, t=None, verbosity=0):
+    def flux(self, verbosity=3):
+    def __init__(self, name, zposition, description="", pv=None, **args):
+    def state(self):
+    def open(self, verbosity=3):
+    def close(self, verbosity=3):
+    def state(self):
+    def __init__(self, name='3PW', zposition=0.0, description='Three-pole wiggler source of x-rays', **args):
+    def state(self):
+    def reading(self, verbosity=3):
+    def quickReading(self, verbosity=3, delay=1.0):
+    def __init__(self, name, zposition, description="", pv=None, epics_signal=None, **args):
+    def state(self):
+    def insert(self, verbosity=3):
+    def retract(self, verbosity=3):
+    def reading(self, verbosity=3):
+    def __init__(self, name='bim6 point diode', zposition=59.1, description="Bar holding a point-diode, downstream of sample.", pv='XF:11BMB-BI{IM:2}EM180:Current1:MeanValue_RBV', epics_signal=None, **args):
+    def state(self):
+    def insert(self, verbosity=3):
+    def retract(self, verbosity=3):
+    def reading(self, verbosity=3):
+    def __init__(self, name='bim3 ionchamber', zposition=49, description="Ion chamber (FMB Oxford I404) at start of endstation hutch", pv=None, beam=None, **args):
+    def state(self):
+    def v_position(self):
+    def h_position(self):
+    def reading(self, verbosity=3):
+    def current_to_flux(self, current):
+    def flux(self, verbosity=3):
+    def __init__(self, name='bim4 scintillator', zposition=57, description="Scintillation detector (FMB Oxford C400) between S3 and KB tank in endstation hutch. Captures scattering off of a Kapton film at 45 degrees.", pv=None, beam=None, **args):
+    def state(self):
+    def reading(self, verbosity=3):
+    def cps_to_flux(self, cps):
+    def flux(self, verbosity=3):
+    def __init__(self, name='bim5 diamonddiode', zposition=58.2, description="Diamond diode BPM (Dectris RIGI via FMB Oxford F460) between KB tank and sample chamber in endstation hutch. Needs to be insered into beam via IM:5.", pv=None, beam=None, **args):
+    def state(self):
+    def v_position(self):
+    def h_position(self):
+    def reading(self, verbosity=3):
+    def current_to_flux(self, current):
+    def flux(self, verbosity=3):
+    def __init__(self):
+        def transmission(verbosity=0):
+        def reading(verbosity=0):
+        def reading(verbosity=0):
+        #def the foils
+    def energy(self, verbosity=3):
+    def wavelength(self, verbosity=3):
+    def setEnergy(self, energy_keV, verbosity=3):
+    def setWavelength(self, wavelength_A, verbosity=3):
+    def size(self, verbosity=3):
+    def setSize(self, horizontal, vertical, verbosity=3):
+    def divergence(self, verbosity=3):
+    def setDivergence(self, horizontal, vertical, verbosity=3):
+    # def _old_is_on(self, verbosity=3):
+    # def _old_on(self, verbosity=3, wait_time=0.1, poling_period=0.10, retry_time=2.0, max_retries=5):
+    # def _old_off(self, verbosity=3, wait_time=0.1, poling_period=0.10, retry_time=2.0, max_retries=5):
+    def is_on(self, verbosity=3):
+    def on(self, verbosity=3, wait_time=0.1, poling_period=0.10, retry_time=2.0, max_retries=5):
+    def off(self, verbosity=3, wait_time=0.1, poling_period=0.10, retry_time=2.0, max_retries=5):
+    def blade1_is_on(self, verbosity=3):
+    def blade2_is_on(self, verbosity=3):
+    def transmission(self, verbosity=3):
+    def calc_transmission_filters(self, filter_settings, energy_keV=None, verbosity=3):
+    def set_attenuation_filters(self, filter_settings, verbosity=3):
+    def setTransmission(self, transmission, retries=3, tolerance=0.7, verbosity=3):
+    def absorber(self, verbosity=3):
+    def absorber_out(self, verbosity=3):
+    def absorberCalcTransmission(self, slot, verbosity=3):
+    def setAbsorber(self, slot, retries=3, tolerance=0.5, verbosity=3):
+    def fluxes(self, verbosity=3):
+    def __init__(self, **kwargs):
+    def mode(self, new_mode):
+    def get_md(self, prefix=None, **md):
+    def comment(self, text, logbooks=None, tags=None, append_md=True, **md):
+    def log_motors(self, motors, verbosity=3, **md):
+    def __init__(self, **kwargs):
+    def modeAlignment_bim6(self, verbosity=3):
+    def modeMeasurement_bim6(self, verbosity=3):
+    def modeAlignment(self, verbosity=3):
+    def modeMeasurement(self, verbosity=3):   
+    def modeBeamstopAlignment(self, verbosity=3):
+    def beamstopCircular(self, verbosity=3):
+    def beamstopLinear(self, verbosity=3):
+    def _actuate_open(self, pv, max_tries=5, wait_time=1.0, verbosity=2):
+    def _actuate_close(self, pv, max_tries=5, wait_time=1.0, verbosity=2):
+    def _actuate_state(self, pv, wait_time=0, verbosity=2):
+    #def gateIn(self):
+    #def gateOut(self):
+    def _gateIn(self):
+    def _gateOut(self):
+    def _gateHome(self):
+    def _gateState(self, verbosity=3):
+    def _pumpSample(self, threshold=0.7): 
+    def _ventSample(self): 
+    def _changePipe(self):
+    def pumpSample(self, threshold=0.7):
+    def ventSample(self):
+    def changePipe(self):
+    #def pumpSample(self, max_tries=8, verbosity=3):
+    #def ventSample(self, verbosity=3):
+    def changePipe(self, max_tries=8, verbosity=3):
+    #def ventChamber(self, verbosity=3):
+    #def pumpChamber(self, verbosity=3):
+    def checkPressure(self, PV, range_low=None, range_high=None, readout_period=1.0, verbosity=3):
+    def diffPressure(self, verbosity=3):
+    #def ventChamber(self, verbosity=3):
+    def _old_ventChamber(self, verbosity=3):
+    def chamberPressure(self, range_low=None, range_high=None, readout_period=1.0, verbosity=3):
+    #def pumpChamber(self, max_tries=8, verbosity=3):
+    def _old_pumpChamber(self, readout_delay=0.2):
+    def openChamberGateValve(self):
+    def closeChamberGateValve(self):
+    def get_md(self, prefix=None, **md):
+    def setMetadata(self, verbosity=3):
+    def _ask_question(self, key, text, default=None):
+    def logAllMotors(self, verbosity=3, **md):
+    def __init__(self, **kwargs):
+    def modeAlignment(self, verbosity=3):
+    def modeMeasurement(self, verbosity=3):   
+    def setDirectBeamROI(self, size=[10,4], verbosity=3):
+    def setReflectedBeamROI(self, total_angle=0.16, size=[10,2], verbosity=3):
+    def setROI2ReflectBeamROI(self, total_angle=0.16, size=[10,100], verbosity=3):
+    def setSpecularReflectivityROI(self, total_angle=0.16, size=[10,10], default_SAXSy=None, verbosity=3):
+    def setSpecularReflectivityROI_SAXSyPOS(self, total_angle=0.16, size=[10,10], default_SAXSy=None, verbosity=3):
+    def setSpecularReflectivityROI_update(self, total_angle=0.16, size=[10,10], default_SAXSy=None, verbosity=3):
+    def out_of_beamstop(self, total_angle, size=[12,12], default_SAXSy=None):
+    def beamOutXR(self, total_angle, roi=[260, 618], size=[10,10]):
+    #def definePos(self, pos1=self.XR_pos1,size=[10,10]):
+    def setMonitor(self, monitor=['stats1', 'stats2', 'stats3', 'stats4']):
+    def __init__(self, **kwargs):
+    def modeXRMeasurement(self, verbosity=3):   
+    def modeXRAlignment(self, verbosity=3):
+    def setDirectBeamROI_WAXS(self, size=[10,4], verbosity=3):
+    def setXRROI(self, total_angle=0.16, size=[10,4], default_WAXSy=None, verbosity=3):
+    def setXRROI_WAXSy(self, total_angle=0.16, size=[10,10], default_WAXSy=None, verbosity=3):
+    def setXRROI_update(self, total_angle=0.16, size=[10,10], default_WAXSy=None, verbosity=3):
+    def setWAXSpos(self, total_angle=0.16, roi=[458, 1043-409], verbosity=3):
+    def gotoWAXSpos2(self):
+    def gotoWAXSpos1(self):
+    def beamOutXR(self, total_angle, roi=[458, 1043-409], size=[10,4]):
+    def bsin():
+    def definePos(self,size=[10,4]):
+def get_beamline():
+def detselect(detector_object, suffix='_stats4_total'):
+def pneumatic(inout,pv_r,pv_in,pv_out,ss1,quiet):
+def io_fs1(inout,q=0):
+def io_fs3(inout,q=0):
+def io_fs4(inout,q=0):
+def io_bim5(inout,q=0):
+def io_atten(pos,inout,q=0):
+def get_atten_trans():
+def set_atten_trans(tr):
+def single_valve(cmd,pv_r,pv_op,pv_cl,ss1,quiet):
+def dual_valve(cmd,pv_r_soft,pv_op_soft,pv_cl_soft,pv_r,pv_op,pv_cl,ss1,quiet):
+def iv_inc(cmd='st',q=0):
+def iv_chm(cmd='st',q=0):
+def iv_pipe(cmd='st',q=0):
+def vv_us(cmd='st',q=0):
+def vv_ds(cmd='st',q=0):
+def gv_us(cmd='st',q=0):
+def gv_ds(cmd='st',q=0):
+def pump_fp(onoff, q=0):
+def pump_chm(onoff, q=0):
+def config_update():
+def config_load():
+def data_output(experiment_cycle=None, experiment_alias_directory=None): 
+def data_output_seires(id_range): 
+#def XRR_data_output(experiment_ids=None)
+def metadata_output(output_file, SAF=None, experiment_alias_directory=None): 
+def rock_motor_per_step(detector, motor, step, rock_motor = None, rock_motor_limits =None):
+    #def rock():
+    def rock(current=current):
+    def inner_rock_and_read():
+	def __init__(self, *args, **kwargs):
+	def descriptor(self, doc):
+	def event(self, doc):
+	def start(self, doc):
+	def event(self, doc):
+	def descriptor(self, doc):
+	def stop(self, doc):
+def remove_last_Pilatus_series():
+    def fake_detector_response_peak():
+    def fake_detector_response_edge():
+    def __init__(self, motor, wait_time):
+    def start(self, doc):
+    def stop(self, doc):
+    def __init__(self, fields, y_name, x_name):
+    def start(self, doc):
+    def event(self, doc):
+    def stop(self, doc):
+    def __init__(self, stat, y_name, x_name, update_every=1):
+    def event(self, doc):
+    def update_fit(self, stat):
+    def __init__(self, livestat, *, scan_range=None, legend_keys=None, xlim=None, ylim=None, ax=None, **kwargs):
+    def get_scan_range(self, overscan=0.0):
+    def start(self, doc):
+    def event(self, doc):
+    def update_plot(self):
+    def descriptor(self, doc):
+    def stop(self, doc):
+    def __init__(self, y, x=None, *, legend_keys=None, xlim=None, ylim=None,ax=None, fig=None, **kwargs):
+    def start(self, doc):
+    def update_plot(self):
+    def scroll_event(self, event):
+    def add_line(self, x_data, y_data, **kwargs):
+    def __init__(self, livefit, *, legend_keys=None, xlim=None, ylim=None,
+    def get_scan_range(self, overscan=0.0):
+    def event(self, doc):
+    def start(self, doc):
+    def update_plot(self):
+    def __init__(self, model_name, y, independent_vars, scan_range, update_every=1, background=None):
+    def get_model(self, model_name):
+            def model_function(x, x0, prefactor, sigma):
+            def model_function(x, x0, prefactor, gamma):
+            def model_function(x, x0, prefactor, sigma, fwhm):
+            def model_function(x, x0, prefactor, fwhm):
+            def model_function(x, x0, prefactor, sigma):
+            def model_function(x, x0, prefactor, sigma):
+            def model_function(x, x0, prefactor, sigma):
+            def model_function(x, x0, prefactor, sigma):
+            def model_function(x, x0, prefactor, sigma):
+            def model_function(x, x0, prefactor, sigma):
+            def model_function(x, x0, prefactor, sigma):
+            def model_function(x, x0, prefactor, sigma):
+            def model_function(x, offset):
+            def model_function(x, m, b):
+    def get_initial_guess(self, model_name):
+    def initial_guess_gauss(self):
+    def initial_guess_lorentz(self):
+    def initial_guess_doublesigmoid(self):
+    def initial_guess_square(self):
+    def initial_guess_sigmoid(self):
+    def initial_guess_sigmoid_r(self):
+    def initial_guess_step(self):
+    def initial_guess_step_r(self):
+    def initial_guess_tanh(self):
+    def initial_guess_tanh_r(self):
+    def initial_guess_erf(self):
+    def initial_guess_erf_r(self):
+    def initial_guess_linear(self):
+    def initial_guess_constant(self):
+def fit_scan(motor, span, num=11, detectors=None, detector_suffix='', exposure_time=0.5, toggle_beam=True,  fit='HMi', background=None, per_step=None, wait_time=None, md={}, save_flg=0):
+def fit_edge(motor, span, num=11, detectors=None, detector_suffix='', plot=True, toggle_beam=True, wait_time=None, md={}):
+        def model(v, x):
+        def func2minimize(params, x, data):
+def _test_fit_scan(motor, span, num=11, detectors=None, detector_suffix='', fit='HMi', background=None, per_step=None, wait_time=None, md={}):
+    def _fit_scan():
+def setMonitor(monitor=['stats1', 'stats2', 'stats3', 'stats4']):
+    #def wa(self, line):
+def wh_motors(motor=None, verbosity=3):
+    def __init__(self, name='<unnamed>', base=None, **kwargs):
+    def _set_axes_definitions(self):
+    def _init_axes(self, axes):
+    def comment(self, text, logbooks=None, tags=None, append_md=True, **md):
+    def set_base_stage(self, base):
+    def multiple_string_replacements(self, text, replacements, word_boundaries=False):
+    def _hint_replacements(self, text):
+    def setTemperature(self, temperature, verbosity=3):
+    def temperature(self, verbosity=3):
+    def enable(self):
+    def disable(self):
+    def is_enabled(self):
+    def pos(self, verbosity=3):
+    def origin(self, verbosity=3):
+    def gotoOrigin(self, axes=None):
+    def setOrigin(self, axes, positions=None):
+    def gotoAlignedPosition(self):
+    def setAlignedPosition(self, axes):
+    def mark(self, label, *axes, **axes_positions):
+    def marks(self, verbosity=3):
+    def goto(self, label, verbosity=3, **additional):
+    def save_state(self):
+    def restore_state(self, state):
+    def __init__(self, name, motor, enabled, scaling, units, hint, base, stage=None, origin=0.0):
+    def cur_to_base(self, position):
+    def base_to_cur(self, base_position):
+    def cur_to_motor(self, position):
+    def motor_to_cur(self, motor_position):
+    def get_position(self, verbosity=3):
+    def get_motor_position(self, verbosity=3):
+    def move_absolute(self, position=None, wait=True, verbosity=3):
+    def move_relative(self, move_amount=None, verbosity=3):
+    def goto_origin(self):
+    def set_origin(self, origin=None):
+    def set_current_position(self, new_position):
+    def search(self, step_size=1.0, min_step=0.05, intensity=None, target=0.5, detector=None, detector_suffix=None, polarity=+1, verbosity=3):
+    def _search(self, step_size=1.0, min_step=0.05, intensity=None, maxInt=40000, target=0.5, detector=None, detector_suffix=None, polarity=+1, verbosity=3):
+    def scan(self):
+    def center(self):
+    def mark(self, label, position=None, verbosity=3):
+    def enable(self):
+    def disable(self):
+    def is_enabled(self):
+    def get_origin(self):
+    def get_units(self):
+    def get_hint(self, verbosity=3):
+    def get_info(self, verbosity=3):
+    def check_base(self):
+    def __init__(self, name, base=None, **md):
+    def _set_axes_definitions(self):
+    def clock(self):
+    def reset_clock(self):
+    def get_attribute(self, attribute):
+    def set_attribute(self, attribute, value):
+    def set_md(self, **md):
+    def get_md(self, prefix='sample_', include_marks=True, **md):
+    def naming(self, scheme=['name', 'extra', 'exposure_time','id'], delimeter='_'):
+    def get_naming_string(self, attribute):
+    def get_savename(self, savename_extra=None):
+    def comment(self, text, logbooks=None, tags=None, append_md=True, **md):
+    def log(self, text, logbooks=None, tags=None, append_md=True, **md):
+    def setTemperature(self, temperature, verbosity=3):
+    def temperature(self, verbosity=3):
+    def get_measurement_md(self, prefix=None, **md):
+    def _expose_manual(self, exposure_time=None, verbosity=3, poling_period=0.1, **md):
+    def expose(self, exposure_time=None, extra=None, handlefile=True, verbosity=3, poling_period=0.1, **md):
+    def _expose_test(self, exposure_time=None, extra=None, handlefile=True, verbosity=3, poling_period=0.1, **md):
+    def handle_file(self, detector, extra=None, verbosity=3, subdirs=True, linksave=True, **md):
+    def _old_handle_file(self, detector, extra=None, verbosity=3, subdirs=True, linksave=True, **md):
+    def snap(self, exposure_time=None, extra=None, measure_type='snap', verbosity=3, **md):
+    def _measure(self, exposure_time=None, extra=None, measure_type='measure', verbosity=3, tiling=False, stitchback=False, **md):
+    def measure(self, exposure_time=None, extra=None, measure_type='measure', verbosity=3, tiling=None, stitchback=False, **md):
+    def measureRock(self, incident_angle=None, exposure_time=None, extra=None, measure_type='measure', rock_motor=None, rock_motor_limits=0.1, verbosity=3, stitchback=False, poling_period=0.2, **md):
+    def measure_single(self, exposure_time=None, extra=None, measure_type='measure', verbosity=3, **md):
+    def _test_time(self):
+    def _test_measure_single(self, exposure_time=None, extra=None, shutteronoff=True, measure_type='measure', verbosity=3, **md):
+    def _test_expose(self, exposure_time=None, extra=None, verbosity=3, poling_period=0.1, shutteronoff=True, **md):
+    def _test_measureSpots(self, num_spots=4, translation_amount=0.2, axis='y', exposure_time=None, extra=None, shutteronoff=True, measure_type='measureSpots', tiling=False, **md):
+    def measureSpots(self, num_spots=4, translation_amount=0.2, axis='y', exposure_time=None, extra=None, measure_type='measureSpots', tiling=False, **md):
+    def measureTimeSeries(self, exposure_time=None, num_frames=10, wait_time=None, extra=None, measure_type='measureTimeSeries', verbosity=3, tiling=False, fix_name=True, **md):
+    #def measureTimeSeriesAngles(self, exposure_time=None, num_frames=10, wait_time=None, extra=None, measure_type='measureTimeSeries', verbosity=3, tiling=False, fix_name=True, **md):
+    def measureTimeSeriesAngles(self, exposure_time=None, num_frames=10, wait_time=None, extra=None, measure_type='measureTimeSeries', verbosity=3, tiling=False, fix_name=True, **md):
+    def measureTemperature(self, temperature, exposure_time=None, wait_time=None, temperature_probe='A', temperature_tolerance=0.4, extra=None, measure_type='measureTemperature', verbosity=3, tiling=False, poling_period=1.0, fix_name=True, **md):
+    def measureTemperatures(self, temperatures, exposure_time=None, wait_time=None, temperature_probe='A', temperature_tolerance=0.4, extra=None, measure_type='measureTemperature', verbosity=3, tiling=False, poling_period=1.0, fix_name=True, **md):
+    def do(self, step=0, verbosity=3, **md):
+    def scan_measure(self, motor, start, stop, num_frames, exposure_time=None, detectors=None, extra=None, per_step=None, wait_time=None, measure_type='Scan_measure', verbosity=3, fill_gaps=False, **md):
+    def series_measure(self, num_frames, exposure_time=None, exposure_period=None, detectors=None, extra=None, per_step=None, wait_time=None, measure_type='Series_measure', verbosity=3, fill_gaps=False, **md):
+    def initialDetector(self):
+    def _old_handle_fileseries(self, detector, num_frames=None, extra=None, verbosity=3, subdirs=True, **md):
+    def handle_fileseries(self, detector, num_frames=None, extra=None, verbosity=3, subdirs=True, **md):
+    def setTemperature(self, temperature, output_channel='1', verbosity=3):
+    def temperature(self, temperature_probe='A', output_channel='1', RTDchan=2, verbosity=3):
+    def humidity(self, AI_chan=8, temperature=25, verbosity=3):        
+    def transmission_data_output(self, slot_pos):
+    def intMeasure(self, output_file, exposure_time):
+    def temperature_setpoint(self, output_channel='1', verbosity=3):
+    def monitor_scheme(self, scheme):
+    def track_scheme(scheme, time_range, output_file, wait_time=5):
+    def __init__(self, name='SampleStage', base=None, **kwargs):
+    def _set_axes_definitions(self):
+    def __init__(self, name='Holder', base=None, **kwargs):
+    def _set_axes_definitions(self):
+    def clock(self):
+    def reset_clock(self):
+    def addSample(self, sample, sample_number=None):
+    def removeSample(self, sample_number):
+    def removeSamplesAll(self):
+    def replaceSample(self, sample, sample_number):
+    def getSample(self, sample_number, verbosity=3):
+    def getSamples(self, range=None, verbosity=3):
+    def listSamples(self):
+    def gotoSample(self, sample_number):
+    def setTemperature(self, temperature, output_channel='1', verbosity=3):
+    def temperature(self, temperature_probe='A', output_channel='1', verbosity=3):
+    def temperature_setpoint(self, output_channel='1', verbosity=3):
+    def doSamples(self, range=None, verbosity=3, **md):
+    def doTemperature(self, temperature, wait_time=None, temperature_probe='A', output_channel='1', temperature_tolerance=0.4, range=None, verbosity=3, poling_period=2.0, **md):
+    def doTemperatures(self, temperatures,  wait_time=None, temperature_probe='A', output_channel='1', temperature_tolerance=0.4, range=None, verbosity=3, **md):
+    def __init__(self, name='PositionalHolder', base=None, **kwargs):
+    def slot(self, sample_number):
+    def get_slot_position(self, slot):
+    def addSampleSlot(self, sample, slot, detector_opt='SAXS'):
+    def addSampleSlotPosition(self, sample, slot, position, detector_opt='BOTH', incident_angles=None, transmission=1, exposure_time_SAXS = None, exposure_time_WAXS = None, tiling=None):
+    def listSamplesPositions(self):
+    def listSamplesDetails(self):
+    def addGaragePosition(self, shelf_num, spot_num):
+    def intMeasure(self, output_file, exposure_time):
+    def saveSampleStates(self, output_file = None):
+    def restoreSampleStates(self, input_file = None):
+    def checkPositions(self):
+def get_default_stage():
+    def intMeasure(self, output_file, exposure_time):
+    def transmission_data_output(self, slot_pos):
+    def __init__(self, name, base=None, **md):
+    def measureSpots(self, num_spots=2, translation_amount=0.1, axis='x', exposure_time=None, extra=None, measure_type='measureSpots', **md):
+    def measureIncidentAngle(self, angle, exposure_time=None, extra=None, tiling=None, **md):
+    def measureIncidentAngles(self, angles=None, exposure_time=None, extra=None, tiling=None, **md):
+    def measureIncidentAngles_Stitch(self, angles=None, exposure_time=None, extra=None, tiling=None, verbosity=3, **md):
+    def intMeasure(self, output_file, exposure_time):
+    def transmission_data_output(self, slot_pos):
+    def _alignOld(self, step=0):
+    def align(self, step=0, reflection_angle=0.12, verbosity=3):
+    def _test_align(self, step=0, reflection_angle=0.12, verbosity=3):
+    def alignQuick(self, align_step=8, reflection_angle=0.08, verbosity=3):
+    def level(self, step=0,pos_x_left=-5, pos_x_right=5):
+    def do(self, step=0, align_step=0, **md):
+    def backup_do_SAXS(self, step=0, align_step=0, measure_setting=None, **md):
+    def do_SAXS(self, step=0, align_step=0, measure_setting=None, **md):
+    def do_WAXS_only(self, step=0, align_step=0, **md):
+    def _backup_do_WAXS(self, step=0, align_step=0, **md):
+    def do_WAXS(self, step=0, align_step=0, **md):
+    def __init__(self, name, base=None, **md):
+    def _set_axes_definitions(self):
+    def measureAngle(self, angle, exposure_time=None, extra=None, measure_type='measure', **md):
+    def measureAngles(self, angles=None, exposure_time=None, extra=None, measure_type='measureAngles', **md):
+    def XR_scan(self, scan_type='theta_scan', theta_range=[0,1.6], theta_delta=0.1, theta_list=None, qz_list=None, roi_size=[12,30], exposure_time=1, threshold=20000, max_exposure_time=10, extra='XR_scan', output_file=None, **md):
+    def XR_abort(self):        
+    def XR_data_output(self, slot_pos, exposure_time):
+    def XR_align(self, step=0, reflection_angle=0.15, verbosity=3):
+    def XR_check_alignment(self, th_angle=1, exposure_time=1, roi_size=[10, 10]):
+    def th2thscan(self, scan_type='theta_scan', theta_range=[1,4], theta_delta=0.1, qz_list=None, roi_size=[10,10], exposure_time=1, threshold=20000, max_exposure_time=10, extra='th2th_scan', output_file=None):
+    def __init__(self, name='Goniometer', base=None, **md):
+    def _set_axes_definitions(self):
+    def __init__(self, name, base=None, **md):
+    def __init__(self, name='GIBar', base=None, **kwargs):
+    def _backup_addSampleSlotPosition(self, sample, slot, position, detector_opt='SAXS', incident_angles=None, account_substrate=True, exposure_time=None, thickness=0):
+    def addSampleSlotPosition(self, sample, slot, position, detector_opt=None, incident_angles=None, exposure_time=None, tiling=None, thickness=0):
+    def setMeasure(self, detector, incident_angles, exposure_time, tiling):
+    def alignSamples(self, range=None, step=0, align_step=0, x_offset=0, verbosity=3, **md):
+    def alignSamplesQuick(self, range=None, step=0, x_offset=0, verbosity=3, **md):
+    def alignSamplesVeryQuick(self, range=None, step=0, x_offset=0, verbosity=3, **md):
+    def measureSamples(self, range=None, step=0, angles=None, exposure_time=15, x_offset=0, verbosity=3, **md):
+    def printSaveStates(self, range=None, verbosity=3, **md):
+    def _backup_doSamples(self, range=None, verbosity=3):
+    def doSamples(self, range=None, verbosity=3):
+    def doSamples_Stitch(self, angles=None, exposure_time=None, extra=None, tiling=None, verbosity=3, **md):
+    def __init__(self, name='CapillaryHolder', base=None, **kwargs):
+    def get_slot_position(self, slot):
+    def measure_Stitch(self, exposure_time=None, extra=None, tiling=None, verbosity=3, **md):
+    def measureSamples(self, range=None, step=0, angles=None, exposure_time=15, x_offset=0, verbosity=3, **md):
+    def __init__(self, name='CapillaryHolderThreeRows', base=None, **kwargs):
+    # def _set_axes_definitions(self):
+    def slot(self, sample_number):
+    def get_slot_position(self, slot):
+    def addSampleSlot(self, sample, slot):
+    def update_sample_names(self):
+    def doHeatCool(self, heat_temps, cool_temps, exposure_time=None, stabilization_time=120, temp_tolerance=0.5, step=1):
+    def __init__(self, name='GIBar', base=None, **kwargs):
+    def alignSamples(self, step=0, align_step=0, verbosity=3, **md):
+    def alignSamples_Custom(self, step=0, align_step=8, verbosity=3, **md):
+    def measureSamples(self, det='SWAXS', tiling=None, verbosity=3, **md):
+    def doTemperatures(self, temperature_list=None, output_file='Transmission_output', int_measure=False, wait_time=600, WAXS_expo_time=5, temperature_probe='A', output_channel='1', temperature_tolerance=1, range=None, verbosity=3, poling_period=2.0, **md):
+    def __init__(self, name='GIBar', base=None, **kwargs):
+    def __init__(self, name='CapillaryHolder', base=None, **kwargs):
+    def _set_axes_definitions(self):
+    def slot(self, sample_number):
+    def get_slot_position(self, slot):
+    def addSample(self, sample, sample_number=None):
+    def addSampleSlot(self, sample, slot):
+    def listSamplesPositions(self):
+    def listSamples(self):
+    def gotoAlignedPosition(self):
+    def getSample(self, sample_number, verbosity=3):
+    def namingWellPlate(name,row_range=['A', 'G'], column_range=[1, 12]):
+    def __init__(self, name='CapillaryHolder', base=None, **kwargs):
+    def _set_axes_definitions(self):
+    def slot(self, sample_number):
+    def get_slot_position(self, slot):
+    def addSampleSlot(self, sample, slot):
+    def __init__(self, name='CapillaryHolder', base=None, **kwargs):
+    def slot(self, sample_number):
+    def get_slot_position(self, slot):
+    def addSampleSlot(self, sample, slot):
+    def __init__(self, name='CapillaryHolder', base=None, **kwargs):
+    def slot(self, sample_number):
+    def get_slot_position(self, slot):
+    def addSampleSlot(self, sample, slot):
+    def __init__(self, name='GIBar', base=None, **kwargs):
+    def __init__(self, name='GIBar', base=None, **kwargs):
+    def humidity(self, AI_chan=7, temperature=25, verbosity=3):        
+    def setFlow(self, channel, voltage=0):
+    def __init__(self, name='HumidityTransmissionStage', base=None, **kwargs):
+    def humidity(self, AI_chan=8, temperature=25, verbosity=3):        
+    def setFlow(self, channel, voltage=0):
+    def __init__(self, name='CapillaryHolder', base=None, **kwargs):
+    def get_slot_position(self, slot):
+    def tscan(self, temperature_start, temperature_final, num_intervals, wait_time, temp_update_time=5, exposure_time=0):
+    #def tscan_save to recover tscan data when prematurely terminated
+    def tscan_save(self):
+    def __init__(self, name='OffCenteredHoder', base=None, **kwargs):
+    def get_slot_position(self, slot):
+    def XR_scan(self, scan_type='theta_scan', theta_range=[0,1.6], theta_delta=0.1, qz_list=None, roi_size=[12,30], exposure_time=1, threshold=20000, max_exposure_time=10, extra='XR_scan', output_file=None):
+    def XR_abort(self):        
+    def XR_data_output(self, slot_pos, exposure_time):
+    def XR_align(self, step=0, reflection_angle=0.15, verbosity=3):
+    def XR_check_alignment(self, int_angle=1, exposure_time=1, roi_size=[12, 30]):
+    def XR_scan(self, scan_type='theta_scan', theta_range=[0,1.6], theta_delta=0.1, qz_list=None, roi_size=[12,30], exposure_time=1, threshold=20000, max_exposure_time=10, extra='XR_scan', output_file=None):
+    def XR_abort(self):        
+    def XR_data_output(self, slot_pos, exposure_time):
+    def XR_align(self, step=0, reflection_angle=0.15, verbosity=3):
+    def XR_check_alignment(self, int_angle=1, exposure_time=1, roi_size=[12, 30]):
+    def __init__(self, name='SampleExchangeRobot', base=None, use_gs=True, **kwargs):
+    def _set_axes_definitions(self):
+    def home_y(self, verbosity=3, delays=0.5, retries=5, max_wait=2.0):
+    def home(self, verbosity=3, delays=0.5):
+    def checkMove(self, verbosity=3):
+    def checkSafe(self, check_stage=True):
+    def setReferenceSampleGripped(self):
+    def setReferenceGarage(self):
+    def motionSlot(self, direction):
+    def motionHover(self, direction):
+    def sequenceGotoSafe(self, verbosity=3):
+    def sequenceGotoSampleStageSlotted(self, x_motion=True, verbosity=3):
+    def sequencePutSampleOntoStage(self, gotoSafe=True, verbosity=3):
+    def sequenceGetSampleFromStage(self, gotoSafe=True, verbosity=3):
+    def sequenceGetSampleFromGarage(self, shelf_num, spot_num, gotoSafe=True, verbosity=3):
+    def sequencePutSampleInGarage(self, shelf_num, spot_num, gotoSafe=True, verbosity=3):
+    def sequencePrepGarageXY(self, shelf_num, spot_num, verbosity=3):
+    def loadSample(self, shelf_num, spot_num, verbosity=3):
+    def calibrationStage(self, verbosity=3):
+    def calibrationGarage(self, verbosity=3):
+    #def pickandStage(self, shelf_num, spot_num,verbosity=3):
+    #def pickandGarage(self, shelf_num, spot_num, verbosity=3):
+    def pickupHolder(self, slot, gotoSafe=True, verbosity=3):
+    def returnHolder(self, slot, gotoSafe=True, verbosity=3):
+    def _stress_test(self, cycles=2, verbosity=5):
+    def run(self, cycles=1, verbosity=3):
+    def run_test(self,  verbosity=3):
+    def listGarage(self, verbosity=3):
+    def __init__(self, name='Queue', base=None, **kwargs):
+    def clock(self):
+    def reset_clock(self):
+    def checkStatus(self, verbosity=3):
+    def setStatus(self, status, current, verbosity=3):
+    def addHolder(self, holder, slot):
+    def addHolderIntoQueue(self, holder, slot, sequence_number):
+    def removeHolder(self, slot):
+    def removeHoldersAll(self):
+    def replaceHolder(self, holder, slot):
+    def getHolder(self, slot, verbosity=3):
+    def getHolders(self, holder_range=None, verbosity=3):
+    def listHolders(self):
+    def listSamples(self):
+    def returnHolder(self, holder='current', gotoSafe=True, force=False):
+    def pickupHolder(self, holder, force=False, gotoSafe=True, slack=False):
+    def gotoSample(self, holder, sample_number, force=False):
+    def setSequence(self):
+    def listSequence(self):
+    def runSequence(self, startSample=None, endSample=None, gotoSafeForce=True, currentSample=False):
+    def runHolder(self, holder, slack=False):
+    def runHolders(self, startHolder=None, endHolder=None, gotoSafeForce=False, slack=False):
+    def exposure_setting(self, exposure_time=None, incident_angles=None, detectors=None, detector_positions=None, tiling=None):
+def slack_post(json_data):
+def post_to_slack(text, slack=True):
+def status_to_slack():
+def get_default_stage():
+    def __init__(self, name, base=None, **md):
+    def __init__(self, name, base=None, **md):
+    def __init__(self, name, base=None, **md):
+    def _measureTimeSeries(self, exposure_time=None, num_frames=10, wait_time=None, extra=None, measure_type='measureTimeSeries', verbosity=3, **md):
+    def goto(self, label, verbosity=3, **additional):
+#def fig_dispatch(header, factory):
+#def browse():
+'''#def wh_all():
+#def wh_offsets():
+#def wh_all():
+#def wh_offsets():

@@ -39,6 +39,8 @@ testing = True
 
 # - HACK #1 -  patch EpicsSignal.get to retry when timeouts happen stolen from HXN
 import ophyd
+from ophyd import (Device, Component as Cpt,
+                   EpicsSignal, EpicsSignalRO, DeviceStatus)
 
 def _epicssignal_get(self, *, as_string=None, connection_timeout=1.0, **kwargs):
     '''Get the readback value through an explicit call to EPICS
