@@ -1318,9 +1318,6 @@ class Sample_Generic(CoordinateSystem):
             return SAXSy.position
         if attribute=='SAXSx':
             return SAXSx.position
-        # if attribute=='temperature_Linkam':
-        #     # return caget('XF:11BM-ES:{LINKAM}:TEMP')
-        #     return LThermal.temperature()
         if attribute in self.md:
             return self.md[attribute]
         if attribute=='energy':
@@ -2984,7 +2981,6 @@ class Sample_Generic(CoordinateSystem):
             #if md['measure_type'] is not 'snap':
             if True:
 
-                # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime'))
                 self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
 
                 # Create symlink
@@ -3129,55 +3125,27 @@ class Sample_Generic(CoordinateSystem):
     # Control methods
     ########################################
     def setTemperature(self, temperature, output_channel='1', verbosity=3):
-        #if verbosity>=1:
-            #print('Temperature functions not implemented in {}'.format(self.__class__.__name__))
-        if output_channel == '1':
-            if verbosity>=2:
-                print('  Changing temperature setpoint from {:.3f}°C  to {:.3f}°C'.format(caget('XF:11BM-ES{Env:01-Out:1}T-SP')-273.15, temperature))
-            caput('XF:11BM-ES{Env:01-Out:1}T-SP', temperature+273.15)
-
-        if output_channel == '2':
-            if verbosity>=2:
-                print('  Changing temperature setpoint from {:.3f}°C  to {:.3f}°C'.format(caget('XF:11BM-ES{Env:01-Out:2}T-SP')-273.15, temperature))
-            caput('XF:11BM-ES{Env:01-Out:2}T-SP', temperature+273.15)
-
-        if output_channel == '3':
-            if verbosity>=2:
-                print('  Changing temperature setpoint from {:.3f}°C  to {:.3f}°C'.format(caget('XF:11BM-ES{Env:01-Out:3}T-SP')-273.15, temperature))
-            caput('XF:11BM-ES{Env:01-Out:3}T-SP', temperature+273.15)
-
-        if output_channel == '4':
-            if verbosity>=2:
-                print('  Changing temperature setpoint from {:.3f}°C  to {:.3f}°C'.format(caget('XF:11BM-ES{Env:01-Out:4}T-SP')-273.15, temperature))
-            caput('XF:11BM-ES{Env:01-Out:4}T-SP', temperature+273.15)
+        signal = getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp')
+        if verbosity>=2:
+            current_temperature = yield from bps.rd(signal)
+            print('  Changing temperature setpoint from {:.3f}°C  to {:.3f}°C'.format(signal, temperature))
+        yield from bps.mv(signal, temperature+273.15)
 
 
     def temperature(self, temperature_probe='A', output_channel='1', RTDchan=2, verbosity=3):
-        #if verbosity>=1:
-            #print('Temperature functions not implemented in {}'.format(self.__class__.__name__))
-
-        if temperature_probe == 'A':
-            current_temperature = caget('XF:11BM-ES{Env:01-Chan:A}T:C-I')
-            if verbosity>=3:
-                print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format( current_temperature, self.temperature_setpoint(output_channel=output_channel)-273.15 ) )
-        if temperature_probe == 'B':
-            current_temperature = caget('XF:11BM-ES{Env:01-Chan:B}T:C-I')
-            if verbosity>=3:
-                print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format( current_temperature, self.temperature_setpoint(output_channel=output_channel)-273.15 ) )
-        if temperature_probe == 'C':
-            current_temperature = caget('XF:11BM-ES{Env:01-Chan:C}T:C-I')
-            if verbosity>=3:
-                print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format( current_temperature, self.temperature_setpoint(output_channel=output_channel)-273.15 ) )
-        if temperature_probe == 'D':
-            current_temperature = caget('XF:11BM-ES{Env:01-Chan:D}T:C-I')
-            if verbosity>=3:
-                print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format( current_temperature, self.temperature_setpoint(output_channel=output_channel)-273.15 ) )
         if temperature_probe == 'E':
             try:
-                current_temperature = ioL.read(RTD[RTDchan])
+                readback = ioL.read(RTD[RTDchan])
             except TypeError:
-                current_temperature = -273.15
-        return current_temperature
+                readback = -273.15
+            return readback
+
+        setpoint = yield from bps.rd(getattr(self, f'self.xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        readback = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_chan_{temperature_probe}_t_c_i'))
+
+        if verbosity>=3:
+            print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format(readback, setpoint-273.15))
+        return readback
 
     def humidity(self, AI_chan=4, temperature=25, verbosity=3):
         return ioL.readRH(AI_chan=AI_chan, temperature=temperature, verbosity=verbosity)
