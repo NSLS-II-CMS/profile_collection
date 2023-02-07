@@ -1,0 +1,20 @@
+user_groups:
+  root:  # The group includes all available plan and devices
+    allowed_plans:
+      - null  # Allow all
+    forbidden_plans:
+      - ":^_"  # All plans with names starting with '_'
+    allowed_devices:
+      - null  # Allow all
+    forbidden_devices:
+      - ":^_:?.*"  # All devices with names starting with '_' and their subdevices
+    allowed_functions:
+      - null  # Allow all
+    forbidden_functions:
+      - ":^_"  # All functions with names starting with '_'
+  primary:
+    allowed_plans:
+      - ":^count"  # Allow all plan names starting with 'count'
+      - ":^sleep"
+    allowed_devices:
+      - ":^pilatus:?.*"  # Allow all devices starting with 'det' and their subdevices
