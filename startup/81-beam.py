@@ -855,7 +855,7 @@ class DiamondDiode_CMS(Monitor):
 
     def flux(self, verbosity=3):
 
-        reading = yield from self.reading(verbosity=0)
+        reading = yield self.reading(verbosity=0)
         if reading < 1e-11:
             return 0.0
 
@@ -2317,7 +2317,7 @@ class CMS_Beamline(Beamline):
         #caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquirePeriod', 0.6)
 
         detselect(pilatus_name, suffix='_stats4_total')
-        RE(pilatus_name.setExposureTime(0.5))
+        yield from pilatus_name.setExposureTime(0.5)
         #Comment out by RL, 071617
         #caput('XF:11BMB-ES{}:cam1:AcquireTime'.format(pilatus_Epicsname), 0.5)
         #caput('XF:11BMB-ES{}:cam1:AcquirePeriod'.format(pilatus_Epicsname), 0.6)
