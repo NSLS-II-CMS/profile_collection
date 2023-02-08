@@ -649,8 +649,8 @@ class IonChamber_CMS(Monitor):
 
 
     def flux(self, verbosity=3):
-
-        if self.reading(verbosity=0) < 5e-10:
+        rd = yield from self.reading(verbosity=0) 
+        if rd < 5e-10:
             return 0.0
 
         h1 = yield from bps.rd(self.h1)
@@ -855,7 +855,7 @@ class DiamondDiode_CMS(Monitor):
 
     def flux(self, verbosity=3):
 
-        reading = yield self.reading(verbosity=0)
+        reading = yield from self.reading(verbosity=0)
         if reading < 1e-11:
             return 0.0
 

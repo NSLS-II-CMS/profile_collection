@@ -9,7 +9,7 @@
 # caproto_log.addHandler(handler)
 # logging.getLogger('caproto.ch').setLevel('DEBUG')
 import nslsii
-nslsii.configure_base(get_ipython().user_ns, 'temp', publish_documents_with_kafka=False)
+nslsii.configure_base(get_ipython().user_ns, 'cms', publish_documents_with_kafka=True)
 
 from bluesky.magics import BlueskyMagics
 from bluesky.preprocessors import pchain

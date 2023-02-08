@@ -16,5 +16,8 @@ user_groups:
     allowed_plans:
       - ":^count"  # Allow all plan names starting with 'count'
       - ":^sleep"
+      - "sam_measure"
+      - ":^yolo"
     allowed_devices:
       - ":^pilatus:?.*"  # Allow all devices starting with 'det' and their subdevices
+      - ":^smy"
