@@ -1378,11 +1378,11 @@ class Sample_Generic(CoordinateSystem):
 
         # Add md that varies over time
         md_return['clock'] = self.clock()
-        md_return['temperature'] = self.temperature(temperature_probe='A', verbosity=0)
-        md_return['temperature_A'] = self.temperature(temperature_probe='A', verbosity=0)
-        md_return['temperature_B'] = self.temperature(temperature_probe='B', verbosity=0)
-        md_return['temperature_C'] = self.temperature(temperature_probe='C', verbosity=0)
-        md_return['temperature_D'] = self.temperature(temperature_probe='D', verbosity=0)
+        md_return['temperature'] = yield from self.temperature(temperature_probe='A', verbosity=0)
+        md_return['temperature_A'] = yield from self.temperature(temperature_probe='A', verbosity=0)
+        md_return['temperature_B'] = yield from self.temperature(temperature_probe='B', verbosity=0)
+        md_return['temperature_C'] = yield from self.temperature(temperature_probe='C', verbosity=0)
+        md_return['temperature_D'] = yield from self.temperature(temperature_probe='D', verbosity=0)
         #md_return['temperature_E'] = self.temperature(temperature_probe='E', verbosity=0)
         # md_return['humidity'] = self.humidity(verbosity=0)
 
@@ -1687,10 +1687,10 @@ class Sample_Generic(CoordinateSystem):
         md['plan_header_override'] = md['measure_type']
         start_time = time.time()
 
-        #md_current = self.get_md()
-        md['beam_int_bim3'] = beam.bim3.flux(verbosity=0)
-        md['beam_int_bim4'] = beam.bim4.flux(verbosity=0)
-        md['beam_int_bim5'] = beam.bim5.flux(verbosity=0)
+        #md_current = yield from self.get_md()
+        md['beam_int_bim3'] = yield from beam.bim3.flux(verbosity=0)
+        md['beam_int_bim4'] = yield from beam.bim4.flux(verbosity=0)
+        md['beam_int_bim5'] = yield from beam.bim5.flux(verbosity=0)
         #md['trigger_time'] = self.clock()
         #md.update(md_current)
 
@@ -1783,7 +1783,7 @@ class Sample_Generic(CoordinateSystem):
         md['plan_header_override'] = md['measure_type']
         #start_time = time.time()
 
-        #md_current = self.get_md()
+        #md_current = yield from self.get_md()
         md['beam_int_bim3'] = beam.bim3.flux(verbosity=0)
         md['beam_int_bim4'] = beam.bim4.flux(verbosity=0)
         md['beam_int_bim5'] = beam.bim5.flux(verbosity=0)
@@ -2337,7 +2337,7 @@ class Sample_Generic(CoordinateSystem):
             raise ValueError("No detectors defined in cms.detector")
 
 
-        md_current = self.get_md()
+        md_current = yield from self.get_md()
         md_current.update(self.get_measurement_md())
         md_current['sample_savename'] = savename
         md_current['measure_type'] = measure_type
@@ -2409,7 +2409,7 @@ class Sample_Generic(CoordinateSystem):
         if verbosity>=1 and len(get_beamline().detector)<1:
             raise ValueError("ERROR: No detectors defined in cms.detector")
 
-        md_current = self.get_md()
+        md_current = yield from self.get_md()
         new_md = yield from self.get_measurement_md()
         md_current.update(new_md)
         md_current['sample_savename'] = savename
@@ -2464,7 +2464,7 @@ class Sample_Generic(CoordinateSystem):
         #print('2') #0.0004s
         #print(time.time())
 
-        md_current = self.get_md()
+        md_current = yield from self.get_md()
         md_current['sample_savename'] = savename
         md_current['measure_type'] = measure_type
 
@@ -2746,7 +2746,7 @@ class Sample_Generic(CoordinateSystem):
         for detector in get_beamline().detector:
             detector.setExposureTime(exposure_time, verbosity=verbosity)
         #set metadata
-        md_current = self.get_md()
+        md_current = yield from self.get_md()
         md_current['sample_savename'] = savename
         md_current['measure_type'] = measure_type
         md_current['scan'] = 'scan_measure'
@@ -2825,7 +2825,7 @@ class Sample_Generic(CoordinateSystem):
         if verbosity>=1 and len(get_beamline().detector)<1:
             raise ValueError("No detectors defined in cms.detector")
 
-        md_current = self.get_md()
+        md_current = yield from self.get_md()
         md_current['sample_savename'] = savename
         md_current['measure_type'] = measure_type
         md_current['series'] = 'series_measure'
@@ -3072,7 +3072,7 @@ class Sample_Generic(CoordinateSystem):
     # Control methods
     ########################################
     def setTemperature(self, temperature, output_channel='1', verbosity=3):
-        signal = getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp')
+        signal = getattr(self, f'xf_11bm_es_env_01_out_{output_channel.lower()}_t_sp')
         if verbosity>=2:
             current_temperature = yield from bps.rd(signal)
             print('  Changing temperature setpoint from {:.3f}°C  to {:.3f}°C'.format(signal, temperature))
@@ -3087,8 +3087,8 @@ class Sample_Generic(CoordinateSystem):
                 readback = -273.15
             return readback
 
-        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
-        readback = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_chan_{temperature_probe}_t_c_i'))
+        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel.lower()}_t_sp'))
+        readback = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_chan_{temperature_probe.lower()}_t_c_i'))
 
         if verbosity>=3:
             print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format(readback, setpoint-273.15))
@@ -3163,7 +3163,7 @@ class Sample_Generic(CoordinateSystem):
             temp_data.to_csv(INT_FILENAME)
 
     def temperature_setpoint(self, output_channel='1', verbosity=3):
-        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel.lower()}_t_sp'))
         return setpoint_temperature
 
     def monitor_scheme(self, scheme):
@@ -3515,19 +3515,19 @@ class Holder(Stage):
     # Control methods
     ########################################
     def setTemperature(self, temperature, output_channel='1', verbosity=3):
-        original_temp = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        original_temp = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel.lower()}_t_sp'))
         if verbosity>=2:
             print(f'  Changing temperature setpoint from {original_temp}°C  to {temperature}°C')
-        yield from bps.mv(getattr(self,'xf_11bm_es_env_01_out_{output_channel}_t_sp'), temperature+273.15)
+        yield from bps.mv(getattr(self,'xf_11bm_es_env_01_out_{output_channel.lower()}_t_sp'), temperature+273.15)
 
     def temperature(self, temperature_probe='A', output_channel='1', verbosity=3):
-        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
-        readback = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_chan_{temperature_probe}_t_c_i'))
+        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel.lower()}_t_sp'))
+        readback = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_chan_{temperature_probe.lower()}_t_c_i'))
         print('  Temperature = {:.3f}°C (setpoint = {:.3f}°C)'.format(readback,setpoint-273.15))
         return readback
 
     def temperature_setpoint(self, output_channel='1', verbosity=3):
-        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel}_t_sp'))
+        setpoint = yield from bps.rd(getattr(self, f'xf_11bm_es_env_01_out_{output_channel.lower()}_t_sp'))
         return setpoint
 
 
