@@ -1161,22 +1161,7 @@ class Sample_Generic(CoordinateSystem):
 
         # Signals
         self.xf_11bmb_es_det_saxs_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV')
-        self.xf_11bmb_es_det_saxs_cam1_acquire = detector.cam.acquire
-        self.xf_11bmb_es_det_saxs_cam1_acquiretime = detector.cam.acquire_time
-        self.xf_11bmb_es_det_saxs_cam1_acquireperiod = detector.cam.acquire_period
-
-        self.xf_11bmb_es_det_saxs_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV')
-        self.xf_11bmb_es_det_saxs_cam1_acquire = EpicsSignal('XF:11BMB-ES{Det:SAXS}:cam1:Acquire')
-        self.xf_11bmb_es_det_saxs_cam1_acquiretime = EpicsSignal('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime')
-        self.xf_11bmb_es_det_saxs_cam1_acquireperiod = EpicsSignal('XF:11BMB-ES{Det:SAXS}:cam1:AcquirePeriod')
-
         self.xf_11bmb_es_det_pil2m_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:PIL2M}:cam1:FileNumber_RBV')
-        self.xf_11bmb_es_det_pil2m_cam1_acquire = EpicsSignal('XF:11BMB-ES{Det:PIL2M}:cam1:Acquire')
-        self.xf_11bmb_es_det_pil2m_cam1_acquiretime = EpicsSignal('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime')
-        self.xf_11bmb_es_det_pil2m_cam1_acquireperiod = EpicsSignal('XF:11BMB-ES{Det:PIL2M}:cam1:AcquirePeriod')
-
-        self.xf_11bmb_es_det_pil800k_cam1_acquiretime = EpicsSignalRO('XF:11BMB-ES{Det:PIL800K}:cam1:AcquireTime')
-        self.xf_11bmb_es_det_pil800k_cam1_acquire = EpicsSignal('XF:11BMB-ES{Det:PIL800K}:cam1:Acquire')
 
         self.xf_11bm_es_env_01_out_1_t_sp = EpicsSignal('XF:11BM-ES{Env:01-Out:1}T-SP')
         self.xf_11bm_es_env_01_out_2_t_sp = EpicsSignal('XF:11BM-ES{Env:01-Out:2}T-SP')
@@ -1186,16 +1171,6 @@ class Sample_Generic(CoordinateSystem):
         self.xf_11bm_es_env_01_chan_b_t_c_i = EpicsSignalRO('XF:11BM-ES{Env:01-Chan:B}T:C-I')
         self.xf_11bm_es_env_01_chan_c_t_c_i = EpicsSignalRO('XF:11BM-ES{Env:01-Chan:C}T:C-I')
         self.xf_11bm_es_env_01_chan_d_t_c_i = EpicsSignalRO('XF:11BM-ES{Env:01-Chan:D}T:C-I')
-
-        # Acquire lookup.
-        self.acquires = {'pilatus300': self.xf_11bmb_es_det_saxs_cam1_acquire,
-                         'pilatus2M': self.xf_11bmb_es_det_pil2m_cam1_acquire,
-                         'pilatus800': self.xf_11bmb_es_det_pil800k_cam1_acquire,
-                         'pilatus8002': self.xf_11bmb_es_det_pil800k_cam1_acquire}
-        self.acquire_times = {'pilatus300': self.xf_11bmb_es_det_saxs_cam1_acquiretime ,
-                              'pilatus2M': self.xf_11bmb_es_det_pil2m_cam1_acquiretime,
-                              'pilatus800': self.xf_11bmb_es_det_pil800k_cam1_acquiretime,
-                              'pilatus8002': self.xf_11bmb_es_det_pil800k_cam1_acquiretime}
 
         self.reset_clock()
 
@@ -1604,7 +1579,7 @@ class Sample_Generic(CoordinateSystem):
     def max_exposure_time(self):
         exposure_times = []
         for detector in get_beamline().detector:
-            exposure_time = yield from bps.rd(self.acquire_times[detector.name])
+            exposure_time = yield from bps.rd(detector.cam.acquire_time)
             exposure_times.append(exposure_time)
         if not exposure_times:
             return 0.1
@@ -1672,19 +1647,19 @@ class Sample_Generic(CoordinateSystem):
         get_beamline().beam.on()
 
         # Trigger acquisition manually
-        yield from bps.mv(acquires[pilatus_Epicsname], 1)
+        yield from bps.mv(detector.cam.acquire, 1)
         if verbosity>=2:
             start_time = time.time()
-            acquiring = yield from bps.rd(self.acquires[get_beamline().detector[0].name])
+            acquiring = yield from bps.rd(detector.cam.acquire)
             while acquiring and (time.time()-start_time)<(exposure_time+20):
                 percentage = 100*(time.time()-start_time)/exposure_time
                 print( 'Exposing {:6.2f} s  ({:3.0f}%)      \r'.format((time.time()-start_time), percentage), end='')
                 time.sleep(poling_period)
-                acquiring = yield from bps.rd(self.acquires[get_beamline().detector[0].name])
+                acquiring = yield from bps.rd(detector.cam.acquire)
         else:
             time.sleep(exposure_time)
 
-        acquiring = yield from bps.rd(self.acquires[get_beamline().detector[0].name])
+        acquiring = yield from bps.rd(detector.cam.acquire)
         if verbosity>=3 and acquiring:
             print('Warning: Detector still not done acquiring.')
 
@@ -1795,8 +1770,10 @@ class Sample_Generic(CoordinateSystem):
             exposure_time = abs(exposure_time)
             #for detector in gs.DETS:
             for detector in get_beamline().detector:
-                if exposure_time != detector.cam.acquire_time.get():
-                    RE(detector.setExposureTime(exposure_time, verbosity=verbosity))
+                acquire_time = yield from bps.rd(detector.cam.acquire_time)
+                if exposure_time != acquire_time:
+                    yield from bps.mv(detector.cam.acquire_time, exposure_time)
+
         print('2', time.time()-start_time)
 
         # Do acquisition
@@ -1835,7 +1812,7 @@ class Sample_Generic(CoordinateSystem):
 
                 statuses = []
                 for detector in get_beamline().detector:
-                    acquire = yield from bps.rd(self.acquires[detector])
+                    acquire = yield from bps.rd(detector.cam.acquire)
                     status.append(acquire)
                 status = any(statuses)
             print('6', time.time()-start_time)
@@ -1924,8 +1901,8 @@ class Sample_Generic(CoordinateSystem):
 
             #if md['measure_type'] is not 'snap':
             if True:
-
-                self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
+                acquire_time = yield from bps.rd(detector.cam.acquire_time)
+                self.set_attribute('exposure_time', acquire_time) #RL, 20210831
 
                 # Create symlink
                 #link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -1963,7 +1940,8 @@ class Sample_Generic(CoordinateSystem):
             #if md['measure_type'] is not 'snap':
             if True:
 
-                self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
+                acquire_time = yield from bps.rd(detector.cam.acquire_time)
+                self.set_attribute('exposure_time', acquire_time) #RL, 20210831
 
                 # Create symlink
                 #link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -1999,7 +1977,8 @@ class Sample_Generic(CoordinateSystem):
             #if md['measure_type'] is not 'snap':
             if True:
 
-                self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
+                acquire_time = yield from bps.rd(detector.cam.acquire_time)
+                self.set_attribute('exposure_time', acquire_time) #RL, 20210831
 
                 # Create symlink
                 #link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -2380,22 +2359,9 @@ class Sample_Generic(CoordinateSystem):
         if exposure_time is not None:
             #for detector in gs.DETS:
             for detector in get_beamline().detector:
-                if exposure_time != detector.cam.acquire_time.get():
-                    RE(detector.setExposureTime(exposure_time, verbosity=verbosity))
-                #if detector.name is 'pilatus300' and exposure_time != detector.cam.acquire_time.get():
-                    #detector.setExposureTime(exposure_time, verbosity=verbosity)
-                    ##extra wait time when changing the exposure time.
-                    ##time.sleep(2)
-                    #############################################
-                    ##extra wait time for adjusting pilatus2M
-                    ##this extra wait time has to be added. Otherwise, the exposure will be skipped when the exposure time is increased
-                    ##Note by 091918
-                    #############################################
-                    #time.sleep(2)
-                #elif detector.name is 'PhotonicSciences_CMS':
-                    #detector.setExposureTime(exposure_time, verbosity=verbosity)
-
-
+                acquire_time = yield from bps.rd(detector.cam.acquire_time)
+                if exposure_time != acquire_time:
+                    yield from bps.mv(detector.cam.acquire_time, exposure_time)
 
         # Do acquisition
         get_beamline().beam.on()
@@ -2798,11 +2764,14 @@ class Sample_Generic(CoordinateSystem):
         #get_beamline().beam._test_on(wait_time=0.1)
         get_beamline().beam.on()
         #RE(relative_scan(gs.DETS, motor, start, stop, num_frames+1, per_step=per_step, md=md_current))
-        RE(relative_scan(cms.detector, motor, start, stop, num_frames+1, per_step=per_step,md=md_current), LiveTable([motor, 'motor_setpoint']))
+        # TODO: Figure out how to do live table.
+        #yield from relative_scan(cms.detector, motor, start, stop, num_frames+1, per_step=per_step,md=md_current), LiveTable([motor, 'motor_setpoint'])
+        yield from relative_scan(cms.detector, motor, start, stop, num_frames+1, per_step=per_step,md=md_current)
+
         stage = 1
         for detector in cms.detector:
-            if detector.cam.acquire.get() == 1:
-
+            acquire = yield from bps.rd(detector.cam.acquire)
+            if acquire == 1:
                 print('Warning: Detector {} still not done acquiring.'.format(detector.name))
 
         get_beamline().beam.off()
@@ -2840,13 +2809,11 @@ class Sample_Generic(CoordinateSystem):
 
         # Set exposure time
         for detector in get_beamline().detector:
-            if exposure_time != detector.cam.acquire_time.get():
-                RE(detector.setExposureTime(exposure_time))
-                # detector.cam.acquire_time.put(exposure_time)
-            # detector.cam.acquire_period.put(exposure_period)
-            # detector.cam.num_images.put(num_frames)
-            RE(detector.setExposurePeriod(exposure_period))
-            RE(detector.setExposureNumber(num_frames))
+            acquire_time = yield from bps.rd(detector.cam.acquire_time)
+            if exposure_time != acquire_time:
+                yield from bps.mv(detector.cam.acquire_time, exposure_time)
+            yield from bps.mv(detector.cam.acquire_period, exposure_period)
+            yield from bps.mv(detector.cam.num_images, num_frames)
 
         #bec.disable_plots()
         #bec.disable_table()
@@ -2913,8 +2880,8 @@ class Sample_Generic(CoordinateSystem):
 
             #if md['measure_type'] is not 'snap':
             if True:
-
-                self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
+                acquire_time = yield from bps.rd(detector.cam.acquire_time)
+                self.set_attribute('exposure_time', acquire_time) #RL, 20210831
                 # Create symlink
                 #link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
                 #savename = md['filename'][:-5]
@@ -2957,7 +2924,9 @@ class Sample_Generic(CoordinateSystem):
             #if md['measure_type'] is not 'snap':
             if True:
 
-                self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
+
+                acquire_time = yield from bps.rd(detector.cam.acquire_time)
+                self.set_attribute('exposure_time', acquire_time) #RL, 20210831
 
                 # Create symlink
                 #link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -3001,7 +2970,8 @@ class Sample_Generic(CoordinateSystem):
             #if md['measure_type'] is not 'snap':
             if True:
 
-                self.set_attribute('exposure_time', pilatus800.cam.acquire_time.get()) #RL, 20210831
+                acquire_time = yield from bps.rd(pilatus800.cam.acquire_time)
+                self.set_attribute('exposure_time', acquire_time) #RL, 20210831
 
                 # Create symlink
                 #link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -3065,7 +3035,8 @@ class Sample_Generic(CoordinateSystem):
         #if md['measure_type'] is not 'snap':
         if True:
 
-            self.set_attribute('exposure_time', detector.cam.acquire_time.get()) #RL, 20210831
+            acquire_time = yield from bps.rd(detector.cam.acquire_time)
+            self.set_attribute('exposure_time', acquire_time) #RL, 20210831
             # Create symlink
             #link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
             #savename = md['filename'][:-5]
