@@ -1155,36 +1155,37 @@ class Sample_Generic(CoordinateSystem):
         self.naming_scheme = ['name', 'extra', 'exposure_time','id']
         self.naming_delimeter = '_'
 
-
         # TODO
         #if base is not None:
             #base.addSample(self)
 
         # Signals
         self.xf_11bmb_es_det_saxs_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV')
-        self.xf_11bmb_es_det_pil2m_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:PIL2M}:cam1:FileNumber_RBV')
-        self.xf_11bmb_es_det_saxs_cam1_acquiretime = EpicsSignalRO('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime')
-        self.xf_11bmb_es_det_pil2m_cam1_acquiretime = EpicsSignalRO('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime')
-        self.xf_11bmb_es_det_pil800k_cam1_acquiretime = EpicsSignalRO('XF:11BMB-ES{Det:PIL800K}:cam1:AcquireTime')
+        self.xf_11bmb_es_det_saxs_cam1_acquire = detector.cam.acquire
+        self.xf_11bmb_es_det_saxs_cam1_acquiretime = detector.cam.acquire_time
+        self.xf_11bmb_es_det_saxs_cam1_acquireperiod = detector.cam.acquire_period
+
+        self.xf_11bmb_es_det_saxs_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV')
         self.xf_11bmb_es_det_saxs_cam1_acquire = EpicsSignal('XF:11BMB-ES{Det:SAXS}:cam1:Acquire')
-        self.xf_11bmb_es_det_pil2m_cam1_acquire = EpicsSignal('XF:11BMB-ES{Det:PIL2M}:cam1:Acquire')
-        self.xf_11bmb_es_det_pil800k_cam1_acquire = EpicsSignal('XF:11BMB-ES{Det:PIL800K}:cam1:Acquire')
-        self.xf_11bm_es_env_01_out_1_t_sp = EpicsSignalRO('XF:11BM-ES{Env:01-Out:1}T-SP')
-        self.xf_11bm_es_env_01_out_2_t_sp = EpicsSignalRO('XF:11BM-ES{Env:01-Out:2}T-SP')
-        self.xf_11bm_es_env_01_out_3_t_sp = EpicsSignalRO('XF:11BM-ES{Env:01-Out:3}T-SP')
-        self.xf_11bm_es_env_01_out_4_t_sp = EpicsSignalRO('XF:11BM-ES{Env:01-Out:4}T-SP')
-        self.xf_11bm_es_env_01_chan_a_t_c_i = EpicsSignalRO('XF:11BM-ES{Env:01-Chan:A}T:C-I')
-        self.xf_11bm_es_env_01_chan_b_t_c_i = EpicsSignalRO('XF:11BM-ES{Env:01-Chan:B}T:C-I')
-        self.xf_11bm_es_env_01_chan_c_t_c_i = EpicsSignalRO('XF:11BM-ES{Env:01-Chan:C}T:C-I')
-        self.xf_11bm_es_env_01_chan_d_t_c_i = EpicsSignalRO('XF:11BM-ES{Env:01-Chan:D}T:C-I')
         self.xf_11bmb_es_det_saxs_cam1_acquiretime = EpicsSignal('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime')
         self.xf_11bmb_es_det_saxs_cam1_acquireperiod = EpicsSignal('XF:11BMB-ES{Det:SAXS}:cam1:AcquirePeriod')
+
+        self.xf_11bmb_es_det_pil2m_cam1_filenumber_rbv = EpicsSignalRO('XF:11BMB-ES{Det:PIL2M}:cam1:FileNumber_RBV')
+        self.xf_11bmb_es_det_pil2m_cam1_acquire = EpicsSignal('XF:11BMB-ES{Det:PIL2M}:cam1:Acquire')
         self.xf_11bmb_es_det_pil2m_cam1_acquiretime = EpicsSignal('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime')
         self.xf_11bmb_es_det_pil2m_cam1_acquireperiod = EpicsSignal('XF:11BMB-ES{Det:PIL2M}:cam1:AcquirePeriod')
+
+        self.xf_11bmb_es_det_pil800k_cam1_acquiretime = EpicsSignalRO('XF:11BMB-ES{Det:PIL800K}:cam1:AcquireTime')
+        self.xf_11bmb_es_det_pil800k_cam1_acquire = EpicsSignal('XF:11BMB-ES{Det:PIL800K}:cam1:Acquire')
+
         self.xf_11bm_es_env_01_out_1_t_sp = EpicsSignal('XF:11BM-ES{Env:01-Out:1}T-SP')
         self.xf_11bm_es_env_01_out_2_t_sp = EpicsSignal('XF:11BM-ES{Env:01-Out:2}T-SP')
         self.xf_11bm_es_env_01_out_3_t_sp = EpicsSignal('XF:11BM-ES{Env:01-Out:3}T-SP')
         self.xf_11bm_es_env_01_out_4_t_sp = EpicsSignal('XF:11BM-ES{Env:01-Out:4}T-SP')
+        self.xf_11bm_es_env_01_chan_a_t_c_i = EpicsSignalRO('XF:11BM-ES{Env:01-Chan:A}T:C-I')
+        self.xf_11bm_es_env_01_chan_b_t_c_i = EpicsSignalRO('XF:11BM-ES{Env:01-Chan:B}T:C-I')
+        self.xf_11bm_es_env_01_chan_c_t_c_i = EpicsSignalRO('XF:11BM-ES{Env:01-Chan:C}T:C-I')
+        self.xf_11bm_es_env_01_chan_d_t_c_i = EpicsSignalRO('XF:11BM-ES{Env:01-Chan:D}T:C-I')
 
         # Acquire lookup.
         self.acquires = {'pilatus300': self.xf_11bmb_es_det_saxs_cam1_acquire,
@@ -1195,7 +1196,6 @@ class Sample_Generic(CoordinateSystem):
                               'pilatus2M': self.xf_11bmb_es_det_pil2m_cam1_acquiretime,
                               'pilatus800': self.xf_11bmb_es_det_pil800k_cam1_acquiretime,
                               'pilatus8002': self.xf_11bmb_es_det_pil800k_cam1_acquiretime}
-
 
         self.reset_clock()
 
@@ -1658,19 +1658,16 @@ class Sample_Generic(CoordinateSystem):
 
         # TODO: Improve this (switch to Bluesky methods)
         # TODO: Store metadata
-
         if 'measure_type' not in md:
             md['measure_type'] = 'expose'
         self.log('{} for {}.'.format(md['measure_type'], self.name), **md)
 
+        detector = get_beamline().detector[0]
+
         if exposure_time is not None:
             # Prep detector
-            if get_beamline().detector[0].name == 'pilatus300':
-                yield from bps.mv(self.xf_11bmb_es_det_saxs_cam1_acquiretime, exposure_time)
-                yield from bps.mv(self.xf_11bmb_es_det_saxs_cam1_acquireperiod, exposure_time+0.1)
-            elif get_beamline().detector[0].name == 'pilatus2M':
-                yield from bps.mv(self.xf_11bmb_es_det_pil2m_cam1_acquiretime, exposure_time)
-                yield from bps.mv(self.xf_11bmb_es_det_pil2m_cam1_acquireperiod, exposure_time+0.1)
+            yield from bps.mv(detector.cam.acquire_time, exposure_time)
+            yield from bps.mv(detector.cam.acquire_period, exposure_time+0.1)
 
         get_beamline().beam.on()
 
