@@ -206,6 +206,7 @@ class Sample(SampleGISAXS):
         # Update internal md
         #self.md['key'] = value
 
+        yield from bps.null()  ##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         
         md_return = self.md.copy()
         md_return['name'] = self.name
@@ -832,168 +833,69 @@ class Sample(SampleGISAXS):
         #     return False, ii
 
 
-    def align_crazy_v3_plan(self, step=0, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, int_threshold=10, verbosity=3):
+    def align_crazy_v3_plan(self, step=0, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, 
+                            int_threshold=10, verbosity=3, detector=None, detector_suffix=None):
 
-        #setting parameters
-        rel_th = 1
-        ct = 0
-        cycle = 0
-        intenisty_threshold = 10
+        if detector is None:
+            #detector = gs.DETS[0]
+            detector = get_beamline().detector[0]
 
-        #re-assure the 3 ROI positon
-        get_beamline().setDirectBeamROI()
-        get_beamline().setReflectedBeamROI(total_angle=reflection_angle*2)
-        detector = get_beamline().detector[0]
+        # if detector_suffix is None:
+        #     #value_name = gs.TABLE_COLS[0]
+        #     value_name = get_beamline().TABLE_COLS[0]
+        # else:
+        #     value_name = detector.name + detector_suffix
 
-        #set ROI2 as a fixed area
-        get_beamline().setROI2ReflectBeamROI(total_angle=reflection_angle*2, size=ROI_size)
-        pilatus2M.roi2.size.y.set(200)
-        pilatus2M.roi2.min_xyz.min_y.set(842)
+        motors_for_table = [smx, smy, sth]
 
+        @bpp.stage_decorator([detector])
+        @bpp.run_decorator(md={})
+        @bpp.finalize_decorator(final_plan=shutter_off)
+        def inner_align(group=None):   
+            nonlocal step
 
-        #def ROI3 in 160pixels with the center located at reflection beam
-        # get_beamline().setReflectedBeamROI(total_angle = reflection_angle*2, size=ROI_size) #set ROI3
+            if group:
+                yield from bps.wait(group)
 
-        # self.thabs(reflection_angle)
-        if verbosity>=4:
-            print('  Aligning {}'.format(self.name))
-        
-        if step<=0:
-            # Prepare for alignment                
-            if get_beamline().current_mode!='alignment':
-                #if verbosity>=2:
-                    #print("WARNING: Beamline is not in alignment mode (mode is '{}')".format(get_beamline().current_mode))
-                print("Switching to alignment mode (current mode is '{}')".format(get_beamline().current_mode))
-                get_beamline().modeAlignment()
-                
-                
+            #setting parameters
+            rel_th = 1
+            ct = 0
+            cycle = 0
+            intenisty_threshold = 10
+
+            #re-assure the 3 ROI positon
             get_beamline().setDirectBeamROI()
-            
-            beam.on()
+            get_beamline().setReflectedBeamROI(total_angle=reflection_angle*2)
+            detector = get_beamline().detector[0]
 
-        
-        if step<=2:
-
-
-            ######################### fast alignment in the case2 and 3 -- NO refl beam
-            self.thabs(0.12)
-            self.snap(0.5)
-            roi2_int = pilatus2M.stats2.total.get()
-            threshold = 100
-            beam_int = 20000
-            target_ratio = 0.5
-            beam.on()
-            if roi2_int < threshold:
-
-                print("CASE 2 or 3")
-
-                roi4_int = pilatus2M.stats4.total.get()
-                roi2_int = pilatus2M.stats2.total.get()
-
-                roi4_beam = roi4_int/beam_int
-                
-                min_step=0.005
-                # if roi4_beam<target_ratio: #blocking the beam, +Y
-                    # print(' +Y')
-                self.ysearch(step_size=0.01, min_step=0.005, intensity=beam_int, target=0.5, verbosity=verbosity, polarity=-1)
-                # else:
-                #     print(' -Y')
-                #     self.ysearch(step_size=0.01, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
-
-                roi4_beam = roi4_int/beam_int
-                roi2_int = pilatus2M.stats2.total.get()
+            #set ROI2 as a fixed area
+            get_beamline().setROI2ReflectBeamROI(total_angle=reflection_angle*2, size=ROI_size)
+            pilatus2M.roi2.size.y.set(200)
+            pilatus2M.roi2.min_xyz.min_y.set(842)
 
 
-            #use the beam heigh to find the correct refl beam
-            print('Search the refl beam')
-            RE(count([pilatus2M]))
-            roi4_beam = roi4_int/beam_int
-            roi2_int = pilatus2M.stats2.total.get()
-            # roi2_int = roi2_i
-            th_step = 0.1
-    
-            while roi2_int<threshold:
-                self.thr(th_step)
-                print('th_step {}'.format(th_step))
-                print('Search the refl beam - th = {}'.format(self.thabs()))
+            #def ROI3 in 160pixels with the center located at reflection beam
+            # get_beamline().setReflectedBeamROI(total_angle = reflection_angle*2, size=ROI_size) #set ROI3
 
-                RE(count([pilatus2M]))
-                roi4_beam2 = roi4_int/beam_int
-                self.yr((roi4_beam2-roi4_beam)*0.05)
-                if roi4_beam2 < roi4_beam:
-                    self.thr(-2*th_step)
-                    self.yr(-2*(roi4_beam2-roi4_beam)*0.05)
-                    th_step = -th_step
-                    
-                    print('REVERSED. th_step {}'.format(th_step))
-
-                RE(count([pilatus2M]))
-                roi4_beam = roi4_int/beam_int
-                roi2_int = pilatus2M.stats2.total.get()
-
-
-            ######################### fast alignment in the case2 -- y is at 50% 
-            
-            while abs(rel_th) > 0.005 and ct < 5:
-            # while detector.roi3.max_value.get() > 50 and ct < 5:
-
-                print("CASE 2 ")
-
-                #absolute beam position 
-                refl_beam = detector.roi2.min_xyz.min_y.get() + detector.stats2.max_xy.y.get()
-
-                #roi3 position
-                roi3_beam = detector.roi3.min_xyz.min_y.get() + detector.roi3.size.y.get()/2
-
-                #distance from current postion to the center of roi2 (the disired rel beam position)
-                # rel_ypos = detector.stats2.max_xy.get().y - detector.stats2.size.get().y
-                rel_ypos = refl_beam - roi3_beam
-
-                rel_th = rel_ypos/get_beamline().SAXS.distance/1000*0.172/np.pi*180/2
-                
-                print('The th offset is {}'.format(rel_th))
-                self.thr(rel_th)
-                
-                ct += 1
-                RE(count([pilatus2M]))
-                # self.ysearch(step_size=0.01, min_step=0.005, intensity=beam_int, target=0.5, verbosity=verbosity, polarity=-1)
-
-            ######################### fast alignment in the case1 -- both refl and direct beam
-            target_ratio = 1
-            # self.snap()
-            print("CASE 1")
-
-            def get_roi2_4():
-                roi2_int = pilatus2M.stats2.total.get()
-                roi2_int = roi2_int if roi2_int > 0 else 0
-                roi4_int = pilatus2M.stats4.total.get()
-                roi4_int = roi4_int if roi4_int > 0 else 0
-                return roi2_int/(roi4_int + 10)
-
-            roi2_4 = get_roi2_4()
-
-            min_step=0.005
-            while abs(roi2_4 - target_ratio)>0.2:
-                print(roi2_4)
-                if roi2_4<target_ratio:
-                    print(' +Y')
-                    step = min_step
-                else:
-                    print(' -Y')
-                    step = -min_step
-    
-                self.yr(step)
-                self.snap()
-                roi2_4 = get_roi2_4()
-
-
-
-        if step>5:
-
+            # self.thabs(reflection_angle)
             if verbosity>=4:
-                print('    align: searching')
+                print('  Aligning {}'.format(self.name))
+
+            if step<=0:
+                # Prepare for alignment                
+                if get_beamline().current_mode!='alignment':
+                    #if verbosity>=2:
+                        #print("WARNING: Beamline is not in alignment mode (mode is '{}')".format(get_beamline().current_mode))
+                    print("Switching to alignment mode (current mode is '{}')".format(get_beamline().current_mode))
+                    yield from get_beamline().modeAlignment()
+                    
+                    
+                get_beamline().setDirectBeamROI()
                 
-            # Estimate full-beam intensity
+                yield from shutter_on()
+
+
+
             value = None
             if True:
                 # You can eliminate this, in which case RE.md['beam_intensity_expected'] is used by default
@@ -1001,7 +903,7 @@ class Sample(SampleGISAXS):
                 #detector = gs.DETS[0]
                 detector = get_beamline().detector[0]
                 value_name = get_beamline().TABLE_COLS[0]
-                RE(count([detector]))
+                yield from bps.trigger_and_read([detector, *motors_for_table])
                 value = detector.read()[value_name]['value']
                 self.yr(0.5)
             
@@ -1009,87 +911,301 @@ class Sample(SampleGISAXS):
                 if value<RE.md['beam_intensity_expected']*0.75:
                     print('WARNING: Direct beam intensity ({}) lower than it should be ({})'.format(value, RE.md['beam_intensity_expected']))
                 
-            #check the last value:
-            ii = 0
-            while abs(pilatus2M.stats4.total.get() - value)/value < 0.1 and ii < 3: 
-                ii += 1
-                # Find the step-edge
-                self.ysearch(step_size=0.2, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
-                
-                # Find the peak
-                self.thsearch(step_size=0.2, min_step=0.01, target='max', verbosity=verbosity)
 
-            #last check for height
-            self.ysearch(step_size=0.05, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
-                
 
-        if step>5:
-
-            #check reflection beam
-            self.thr(reflection_angle)
-            RE(count([detector]))
             
-            if abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20 and detector.stats2.max_value.get() > intenisty_threshold:
+            if step<=2:
 
-                #continue the fast alignment 
-                print('The reflective beam is found! Continue the fast alignment')
+
+                ######################### fast alignment in the case2 and 3 -- NO refl beam
+                self.thabs(0.12)
+                # self.snap(0.5)
+                yield from bps.trigger_and_read([detector, *motors_for_table])
+                roi2_int = pilatus2M.stats2.total.get()
+                roi4_int = pilatus2M.stats4.total.get()
+                threshold = 100
+                beam_int = value
+                target_ratio = 0.5
+                # yield from shutter_on()
+
+                if roi2_int < threshold:
+
+                    print("CASE 2 or 3")
+
+                    roi4_int = pilatus2M.stats4.total.get()
+                    roi2_int = pilatus2M.stats2.total.get()
+
+                    roi4_beam = roi4_int/beam_int
+                    
+                    min_step=0.005
+                    # if roi4_beam<target_ratio: #blocking the beam, +Y
+                        # print(' +Y')
+                    yield from self.search_stub2(
+                        motor=smy, step_size=.01, min_step=0.005, target=0.5, intensity=beam_int, 
+                        polarity=-1, detector=detector, detector_suffix='_stats4_total'
+                    )
+
+                    ii = 0
+                    while abs(pilatus2M.stats4.total.get() - beam_int)/beam_int < 0.1 and ii < 3: 
+                        ii += 1
+                        # Find the step-edge
+                        yield from self.search_stub2(
+                                motor=smy, step_size=.2, min_step=0.005, target=0.5, intensity=beam_int, 
+                                polarity=-1, detector=detector, detector_suffix='_stats4_total'
+                            )
+                        
+                        yield from self.search_stub2(
+                                motor=sth, step_size=.2, min_step=0.01, target='max',  
+                                polarity=-1, detector=detector, detector_suffix='_stats4_total'
+                            )
+
+
+                        # self.ysearch(step_size=0.2, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
+                        
+                        # # Find the peak
+                        # self.thsearch(step_size=0.2, min_step=0.01, target='max', verbosity=verbosity)
+
+                    #last check for height
+                    # self.ysearch(step_size=0.05, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
+                    yield from self.search_stub2(
+                            motor=smy, step_size=.05, min_step=0.005, target=0.5, intensity=beam_int, 
+                            polarity=-1, detector=detector, detector_suffix='_stats4_total'
+                        )
+
+                    # self.ysearch(step_size=0.01, min_step=0.005, intensity=beam_int, target=0.5, verbosity=verbosity, polarity=-1)
+                    # else:
+                    #     print(' -Y')
+                    #     self.ysearch(step_size=0.01, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
+
+                    roi4_beam = roi4_int/beam_int
+                    roi2_int = pilatus2M.stats2.total.get()
+
+
+                # #use the beam heigh to find the correct refl beam
+                # print('Search the refl beam')
+                # yield from bps.trigger_and_read([detector, *motors_for_table])
+                # # RE(count([pilatus2M]))
                 
-                while abs(rel_th) > 0.005 and ct < 5:
-                # while detector.roi3.max_value.get() > 50 and ct < 5:
+                # roi4_beam = roi4_int/beam_int
+                # roi2_int = pilatus2M.stats2.total.get()
+                # # roi2_int = roi2_i
+                # th_step = 0.1
+        
+                # while roi2_int<threshold:
+                #     self.thr(th_step)
+                #     print('th_step {}'.format(th_step))
+                #     print('Search the refl beam - th = {}'.format(self.thabs()))
+
+                #     yield from bps.trigger_and_read([detector, *motors_for_table])
+                #     # RE(count([pilatus2M]))
+                #     roi4_beam2 = roi4_int/beam_int
+                #     self.yr((roi4_beam2-roi4_beam)*0.05)
+                #     if roi4_beam2 < roi4_beam:
+                #         self.thr(-2*th_step)
+                #         self.yr(-2*(roi4_beam2-roi4_beam)*0.05)
+                #         th_step = -th_step
+                        
+                #         print('REVERSED. th_step {}'.format(th_step))
+
+                #     yield from bps.trigger_and_read([detector, *motors_for_table])
+                #     # RE(count([pilatus2M]))
+                #     roi4_beam = roi4_int/beam_int
+                #     roi2_int = pilatus2M.stats2.total.get()
+
+
+                # ######################### fast alignment in the case2 -- y is at 50% 
+                
+                # while abs(rel_th) > 0.005 and ct < 5:
+                # # while detector.roi3.max_value.get() > 50 and ct < 5:
+
+                #     print("CASE 2 ")
+
+                #     #absolute beam position 
+                #     refl_beam = detector.roi2.min_xyz.min_y.get() + detector.stats2.max_xy.y.get()
+
+                #     #roi3 position
+                #     roi3_beam = detector.roi3.min_xyz.min_y.get() + detector.roi3.size.y.get()/2
+
+                #     #distance from current postion to the center of roi2 (the disired rel beam position)
+                #     # rel_ypos = detector.stats2.max_xy.get().y - detector.stats2.size.get().y
+                #     rel_ypos = refl_beam - roi3_beam
+
+                #     rel_th = rel_ypos/get_beamline().SAXS.distance/1000*0.172/np.pi*180/2
                     
-                    #absolute beam position 
-                    refl_beam = detector.roi2.min_xyz.min_y.get() + detector.stats2.max_xy.y.get()
-
-                    #roi3 position
-                    roi3_beam = detector.roi3.min_xyz.min_y.get() + detector.roi3.size.y.get()/2
-
-                    #distance from current postion to the center of roi2 (the disired rel beam position)
-                    # rel_ypos = detector.stats2.max_xy.get().y - detector.stats2.size.get().y
-                    rel_ypos = refl_beam - roi3_beam
-
-                    rel_th = rel_ypos/get_beamline().SAXS.distance/1000*0.172/np.pi*180/2
+                #     print('The th offset is {}'.format(rel_th))
+                #     self.thr(rel_th)
                     
-                    print('The th offset is {}'.format(rel_th))
-                    self.thr(rel_th)
+                #     ct += 1
+                #     yield from bps.trigger_and_read([detector, *motors_for_table])
+                #     # RE(count([pilatus2M]))
+                #     # self.ysearch(step_size=0.01, min_step=0.005, intensity=beam_int, target=0.5, verbosity=verbosity, polarity=-1)
+
+                ######################### fast alignment in the case1 -- both refl and direct beam
+                
+                # self.thr(reflection_angle)
+                # yield from bps.trigger_and_read([detector, *motors_for_table])
+                # RE(count([detector]))
+                
+            #     # if abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20 and detector.stats2.max_value.get() > intenisty_threshold:
+                
+            #     target_ratio = 1
+            #     # self.snap()
+            #     print("CASE 1")
+
+            #     def get_roi2_4():
+            #         roi2_int = pilatus2M.stats2.total.get()
+            #         roi2_int = roi2_int if roi2_int > 0 else 0
+            #         roi4_int = pilatus2M.stats4.total.get()
+            #         roi4_int = roi4_int if roi4_int > 0 else 0
+            #         return roi2_int/(roi4_int + 10)
+
+            #     roi2_4 = get_roi2_4()
+
+            #     min_step=0.005
+            #     while abs(roi2_4 - target_ratio)>0.2:
+            #         print(roi2_4)
+            #         if roi2_4<target_ratio:
+            #             print(' +Y')
+            #             step = min_step
+            #         else:
+            #             print(' -Y')
+            #             step = -min_step
+        
+            #         self.yr(step)
+            #         yield from bps.trigger_and_read([detector, *motors_for_table])
+            #         # self.snap()
+            #         roi2_4 = get_roi2_4()
+
+
+
+            # if step>5:
+
+            #     if verbosity>=4:
+            #         print('    align: searching')
                     
-                    ct += 1
-                    RE(count([detector]))
+            #     # Estimate full-beam intensity
+            #     value = None
+            #     if True:
+            #         # You can eliminate this, in which case RE.md['beam_intensity_expected'] is used by default
+            #         self.yr(-0.5)
+            #         #detector = gs.DETS[0]
+            #         detector = get_beamline().detector[0]
+            #         value_name = get_beamline().TABLE_COLS[0]
+            #         yield from bps.trigger_and_read([detector, *motors_for_table])
+            #         # RE(count([detector]))
+            #         value = detector.read()[value_name]['value']
+            #         self.yr(0.5)
+                
+            #     if 'beam_intensity_expected' in RE.md:
+            #         if value<RE.md['beam_intensity_expected']*0.75:
+            #             print('WARNING: Direct beam intensity ({}) lower than it should be ({})'.format(value, RE.md['beam_intensity_expected']))
+                    
+            #     #check the last value:
+            #     ii = 0
+            #     while abs(pilatus2M.stats4.total.get() - value)/value < 0.1 and ii < 3: 
+            #         ii += 1
+            #         # Find the step-edge
+            #         yield from self.search_stub2(
+            #             motor=smy, step_size=0.2, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, 
+            #             polarity=-1, detector=detector, detector_suffix='_stats4_total'
+            #         )
+            #         # self.ysearch(step_size=0.2, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
+                    
+            #         # Find the peak
+            #         yield from self.search_stub2(
+            #             motor=sth, step_size=0.2, min_step=0.01, target='max', verbosity=verbosity, detector=detector,
+            #             detector_suffix='_stats4_total'
+            #         )
+            #         # self.thsearch(step_size=0.2, min_step=0.01, target='max', verbosity=verbosity)
 
-                # if detector.stats3.total.get()>50:
+            #     #last check for height
+            #     yield from self.search_stub2(
+            #         motor=smy, step_size=0.05, min_step=0.005, intensity=value, target=0.5, 
+            #         verbosity=verbosity, polarity=-1, detector=detector, detector_suffix='_stats4_total'
+            #     )
+            #     # self.ysearch(step_size=0.05, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
+                    
 
-                #     print('The fast alignment works!')
-                #     self.thr(-reflection_angle)
-                #     self.setOrigin(['y', 'th'])
+            if step<5:
 
-                #     beam.off()
+                #check reflection beam
+                self.thr(reflection_angle)
+                yield from bps.trigger_and_read([detector, *motors_for_table])
+                # RE(count([detector]))
+                
+                if abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20 and detector.stats2.max_value.get() > intenisty_threshold:
 
-                #     return True, ii
+                    #continue the fast alignment 
+                    print('The reflective beam is found! Continue the fast alignment')
+                    
+                    while abs(rel_th) > 0.005 and ct < 5:
+                    # while detector.roi3.max_value.get() > 50 and ct < 5:
+                        
+                        #absolute beam position 
+                        refl_beam = detector.roi2.min_xyz.min_y.get() + detector.stats2.max_xy.y.get()
 
-                # else:
-                #     print('Alignment Error: Cannot Locate the reflection beam')
-                #     self.thr(-reflection_angle)
-                #     beam.off()
+                        #roi3 position
+                        roi3_beam = detector.roi3.min_xyz.min_y.get() + detector.roi3.size.y.get()/2
 
-                #     return False, ii
+                        #distance from current postion to the center of roi2 (the disired rel beam position)
+                        # rel_ypos = detector.stats2.max_xy.get().y - detector.stats2.size.get().y
+                        rel_ypos = refl_beam - roi3_beam
+
+                        rel_th = rel_ypos/get_beamline().SAXS.distance/1000*0.172/np.pi*180/2
+                        
+                        print('The th offset is {}'.format(rel_th))
+                        self.thr(rel_th)
+                        
+                        ct += 1
+                        yield from bps.trigger_and_read([detector, *motors_for_table])
+                        # RE(count([detector]))
+
+                    # if detector.stats3.total.get()>50:
+
+                    #     print('The fast alignment works!')
+                    #     self.thr(-reflection_angle)
+                    #     self.setOrigin(['y', 'th'])
+
+                    #     beam.off()
+
+                    #     return True, ii
+
+                    # else:
+                    #     print('Alignment Error: Cannot Locate the reflection beam')
+                    #     self.thr(-reflection_angle)
+                    #     beam.off()
+
+                    #     return False, ii
 
 
-        # elif abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) > 5:
-        #     print('Max and Centroid dont Match!')
+            # elif abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) > 5:
+            #     print('Max and Centroid dont Match!')
 
-        #     #perform the full alignment
-        #     print('Alignment Error: No reflection beam is found!')
-        #     self.thr(-reflection_angle)
-        #     beam.off()
-        #     return False, ii
+            #     #perform the full alignment
+            #     print('Alignment Error: No reflection beam is found!')
+            #     self.thr(-reflection_angle)
+            #     beam.off()
+            #     return False, ii
 
-        # else:
-        #     print('Intensiy < threshold!')
+            # else:
+            #     print('Intensiy < threshold!')
 
-        #     #perform the full alignment
-        #     print('Alignment Error: No reflection beam is found!')
-        #     self.thr(-reflection_angle)
-        #     beam.off()
-        #     return False, ii
+            #     #perform the full alignment
+            #     print('Alignment Error: No reflection beam is found!')
+            #     self.thr(-reflection_angle)
+            #     beam.off()
+            #     return False, ii
+
+        group_name = "setup_aligment"
+        yield from bps.abs_set(bsx, cms.bsx_pos + 3, group=group_name)
+        beam.setTransmission(1e-6)
+
+        yield from inner_align(group=group_name)
+
+        yield from bps.abs_set(bsx, cms.bsx_pos, group=group_name)
+        yield from bps.wait(group_name)
+
+
 
 
     def swing_v2(self, step=0, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, int_threshold=10, verbosity=3):
@@ -1544,7 +1660,7 @@ class Sample(SampleGISAXS):
                     
         measure_queue.publish(commands) # Send results for analysis
 
-    def search_plan(self, motor=smy, step_size=1.0, min_step=0.05, intensity=None, target=0.5, detector=None, detector_suffix=None, polarity=+1, verbosity=3):
+    def search_plan(self, motor=smy, step_size=0.2, min_step=0.05, intensity=None, target=0.5, detector=None, detector_suffix=None, polarity=-1, verbosity=3):
         '''Moves this axis, searching for a target value.
         
         Parameters
@@ -1720,7 +1836,141 @@ class Sample(SampleGISAXS):
         yield from inner_search()
 
 
-    def search_plan2(self, motor=smy, step_size=1.0, min_step=0.05, intensity=None, target=0.5, detector=None, detector_suffix=None, polarity=+1, verbosity=3):
+    def search_stub2(self, motor=smy, step_size=1.0, min_step=0.05, intensity=None, target=0.5, 
+                     detector=None, detector_suffix=None, polarity=1, verbosity=3):
+
+        if detector is None:
+            #detector = gs.DETS[0]
+            detector = get_beamline().detector[0]      
+        if detector_suffix is None:
+            #value_name = gs.TABLE_COLS[0]
+            value_name = get_beamline().TABLE_COLS[0]
+        else:
+            value_name = detector.name + detector_suffix
+
+        if intensity is None:
+            intensity = RE.md['beam_intensity_expected']
+
+        motors_for_table = [smx, smy, sth]
+
+        # Check current value
+        vv = yield from bps.trigger_and_read([detector, *motors_for_table])
+        value = vv[value_name]['value']
+
+        if target == 'max':
+            
+            if verbosity>=5:
+                print("Performing search on axis '{}' target is 'max'".format(self.name))
+            
+            max_value = value
+            # max_position = self.get_position(verbosity=0)
+            
+            
+            direction = polarity
+            
+            while step_size>=min_step:
+                if verbosity>=4:
+                    print("        move {} by {} × {}".format(self.name, direction, step_size))
+
+                yield from bps.mvr(motor, direction*step_size)
+
+                prev_value = value
+                yield from bps.trigger_and_read([detector, *motors_for_table])
+                
+                value = detector.read()[value_name]['value']
+                # if verbosity>=3:
+                #     print("      {} = {:.3f} {}; value : {}".format(self.name, self.get_position(verbosity=0), self.units, value))
+                    
+                if value>max_value:
+                    max_value = value
+                    # max_position = self.get_position(verbosity=0)
+                    
+                if value>prev_value:
+                    # Keep going in this direction...
+                    pass
+                else:
+                    # Switch directions!
+                    direction *= -1
+                    step_size *= 0.5
+                
+                
+        elif target == 'min':
+            
+            if verbosity>=5:
+                print("Performing search on axis '{}' target is 'min'".format(self.name))
+            
+            direction = +1*polarity
+            
+            while step_size>=min_step:
+                if verbosity>=4:
+                    print("        move {} by {} × {}".format(self.name, direction, step_size))
+
+                # pos = yield from bps.rd(motor)
+                yield from bps.mvr(motor, direction*step_size)
+                # self.move_relative(move_amount=direction*step_size, verbosity=verbosity-2)
+
+                prev_value = value
+                yield from bps.trigger_and_read([detector, *motors_for_table])
+                value = detector.read()[value_name]['value']
+                if verbosity>=3:
+                    print("      {} = {:.3f} {}; value : {}".format(self.name, self.get_position(verbosity=0), self.units, value))
+                    
+                if value<prev_value:
+                    # Keep going in this direction...
+                    pass
+                else:
+                    # Switch directions!
+                    direction *= -1
+                    step_size *= 0.5
+                                
+        else:
+
+            target_rel = target
+            target = target_rel*intensity
+
+            if verbosity>=5:
+                print("Performing search on axis '{}' target {} × {} = {}".format(self.name, target_rel, intensity, target))
+            if verbosity>=4:
+                print("      value : {} ({:.1f}%)".format(value, 100.0*value/intensity))
+            
+            
+            # Determine initial motion direction
+            if value>target:
+                direction = -1*polarity
+            else:
+                direction = +1*polarity
+                
+            while step_size>=min_step:
+                
+                if verbosity>=4:
+                    print("        move {} by {} × {}".format(self.name, direction, step_size))
+                
+                yield from bps.mvr(motor, direction*step_size)
+                
+                yield from bps.trigger_and_read([detector, *motors_for_table])
+                value = detector.read()[value_name]['value']
+                #if verbosity>=3:
+                #    print("      {} = {:.3f} {}; value : {} ({:.1f}%)".format(self.name, self.get_position(verbosity=0), self.units, value, 100.0*value/intensity))
+                    
+                # Determine direction
+                if value>target:
+                    new_direction = -1.0*polarity
+                else:
+                    new_direction = +1.0*polarity
+                    
+                if abs(direction-new_direction)<1e-4:
+                    # Same direction as we've been going...
+                    # ...keep moving this way
+                    pass
+                else:
+                    # Switch directions!
+                    direction *= -1
+                    step_size *= 0.5
+    
+        # bec.enable_table()
+
+
+    def search_plan2(self, motor=smy, step_size=0.2, min_step=0.05, intensity=None, target=0.5, detector=None, detector_suffix=None, polarity=-1, verbosity=3):
         '''Moves this axis, searching for a target value.
         
         Parameters
@@ -1739,16 +1989,10 @@ class Sample(SampleGISAXS):
         polarity : +1 or -1
             Positive motion assumes, e.g. a step-height 'up' (as the axis goes more positive)
         '''
-        
+
         if detector is None:
             #detector = gs.DETS[0]
-            detector = get_beamline().detector[0]
-        if detector_suffix is None:
-            #value_name = gs.TABLE_COLS[0]
-            value_name = get_beamline().TABLE_COLS[0]
-        else:
-            value_name = detector.name + detector_suffix
-
+            detector = get_beamline().detector[0]      
 
         @bpp.stage_decorator([detector])
         @bpp.run_decorator(md={})
@@ -1766,122 +2010,12 @@ class Sample(SampleGISAXS):
                 yield from bps.wait(group)
 
             yield from shutter_on()
-            
-            # Check current value
-            vv = yield from bps.trigger_and_read([detector, motor])
-            value = vv[value_name]['value']
 
-            if target == 'max':
-                
-                if verbosity>=5:
-                    print("Performing search on axis '{}' target is 'max'".format(self.name))
-                
-                max_value = value
-                # max_position = self.get_position(verbosity=0)
-                
-                
-                direction = +1*polarity
-                
-                while step_size>=min_step:
-                    if verbosity>=4:
-                        print("        move {} by {} × {}".format(self.name, direction, step_size))
+            yield from self.search_stub2(
+                motor=motor, step_size=step_size, min_step=min_step, intensity=intensity, target=target, 
+                detector=detector, detector_suffix=detector_suffix, polarity=polarity, verbosity=verbosity
+            )
 
-                    yield from bps.mvr(motor, direction*step_size)
-
-                    prev_value = value
-                    yield from bps.trigger_and_read([detector, motor])
-                    
-                    value = detector.read()[value_name]['value']
-                    # if verbosity>=3:
-                    #     print("      {} = {:.3f} {}; value : {}".format(self.name, self.get_position(verbosity=0), self.units, value))
-                        
-                    if value>max_value:
-                        max_value = value
-                        # max_position = self.get_position(verbosity=0)
-                        
-                    if value>prev_value:
-                        # Keep going in this direction...
-                        pass
-                    else:
-                        # Switch directions!
-                        direction *= -1
-                        step_size *= 0.5
-                    
-                    
-            elif target == 'min':
-                
-                if verbosity>=5:
-                    print("Performing search on axis '{}' target is 'min'".format(self.name))
-                
-                direction = +1*polarity
-                
-                while step_size>=min_step:
-                    if verbosity>=4:
-                        print("        move {} by {} × {}".format(self.name, direction, step_size))
-
-                    # pos = yield from bps.rd(motor)
-                    yield from bps.mvr(motor, direction*step_size)
-                    # self.move_relative(move_amount=direction*step_size, verbosity=verbosity-2)
-
-                    prev_value = value
-                    yield from bps.trigger_and_read([detector, motor])
-                    value = detector.read()[value_name]['value']
-                    if verbosity>=3:
-                        print("      {} = {:.3f} {}; value : {}".format(self.name, self.get_position(verbosity=0), self.units, value))
-                        
-                    if value<prev_value:
-                        # Keep going in this direction...
-                        pass
-                    else:
-                        # Switch directions!
-                        direction *= -1
-                        step_size *= 0.5
-                                    
-            else:
-
-                target_rel = target
-                target = target_rel*intensity
-
-                if verbosity>=5:
-                    print("Performing search on axis '{}' target {} × {} = {}".format(self.name, target_rel, intensity, target))
-                if verbosity>=4:
-                    print("      value : {} ({:.1f}%)".format(value, 100.0*value/intensity))
-                
-                
-                # Determine initial motion direction
-                if value>target:
-                    direction = -1*polarity
-                else:
-                    direction = +1*polarity
-                    
-                while step_size>=min_step:
-                    
-                    if verbosity>=4:
-                        print("        move {} by {} × {}".format(self.name, direction, step_size))
-                    
-                    yield from bps.mvr(motor, direction*step_size)
-                    
-                    yield from bps.trigger_and_read([detector, motor])
-                    value = detector.read()[value_name]['value']
-                    #if verbosity>=3:
-                    #    print("      {} = {:.3f} {}; value : {} ({:.1f}%)".format(self.name, self.get_position(verbosity=0), self.units, value, 100.0*value/intensity))
-                        
-                    # Determine direction
-                    if value>target:
-                        new_direction = -1.0*polarity
-                    else:
-                        new_direction = +1.0*polarity
-                        
-                    if abs(direction-new_direction)<1e-4:
-                        # Same direction as we've been going...
-                        # ...keep moving this way
-                        pass
-                    else:
-                        # Switch directions!
-                        direction *= -1
-                        step_size *= 0.5
-        
-            # bec.enable_table()
 
         group_name = "setup_aligment"
         yield from bps.abs_set(bsx, cms.bsx_pos + 3, group=group_name)

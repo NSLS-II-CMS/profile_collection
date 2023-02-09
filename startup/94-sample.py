@@ -1666,6 +1666,7 @@ class Sample_Generic(CoordinateSystem):
         get_beamline().beam.off()
 
 
+    @bpp.finalize_decorator(final_plan=shutter_off)
     def expose(self, exposure_time=None, extra=None, handlefile=True, verbosity=3, poling_period=0.1, **md):
         '''Internal function that is called to actually trigger a measurement.'''
         '''TODO: **md doesnot work in RE(count). '''
@@ -1682,7 +1683,8 @@ class Sample_Generic(CoordinateSystem):
                     yield from detector.setExposureTime(exposure_time, verbosity=verbosity)
 
         # Do acquisition
-        get_beamline().beam.on()
+        yield from shutter_on()
+        # get_beamline().beam.on()
 
         md['plan_header_override'] = md['measure_type']
         start_time = time.time()
@@ -1723,7 +1725,8 @@ class Sample_Generic(CoordinateSystem):
                 percentage = 100*(time.time()-start_time)/max_exposure_time
                 print('After re-exposing .... percentage = {} '.format(percentage))
 
-        get_beamline().beam.off()
+        # get_beamline().beam.off()
+        # yield from shutter_off()
 
         #save the percentage information
         # if verbosity>=5:

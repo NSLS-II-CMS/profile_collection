@@ -1,10 +1,12 @@
+from epics import caput, caget
+
 class PhotoThermalAnnealer():
     
     def __init__(self, print_code='PTA> '):
         
         # self.controlTTL_PV = 'XF:11BMB-ES{IO}AO:3-SP'
         self.controlTTL_PV = 'XF:11BM-ES{Ecat:DO1_2}'
-        # self.powerV_PV = 'XF:11BMB-ES{IO}AO:4-SP'
+        # self.powerV_PV = 'XF:11BMB-ES{IO}AO:4-SP' 
         self.powerV_PV = 'XF:11BM-ES{Ecat:AO1}1'
 
         self.print_code = print_code
@@ -707,4 +709,4 @@ class PhotoThermalAnnealer():
         self.setLaserPower(power_W)
         self.laserPulse(duration)
 
-# pta = PhotoThermalAnnealer()
+pta = PhotoThermalAnnealer()

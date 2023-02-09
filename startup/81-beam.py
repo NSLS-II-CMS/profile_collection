@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # vi: ts=4 sw=4
 
-
+from epics import caput, caget
 
 
 ################################################################################
@@ -855,7 +855,7 @@ class DiamondDiode_CMS(Monitor):
 
     def flux(self, verbosity=3):
 
-        reading = yield self.reading(verbosity=0)
+        reading = yield from self.reading(verbosity=0)
         if reading < 1e-11:
             return 0.0
 
@@ -2303,14 +2303,16 @@ class CMS_Beamline(Beamline):
         # TODO: Check list: change attenuator for different energy, change the bsx position with beamcenter accordingly
 
 
-        self.beam.off()
+        # self.beam.off()
+        yield from shutter_off()
         self.beam.setTransmission(1e-8)  #1e-6 for 13.5kev, 1e-8 for 17kev
         while beam.transmission() > 3e-8:
-            time.sleep(0.5)
+            yield from bps.sleep(0.5)
             self.beam.setTransmission(1e-8)
 
         #mov(bsx, -10.95)
-        bsx.move(self.bsx_pos+5)
+        yield from bps.mv(bsx, self.bsx_pos + 5)
+        # bsx.move(self.bsx_pos+5)
 
         #detselect(pilatus300, suffix='_stats4_total')
         #caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime', 0.5)
@@ -3338,18 +3340,15 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
 
     def modeAlignment(self, verbosity=3):
 
-        if RE.state!='idle':
-            RE.abort()
-
         self.current_mode = 'undefined'
 
         # TODO: Check what mode (TSAXS, GISAXS) and respond accordingly
         # TODO: Check if gate valves are open and flux is okay (warn user)
 
-        self.beam.off()
+        yield from shutter_off()
         self.beam.setTransmission(1e-6)
         while beam.transmission() > 2e-6:
-            time.sleep(0.5)
+            yield from bps.sleep(0.5)
             self.beam.setTransmission(1e-6)
 
         # pilatus_name = pilatus2M
@@ -3364,7 +3363,7 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         #mov(bsx, -16.53+3) # 07/20/17, GISAXS, 5m, CRoss
         #mov(bsx, self.bsx_pos+3)
 
-        bsx.move(self.bsx_pos+3)
+        yield from bps.mv(bsx, self.bsx_pos + 3)
 
         self.setReflectedBeamROI()
         self.setDirectBeamROI()
@@ -3375,7 +3374,7 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
 
         #self.setMonitor(monitor=['stats3', 'stats4'])
         detselect(pilatus_name, suffix='_stats4_total')
-        RE(pilatus_name.setExposureTime(0.5))
+        yield from pilatus_name.setExposureTime(0.5)
 
         # caput('XF:11BMB-ES{}:cam1:AcquireTime'.format(pilatus_Epicsname), 0.1)
         # caput('XF:11BMB-ES{}:cam1:AcquirePeriod'.format(pilatus_Epicsname), 0.6)
@@ -3453,7 +3452,7 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         if pilatus_name.name == 'pilatus2M':
             detector = self.SAXS
             # These positions are updated based on current detector position
-            det_md = detector.get_md()
+            det_md = yield from detector.get_md()
             x0 = det_md['detector_SAXS_x0_pix']
             y0 = det_md['detector_SAXS_y0_pix']
         if pilatus_name.name == 'pilatus800':
@@ -3531,7 +3530,7 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         if pilatus_name.name == 'pilatus2M':
             detector = self.SAXS
             # These positions are updated based on current detector position
-            det_md = detector.get_md()
+            det_md = yield from detector.get_md()
             x0 = det_md['detector_SAXS_x0_pix']
             y0 = det_md['detector_SAXS_y0_pix']
         if pilatus_name.name == 'pilatus800':
@@ -3584,14 +3583,14 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         if pilatus_name.name == 'pilatus2M':
             detector = self.SAXS
             # These positions are updated based on current detector position
-            det_md = detector.get_md()
+            det_md = yield from detector.get_md()
             x0 = det_md['detector_SAXS_x0_pix']
             y0 = det_md['detector_SAXS_y0_pix']
         if pilatus_name.name == 'pilatus800':
             detector = self.WAXS
 
             # These positions are updated based on current detector position
-            det_md = detector.get_md()
+            det_md = yield from detector.get_md()
             x0 = det_md['detector_WAXS_x0_pix']
             y0 = det_md['detector_WAXS_y0_pix']
 

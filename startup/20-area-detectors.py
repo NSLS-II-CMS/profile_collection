@@ -557,6 +557,7 @@ if Pilatus2M_on == True:
         stats_plugin.read_attrs = ['total']
     pilatus2M.cam.ensure_nonblocking()
     pilatus2M.tiff.ensure_blocking()
+    pilatus2M.stats2.total.kind = 'hinted'
     pilatus2M.stats3.total.kind = 'hinted'
     pilatus2M.stats4.total.kind = 'hinted'
 
