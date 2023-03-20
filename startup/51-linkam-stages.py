@@ -491,9 +491,9 @@ class LinkamTensile(LinkamThermal):
 
         # setting for the tensile part
         text += f"\nCurrent mode = {self.getMode(verbosity=5)}\n\n"
-        text += f"\nCurrent distance = {self.distance.get():1f}, setpoint={self.distance_setpoi.get():1f}\n\n"
-        text += f"\nCurrent velocity = {self.velocity.get():1f}, setpoint={self.velocity_setpoi.get():1f}\n\n"
-        text += f"\nCurrent force = {self.force.get():1f}, setpoint={self.force_setpoi.get():1f}\n\n"
+        text += f"\nCurrent distance = {self.distance.get():1f}, setpoint={self.distance_setpoint.get():1f}\n\n"
+        text += f"\nCurrent velocity = {self.velocity.get():1f}, setpoint={self.velocity_setpoint.get():1f}\n\n"
+        text += f"\nCurrent force = {self.force.get():1f}, setpoint={self.force_setpoint.get():1f}\n\n"
 
     # force = Cpt(EpicsSignal, 'TST_FORCE_SETPOINT')
     # distance = Cpt(EpicsSignal, 'TST_MTR_DIST_SP') #relative distance

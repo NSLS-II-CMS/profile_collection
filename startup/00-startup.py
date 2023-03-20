@@ -44,7 +44,6 @@ if testing:
 else:
     runengine_metadata_dir = "/nsls2/data/cms/shared/config/runengine-metadata"
 
-
 # PersistentDict will create the directory if it does not exist
 RE.md = PersistentDict(runengine_metadata_dir)
 

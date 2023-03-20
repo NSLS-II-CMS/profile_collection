@@ -24,6 +24,10 @@ class PhotoThermalAnnealer:
         )
         self.controlTTL_PV = "XF:11BM-CT{BIOME-MTO:1}Output:1-Sel"
 
+        #setting at Feb 2023
+        self.powerV_PV = 'XF:11BM-ES{Ecat:AO2}1'
+        self.controlTTL_PV = 'XF:11BM-ES{Ecat:DO1_2}'
+
         self.print_code = print_code
         # if verbosity>=3:
         # print('{}'.format(self.print_code))
@@ -727,5 +731,5 @@ class PhotoThermalAnnealer:
         self.setLaserPower(power_W)
         self.laserPulse(duration)
 
-
 pta = PhotoThermalAnnealer()
+
