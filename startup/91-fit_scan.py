@@ -194,7 +194,7 @@ class LiveStat(CallbackBase):
         xs = np.asarray(self.xdata)
         ys = np.asarray(self.ydata)
     
-        if stat is 'max':
+        if stat == 'max':
             idx = np.argmax(ys)
             x0 = xs[idx]
             y0 = ys[idx]
@@ -202,7 +202,7 @@ class LiveStat(CallbackBase):
             self.result.values['x_max'] = x0
             self.result.values['y_max'] = y0
 
-        elif stat is 'min':
+        elif stat == 'min':
             idx = np.argmin(ys)
             x0 = xs[idx]
             y0 = ys[idx]
@@ -210,14 +210,14 @@ class LiveStat(CallbackBase):
             self.result.values['x_min'] = x0
             self.result.values['y_min'] = y0
             
-        elif stat is 'COM':
+        elif stat == 'COM':
             x0 = np.sum(xs*ys)/np.sum(ys)
             y0 = np.interp(x0, xs, ys)
 
             self.result.values['x_COM'] = x0
             self.result.values['y_COM'] = y0
             
-        elif stat is 'HM':
+        elif stat == 'HM':
             '''Half-maximum, using the point(s) closest to HM.'''
             idx_max = np.argmax(ys)
             half_max = 0.5*ys[idx_max]
@@ -251,7 +251,7 @@ class LiveStat(CallbackBase):
             self.result.values['y_HM'] = y0
             
             
-        elif stat is 'HMi':
+        elif stat == 'HMi':
             '''Half-maximum, with averaging of values near HW.'''
             idx_max = np.argmax(ys)
             half_max = 0.5*ys[idx_max]
@@ -662,21 +662,21 @@ class LiveFit_Custom(LiveFit):
         
     def get_model(self, model_name):
         
-        if model_name is 'gauss':
+        if model_name == 'gauss':
             def model_function(x, x0, prefactor, sigma):
                 return prefactor*np.exp(-(x - x0)**2/(2 * sigma**2))
 
-        elif model_name is 'lorentz':
+        elif model_name == 'lorentz':
             def model_function(x, x0, prefactor, gamma):
                 return prefactor* (gamma**2) / ( (x-x0)**2 + (gamma**2) )
 
-        elif model_name is 'doublesigmoid':
+        elif model_name == 'doublesigmoid':
             def model_function(x, x0, prefactor, sigma, fwhm):
                 left = prefactor/( 1 + np.exp( -(x-(x0-fwhm*0.5))/sigma ) )
                 right = prefactor/( 1 + np.exp( -(x-(x0+fwhm*0.5))/sigma ) )
                 return prefactor*( left - right )
 
-        elif model_name is 'square':
+        elif model_name == 'square':
             def model_function(x, x0, prefactor, fwhm):
                 sigma = fwhm*0.02
                 left = prefactor/( 1 + np.exp( -(x-(x0-fwhm*0.5))/sigma ) )
@@ -684,46 +684,46 @@ class LiveFit_Custom(LiveFit):
                 return prefactor*( left - right )
 
 
-        elif model_name is 'sigmoid':
+        elif model_name == 'sigmoid':
             def model_function(x, x0, prefactor, sigma):
                 return prefactor/( 1 + np.exp( -(x-x0)/sigma ) )
 
-        elif model_name is 'sigmoid_r':
+        elif model_name == 'sigmoid_r':
             def model_function(x, x0, prefactor, sigma):
                 return prefactor/( 1 + np.exp( +(x-x0)/sigma ) )
 
-        elif model_name is 'step':
+        elif model_name == 'step':
             def model_function(x, x0, prefactor, sigma):
                 return prefactor/( 1 + np.exp( -(x-x0)/sigma ) )
 
-        elif model_name is 'step_r':
+        elif model_name == 'step_r':
             def model_function(x, x0, prefactor, sigma):
                 return prefactor/( 1 + np.exp( +(x-x0)/sigma ) )
 
-        elif model_name is 'tanh':
+        elif model_name == 'tanh':
             def model_function(x, x0, prefactor, sigma):
                 return prefactor*0.5*( np.tanh((x-x0)/sigma) + 1.0 )
 
-        elif model_name is 'tanh_r':
+        elif model_name == 'tanh_r':
             def model_function(x, x0, prefactor, sigma):
                 return prefactor*0.5*( np.tanh(-(x-x0)/sigma) + 1.0 )
 
-        elif model_name is 'erf':
+        elif model_name == 'erf':
             import scipy
             def model_function(x, x0, prefactor, sigma):
                 return prefactor*0.5*( scipy.special.erf((x-x0)/sigma) + 1.0 )
 
-        elif model_name is 'erf_r':
+        elif model_name == 'erf_r':
             import scipy
             def model_function(x, x0, prefactor, sigma):
                 return prefactor*0.5*( scipy.special.erf(-(x-x0)/sigma) + 1.0 )
                 
 
-        elif model_name is 'constant':
+        elif model_name == 'constant':
             def model_function(x, offset):
                 return x*0 + offset
 
-        elif model_name is 'linear':
+        elif model_name == 'linear':
             def model_function(x, m, b):
                 return m*x + b
             
