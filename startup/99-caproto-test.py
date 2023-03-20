@@ -1,30 +1,21 @@
 import logging
 import caproto
-#from caproto._log import LogFormatter, color_log_format, log_date_format
 
-#handler = logging.FileHandler('caproto_log')
-#handler.setFormatter(
-    #LogFormatter(color_log_format, datefmt=log_date_format))
-#log = logging.getLogger('caproto')
+# from caproto._log import LogFormatter, color_log_format, log_date_format
+
+# handler = logging.FileHandler('caproto_log')
+# handler.setFormatter(
+# LogFormatter(color_log_format, datefmt=log_date_format))
+# log = logging.getLogger('caproto')
 ##log.setLevel('INFO')
-#log.setLevel('DEBUG')
+# log.setLevel('DEBUG')
 ##log.setLevel('CRITICAL')
-##log.disabled=True 
-#log.handlers.clear()
-#log.addHandler(handler)
+##log.disabled=True
+# log.handlers.clear()
+# log.addHandler(handler)
 
 
-
-
-
-
-
-
-
-
-
-
-'''
+"""
 set the evn viarable in COMMAND LINE
 export OPHYD_CONTROL_LAYER=caproto
 
@@ -583,4 +574,4 @@ Wall time: 7.06 s
 Out[5]: ('da6b9b84-2587-46ed-bc68-f45812ed70a9',)
 
 
-'''
+"""
