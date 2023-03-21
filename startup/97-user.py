@@ -113,19 +113,4 @@ if False:
     sam = hol.getSample(1)
 
 
-def sam_measure(
-    exposure_time=None, extra=None, measure_type="measure", verbosity=3, tiling=None, stitchback=False, **md
-):
 
-    if tiling is not None:
-        raise ValueError("Parameter 'tiling' must be None. Other values are not supported yet.")
-
-    yield from sam.measure(
-        exposure_time=exposure_time,
-        extra=extra,
-        measure_type=measure_type,
-        verbosity=verbosity,
-        tiling=tiling,
-        stitchback=stitchback,
-        **md,
-    )
