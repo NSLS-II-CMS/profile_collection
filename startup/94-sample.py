@@ -1685,7 +1685,7 @@ class Sample_Generic(CoordinateSystem):
         # md.update(md_current)
 
         # uids = RE(count(get_beamline().detector, 1), **md)
-        uids = yield from count(get_beamline().detector, md=md)
+        uids = yield from count(get_beamline().detector + [core_laser, laser, laserx, lasery, smy, smx, sth, schi], md=md)
         # yield from (count(get_beamline().detector), **md)
 
         # get_beamline().beam.off()
