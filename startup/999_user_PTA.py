@@ -2670,393 +2670,146 @@ pta.setLaserPower(power)
 """
 
 
-def test_plan(
-    step=0,
-    reflection_angle=0.12,
-    ROI_size=[10, 180],
-    th_range=0.3,
-    int_threshold=10,
-    verbosity=3,
-    detector=None,
-    detector_suffix=None,
-):
+# camonitor -S XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire
+
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:18:45.322852 Waiting for acquire command  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:18:45.406499 Done  
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:18:45.332771 23333  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:18:45.332854 10  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:18:45.562211 Done  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:10.780798 0  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.563899 Acquiring data  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:11.563945 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:11.563973 Acquiring STATE MINOR
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.632702 Waiting for 7OK response  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.937539 Reading image file /ramdisk/current_0000.tiff  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:11.953721 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.953786 Waiting for acquire command  
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:11.963590 23334  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:11.963779 1  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:12.055200 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.278970 Acquiring data  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:12.279087 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:12.279116 Acquiring STATE MINOR
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.347917 Waiting for 7OK response  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.653034 Reading image file /ramdisk/current_0000.tiff  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:12.666444 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.666491 Waiting for acquire command  
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:12.674896 23335  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:12.674989 2  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:12.806157 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.929527 Acquiring data  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:12.929575 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:12.929593 Acquiring STATE MINOR
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.998175 Waiting for 7OK response  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.301574 Reading image file /ramdisk/current_0000.tiff  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:13.316497 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.316522 Waiting for acquire command  
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:13.325644 23336  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:13.325764 3  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:13.452583 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.567623 Acquiring data  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:13.567675 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:13.567699 Acquiring STATE MINOR
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.636079 Waiting for 7OK response  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.153505 Reading image file /ramdisk/current_0000.tiff  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.168763 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.168805 Waiting for acquire command  
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:14.178550 23337  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:14.178706 4  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:14.252755 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.380508 Acquiring data  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.380533 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:14.380543 Acquiring STATE MINOR
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.449284 Waiting for 7OK response  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.756593 Reading image file /ramdisk/current_0000.tiff  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.772070 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.772109 Waiting for acquire command  
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:14.781253 23338  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:14.781299 5  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:14.859708 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.982903 Acquiring data  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.982950 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:14.982985 Acquiring STATE MINOR
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.051642 Waiting for 7OK response  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.661136 Reading image file /ramdisk/current_0000.tiff  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:15.676297 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.676319 Waiting for acquire command  
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:15.685042 23339  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:15.685210 6  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:15.816051 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.932728 Acquiring data  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:15.932767 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:15.932785 Acquiring STATE MINOR
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.001699 Waiting for 7OK response  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.305201 Reading image file /ramdisk/current_0000.tiff  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:16.319495 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.319542 Waiting for acquire command  
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:16.329081 23340  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:16.329159 7  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:16.408806 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.533301 Acquiring data  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:16.533346 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:16.533364 Acquiring STATE MINOR
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.602075 Waiting for 7OK response  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.143514 Reading image file /ramdisk/current_0000.tiff  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:17.157371 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.157411 Waiting for acquire command  
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:17.167105 23341  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:17.167203 8  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:17.245183 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.369047 Acquiring data  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:17.369103 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:17.369129 Acquiring STATE MINOR
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.437877 Waiting for 7OK response  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.743062 Reading image file /ramdisk/current_0000.tiff  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:17.756966 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.757005 Waiting for acquire command  
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:17.766715 23342  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:17.766777 9  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:17.919766 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.042324 Acquiring data  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:18.042377 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:18.042401 Acquiring STATE MINOR
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.111180 Waiting for 7OK response  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.673632 Reading image file /ramdisk/current_0000.tiff  
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:18.688266 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.688318 Waiting for acquire command  
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:18.697376 23343  
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:18.697448 10  
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:18.825073 Done  
+
+
+def test_plan(detector=None):
 
     if detector is None:
-        detector = get_beamline().detector[0]
+        detector=pilatus2M
+        # detector = get_beamline().detector[0]
 
     motors_for_table = [smx, smy, sth]
 
     @bpp.stage_decorator([detector])
     @bpp.run_decorator(md={})
     @bpp.finalize_decorator(final_plan=shutter_off)
-    def inner_align(group=None):
-        nonlocal step
+    def inner_plan(group=None):
 
         if group:
             yield from bps.wait(group)
 
-        yield from bps.trigger_and_read([detector, *motors_for_table])
-
-
-        # setting parameters
-        rel_th = 1
-        ct = 0
-        cycle = 0
-        intenisty_threshold = 10
-
-        # re-assure the 3 ROI positon
-        get_beamline().setDirectBeamROI()
-        get_beamline().setReflectedBeamROI(total_angle=reflection_angle * 2)
-        detector = get_beamline().detector[0]
-
-        # set ROI2 as a fixed area
-        get_beamline().setROI2ReflectBeamROI(total_angle=reflection_angle * 2, size=ROI_size)
-        pilatus2M.roi2.size.y.set(200)
-        pilatus2M.roi2.min_xyz.min_y.set(842)
-
-        # def ROI3 in 160pixels with the center located at reflection beam
-        # get_beamline().setReflectedBeamROI(total_angle = reflection_angle*2, size=ROI_size) #set ROI3
-
-        # self.thabs(reflection_angle)
-        if verbosity >= 4:
-            print("  Aligning {}".format(self.name))
-
-        if step <= 0:
-            # Prepare for alignment
-            if get_beamline().current_mode != "alignment":
-                # if verbosity>=2:
-                # print("WARNING: Beamline is not in alignment mode (mode is '{}')".format(get_beamline().current_mode))
-                print("Switching to alignment mode (current mode is '{}')".format(get_beamline().current_mode))
-                yield from get_beamline().modeAlignment()
-
-            get_beamline().setDirectBeamROI()
-
-            yield from shutter_on()
-
-        value = None
-        if True:
-            # You can eliminate this, in which case RE.md['beam_intensity_expected'] is used by default
-            self.yr(-0.5)
-            # detector = gs.DETS[0]
-            detector = get_beamline().detector[0]
-            value_name = get_beamline().TABLE_COLS[0]
-            yield from bps.trigger_and_read([detector, *motors_for_table])
-            value = detector.read()[value_name]["value"]
-            self.yr(0.5)
-
-        if "beam_intensity_expected" in RE.md:
-            if value < RE.md["beam_intensity_expected"] * 0.75:
-                print(
-                    "WARNING: Direct beam intensity ({}) lower than it should be ({})".format(
-                        value, RE.md["beam_intensity_expected"]
-                    )
-                )
-
-        if step <= 2:
-
-            ######################### fast alignment in the case2 and 3 -- NO refl beam
-            self.thabs(0.12)
-            # self.snap(0.5)
-            yield from bps.trigger_and_read([detector, *motors_for_table])
-            roi2_int = pilatus2M.stats2.total.get()
-            roi4_int = pilatus2M.stats4.total.get()
-            threshold = 100
-            beam_int = value
-            target_ratio = 0.5
-            # yield from shutter_on()
-
-            if roi2_int < threshold:
-
-                print("CASE 2 or 3")
-
-                roi4_int = pilatus2M.stats4.total.get()
-                roi2_int = pilatus2M.stats2.total.get()
-
-                roi4_beam = roi4_int / beam_int
-
-                min_step = 0.005
-                # if roi4_beam<target_ratio: #blocking the beam, +Y
-                # print(' +Y')
-                yield from self.search_stub2(
-                    motor=smy,
-                    step_size=0.01,
-                    min_step=0.005,
-                    target=0.5,
-                    intensity=beam_int,
-                    polarity=-1,
-                    detector=detector,
-                    detector_suffix="_stats4_total",
-                )
-
-                ii = 0
-                while abs(pilatus2M.stats4.total.get() - beam_int) / beam_int < 0.1 and ii < 3:
-                    ii += 1
-                    # Find the step-edge
-                    yield from self.search_stub2(
-                        motor=smy,
-                        step_size=0.2,
-                        min_step=0.005,
-                        target=0.5,
-                        intensity=beam_int,
-                        polarity=-1,
-                        detector=detector,
-                        detector_suffix="_stats4_total",
-                    )
-
-                    yield from self.search_stub2(
-                        motor=sth,
-                        step_size=0.2,
-                        min_step=0.01,
-                        target="max",
-                        polarity=-1,
-                        detector=detector,
-                        detector_suffix="_stats4_total",
-                    )
-
-                    # self.ysearch(step_size=0.2, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
-
-                    # # Find the peak
-                    # self.thsearch(step_size=0.2, min_step=0.01, target='max', verbosity=verbosity)
-
-                # last check for height
-                # self.ysearch(step_size=0.05, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
-                yield from self.search_stub2(
-                    motor=smy,
-                    step_size=0.05,
-                    min_step=0.005,
-                    target=0.5,
-                    intensity=beam_int,
-                    polarity=-1,
-                    detector=detector,
-                    detector_suffix="_stats4_total",
-                )
-
-                # self.ysearch(step_size=0.01, min_step=0.005, intensity=beam_int, target=0.5, verbosity=verbosity, polarity=-1)
-                # else:
-                #     print(' -Y')
-                #     self.ysearch(step_size=0.01, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
-
-                roi4_beam = roi4_int / beam_int
-                roi2_int = pilatus2M.stats2.total.get()
-
-            # #use the beam heigh to find the correct refl beam
-            # print('Search the refl beam')
+        for n in range(10):
+            t0 = time.time()
             # yield from bps.trigger_and_read([detector, *motors_for_table])
-            # # RE(count([pilatus2M]))
-
-            # roi4_beam = roi4_int/beam_int
-            # roi2_int = pilatus2M.stats2.total.get()
-            # # roi2_int = roi2_i
-            # th_step = 0.1
-
-            # while roi2_int<threshold:
-            #     self.thr(th_step)
-            #     print('th_step {}'.format(th_step))
-            #     print('Search the refl beam - th = {}'.format(self.thabs()))
-
-            #     yield from bps.trigger_and_read([detector, *motors_for_table])
-            #     # RE(count([pilatus2M]))
-            #     roi4_beam2 = roi4_int/beam_int
-            #     self.yr((roi4_beam2-roi4_beam)*0.05)
-            #     if roi4_beam2 < roi4_beam:
-            #         self.thr(-2*th_step)
-            #         self.yr(-2*(roi4_beam2-roi4_beam)*0.05)
-            #         th_step = -th_step
-
-            #         print('REVERSED. th_step {}'.format(th_step))
-
-            #     yield from bps.trigger_and_read([detector, *motors_for_table])
-            #     # RE(count([pilatus2M]))
-            #     roi4_beam = roi4_int/beam_int
-            #     roi2_int = pilatus2M.stats2.total.get()
-
-            # ######################### fast alignment in the case2 -- y is at 50%
-
-            # while abs(rel_th) > 0.005 and ct < 5:
-            # # while detector.roi3.max_value.get() > 50 and ct < 5:
-
-            #     print("CASE 2 ")
-
-            #     #absolute beam position
-            #     refl_beam = detector.roi2.min_xyz.min_y.get() + detector.stats2.max_xy.y.get()
-
-            #     #roi3 position
-            #     roi3_beam = detector.roi3.min_xyz.min_y.get() + detector.roi3.size.y.get()/2
-
-            #     #distance from current postion to the center of roi2 (the disired rel beam position)
-            #     # rel_ypos = detector.stats2.max_xy.get().y - detector.stats2.size.get().y
-            #     rel_ypos = refl_beam - roi3_beam
-
-            #     rel_th = rel_ypos/get_beamline().SAXS.distance/1000*0.172/np.pi*180/2
-
-            #     print('The th offset is {}'.format(rel_th))
-            #     self.thr(rel_th)
-
-            #     ct += 1
-            #     yield from bps.trigger_and_read([detector, *motors_for_table])
-            #     # RE(count([pilatus2M]))
-            #     # self.ysearch(step_size=0.01, min_step=0.005, intensity=beam_int, target=0.5, verbosity=verbosity, polarity=-1)
-
-            ######################### fast alignment in the case1 -- both refl and direct beam
-
-            # self.thr(reflection_angle)
-            # yield from bps.trigger_and_read([detector, *motors_for_table])
-            # RE(count([detector]))
-
-        #     # if abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20 and detector.stats2.max_value.get() > intenisty_threshold:
-
-        #     target_ratio = 1
-        #     # self.snap()
-        #     print("CASE 1")
-
-        #     def get_roi2_4():
-        #         roi2_int = pilatus2M.stats2.total.get()
-        #         roi2_int = roi2_int if roi2_int > 0 else 0
-        #         roi4_int = pilatus2M.stats4.total.get()
-        #         roi4_int = roi4_int if roi4_int > 0 else 0
-        #         return roi2_int/(roi4_int + 10)
-
-        #     roi2_4 = get_roi2_4()
-
-        #     min_step=0.005
-        #     while abs(roi2_4 - target_ratio)>0.2:
-        #         print(roi2_4)
-        #         if roi2_4<target_ratio:
-        #             print(' +Y')
-        #             step = min_step
-        #         else:
-        #             print(' -Y')
-        #             step = -min_step
-
-        #         self.yr(step)
-        #         yield from bps.trigger_and_read([detector, *motors_for_table])
-        #         # self.snap()
-        #         roi2_4 = get_roi2_4()
-
-        # if step>5:
-
-        #     if verbosity>=4:
-        #         print('    align: searching')
-
-        #     # Estimate full-beam intensity
-        #     value = None
-        #     if True:
-        #         # You can eliminate this, in which case RE.md['beam_intensity_expected'] is used by default
-        #         self.yr(-0.5)
-        #         #detector = gs.DETS[0]
-        #         detector = get_beamline().detector[0]
-        #         value_name = get_beamline().TABLE_COLS[0]
-        #         yield from bps.trigger_and_read([detector, *motors_for_table])
-        #         # RE(count([detector]))
-        #         value = detector.read()[value_name]['value']
-        #         self.yr(0.5)
-
-        #     if 'beam_intensity_expected' in RE.md:
-        #         if value<RE.md['beam_intensity_expected']*0.75:
-        #             print('WARNING: Direct beam intensity ({}) lower than it should be ({})'.format(value, RE.md['beam_intensity_expected']))
-
-        #     #check the last value:
-        #     ii = 0
-        #     while abs(pilatus2M.stats4.total.get() - value)/value < 0.1 and ii < 3:
-        #         ii += 1
-        #         # Find the step-edge
-        #         yield from self.search_stub2(
-        #             motor=smy, step_size=0.2, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity,
-        #             polarity=-1, detector=detector, detector_suffix='_stats4_total'
-        #         )
-        #         # self.ysearch(step_size=0.2, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
-
-        #         # Find the peak
-        #         yield from self.search_stub2(
-        #             motor=sth, step_size=0.2, min_step=0.01, target='max', verbosity=verbosity, detector=detector,
-        #             detector_suffix='_stats4_total'
-        #         )
-        #         # self.thsearch(step_size=0.2, min_step=0.01, target='max', verbosity=verbosity)
-
-        #     #last check for height
-        #     yield from self.search_stub2(
-        #         motor=smy, step_size=0.05, min_step=0.005, intensity=value, target=0.5,
-        #         verbosity=verbosity, polarity=-1, detector=detector, detector_suffix='_stats4_total'
-        #     )
-        #     # self.ysearch(step_size=0.05, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1)
-
-        if step < 5:
-
-            # check reflection beam
-            self.thr(reflection_angle)
-            yield from bps.trigger_and_read([detector, *motors_for_table])
-            # RE(count([detector]))
-
-            if (
-                abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20
-                and detector.stats2.max_value.get() > intenisty_threshold
-            ):
-
-                # continue the fast alignment
-                print("The reflective beam is found! Continue the fast alignment")
-
-                while abs(rel_th) > 0.005 and ct < 5:
-                    # while detector.roi3.max_value.get() > 50 and ct < 5:
-
-                    # absolute beam position
-                    refl_beam = detector.roi2.min_xyz.min_y.get() + detector.stats2.max_xy.y.get()
-
-                    # roi3 position
-                    roi3_beam = detector.roi3.min_xyz.min_y.get() + detector.roi3.size.y.get() / 2
-
-                    # distance from current postion to the center of roi2 (the disired rel beam position)
-                    # rel_ypos = detector.stats2.max_xy.get().y - detector.stats2.size.get().y
-                    rel_ypos = refl_beam - roi3_beam
-
-                    rel_th = rel_ypos / get_beamline().SAXS.distance / 1000 * 0.172 / np.pi * 180 / 2
-
-                    print("The th offset is {}".format(rel_th))
-                    self.thr(rel_th)
-
-                    ct += 1
-                    yield from bps.trigger_and_read([detector, *motors_for_table])
-                    # RE(count([detector]))
-
-                # if detector.stats3.total.get()>50:
-
-                #     print('The fast alignment works!')
-                #     self.thr(-reflection_angle)
-                #     self.setOrigin(['y', 'th'])
-
-                #     beam.off()
-
-                #     return True, ii
-
-                # else:
-                #     print('Alignment Error: Cannot Locate the reflection beam')
-                #     self.thr(-reflection_angle)
-                #     beam.off()
-
-                #     return False, ii
-
-        # elif abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) > 5:
-        #     print('Max and Centroid dont Match!')
-
-        #     #perform the full alignment
-        #     print('Alignment Error: No reflection beam is found!')
-        #     self.thr(-reflection_angle)
-        #     beam.off()
-        #     return False, ii
-
-        # else:
-        #     print('Intensiy < threshold!')
-
-        #     #perform the full alignment
-        #     print('Alignment Error: No reflection beam is found!')
-        #     self.thr(-reflection_angle)
-        #     beam.off()
-        #     return False, ii
+            yield from bps.trigger_and_read([detector])
+            print(f"Detection time: {time.time() - t0}")
+            # yield from bps.sleep(.1)
 
     group_name = "setup_aligment"
     yield from bps.abs_set(bsx, cms.bsx_pos + 3, group=group_name)
     beam.setTransmission(1e-6)
 
-    yield from inner_align(group=group_name)
+    yield from inner_plan(group=group_name)
 
     yield from bps.abs_set(bsx, cms.bsx_pos, group=group_name)
     yield from bps.wait(group_name)

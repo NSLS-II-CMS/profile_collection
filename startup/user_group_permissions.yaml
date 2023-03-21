@@ -18,6 +18,7 @@ user_groups:
       - ":^sleep"
       - "sam_measure"
       - ":^yolo"
+      - "test_plan"
     allowed_devices:
       - ":^pilatus:?.*"  # Allow all devices starting with 'det' and their subdevices
       - ":^smy"
