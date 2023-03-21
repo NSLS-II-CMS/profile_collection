@@ -19,6 +19,8 @@ user_groups:
       - "sam_measure"
       - ":^yolo"
       - "test_plan"
+      - "feedback_plan"
+      - ":^agent_"
     allowed_devices:
       - ":^pilatus:?.*"  # Allow all devices starting with 'det' and their subdevices
       - ":^smy"

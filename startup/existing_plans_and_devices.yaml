@@ -3236,6 +3236,25 @@ existing_devices:
     is_movable: false
     is_readable: true
     module: startup_script
+  core_laser:
+    classname: NuPhotoThermalAnnealer
+    components:
+      state:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      voltage:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+    is_flyable: false
+    is_movable: false
+    is_readable: true
+    module: startup_script
   fs2:
     classname: StandardProsilicaV33
     is_flyable: false
@@ -3561,6 +3580,25 @@ existing_devices:
         module: ophyd.signal
     is_flyable: false
     is_movable: true
+    is_readable: true
+    module: startup_script
+  laser:
+    classname: Laser
+    components:
+      cmd:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      pulse_width:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+    is_flyable: false
+    is_movable: false
     is_readable: true
     module: startup_script
   laserx:
@@ -9420,6 +9458,21 @@ existing_plans:
       kind:
         name: KEYWORD_ONLY
         value: 3
+      name: md
+    properties:
+      is_generator: true
+  agent_feedback_plan:
+    module: startup_script
+    name: agent_feedback_plan
+    parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: sample_x
+    - default: None
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
       name: md
     properties:
       is_generator: true
