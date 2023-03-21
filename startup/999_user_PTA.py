@@ -17,7 +17,7 @@
 ################################################################################
 
 
-from ophyd import EpicsSignal
+from ophyd import EpicsSignal, Device, Component as Cpt
 from bluesky.suspenders import SuspendFloor, SuspendCeil
 from bluesky.preprocessors import stage_decorator
 
@@ -70,6 +70,11 @@ INTENSITY_EXPECTED_025 = INTENSITY_EXPECTED_050 * 0.5
 def get_default_stage():
     return stg
 
+class Laser(Device):
+    pulse_width = Cpt(EpicsSignal, 'Width-SP')
+    cmd = Cpt(EpicsSignal, 'Cmd')
+
+laser = Laser('biome:{Trigger}', name="laser")
 
 class SampleTSAXS(SampleTSAXS_Generic):
     def __init__(self, name, base=None, **md):
