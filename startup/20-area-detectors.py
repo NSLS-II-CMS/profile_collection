@@ -153,6 +153,10 @@ class PilatusDetectorCamV33(PilatusDetectorCam):
                 cpt.ensure_nonblocking()
 
 
+
+
+
+
 # class Pilatus(SingleTrigger, PilatusDetector):
 #     image = Cpt(ImagePlugin, 'image1:')
 #     stats1 = Cpt(StatsPluginV33, 'Stats1:')
