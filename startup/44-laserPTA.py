@@ -1,6 +1,19 @@
 from epics import caput, caget
 
 
+class NuPhotoThermalAnnealer(Device):
+    voltage = Cpt(EpicsSignal, '{Ecat:AO1}1')
+    state = Cpt(EpicsSignal, '{Ecat:DO1_2}')
+
+core_laser = NuPhotoThermalAnnealer("XF:11BM-ES", name='laser')
+
+
+def agent_feedback_plan(sample_x, md=None):
+    md = md or {}
+    yield from bps.mv(smx, sample_x)
+    yield from sam.measure(1, **md)
+
+
 class PhotoThermalAnnealer:
     def __init__(self, print_code="PTA> "):
 
