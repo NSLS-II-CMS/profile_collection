@@ -3481,8 +3481,57 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         self.current_mode = "measurement"
 
         # Check if gate valves are open
-        if self.beam.GVdsbig.state() != "out" and verbosity >= 1:
-            print("Warning: Sample chamber gate valve (large, downstream) is not open.")
+        # if self.beam.GVdsbig.state() != "out" and verbosity >= 1:
+        #     print("Warning: Sample chamber gate valve (large, downstream) is not open.")
+
+    def modeMeasurement_plan(self, verbosity=3):
+
+        self.current_mode = "undefined"
+
+        yield from shutter_off()
+
+        # pilatus_name = pilatus2M
+        # pilatus_Epicsname = '{Det:PIL2M}'
+        # bsx_pos=-16.74
+        # mov(bsx, -16.55)
+        # mov(bsx, -13.83) #change it at 06/02/17, Osuji Beam time
+        # mov(bsx, -14.73) #change it at 06/04/17, SAXS, 3m, Osuji Beam time
+        # mov(bsx, -15.03) #change it at 06/04/17, GISAXS, 3m, Osuji Beam time
+        # mov(bsx, -16.43) #change it at 06/12/17, GISAXS, 3m, LZhu Beam time
+        # mov(bsx, -16.53) #change it at 06/19/17, GISAXS, 5m, AHexemer Beam time
+        # mov(bsx, -16.2) #change it at 07/07/17, GISAXS, 3m, TKoga Beam time
+        # mov(bsx, -16.43) #change it at 07/10/17, GISAXS, 2m, LSita Beam time
+        # mov(bsx, -16.53) # 07/20/17, GISAXS, 5m, CRoss Beam time
+        # mov(bsx, -15.84) # 07/26/17, SAXS/WAXS, 2m, BVogt Beam time
+        # mov(bsx, -16.34) # 08/02/17, TOMO GISAXS, 5m, LRichter Beam time
+        # mov(bsx, -16.74) # 08/02/17, TOMO GISAXS, 5m, LRichter Beam time
+        # mov(bsx, self.bsx_pos)
+
+        yield from bps.mv(bsx, self.bsx_pos)
+
+        # if abs(bsx.user_readback.value - -16.74)>0.1:
+        if abs(bsx.user_readback.value - self.bsx_pos) > 0.1:
+            print("WARNING: Beamstop did not return to correct position!")
+            return
+
+        self.beam.setTransmission(1)
+
+        # mov(DETy, -16)
+        # self.beam.bim6.retract()
+
+        # caput('XF:11BMB-BI{IM:2}EM180:Acquire', 0) # Turn off bim6
+        # detselect(pilatus300)
+        # detselect([pilatus300, psccd])
+        detselect(pilatus_name)
+        # detselect(psccd)
+
+        # self.setMonitor(monitor=None)
+
+        self.current_mode = "measurement"
+
+        # Check if gate valves are open
+        # if self.beam.GVdsbig.state() != "out" and verbosity >= 1:
+        #     print("Warning: Sample chamber gate valve (large, downstream) is not open.")
 
     def setDirectBeamROI(self, size=[10, 4], verbosity=3):
         """Update the ROI (stats4) for the direct beam on the Pilatus

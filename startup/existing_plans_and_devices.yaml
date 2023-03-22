@@ -9461,6 +9461,12 @@ existing_plans:
       name: md
     properties:
       is_generator: true
+  agent_bootstrap_alignment:
+    module: startup_script
+    name: agent_bootstrap_alignment
+    parameters: []
+    properties:
+      is_generator: true
   agent_feedback_plan:
     module: startup_script
     name: agent_feedback_plan
@@ -9772,6 +9778,28 @@ existing_plans:
         name: POSITIONAL_OR_KEYWORD
         value: 1
       name: step
+    properties:
+      is_generator: true
+  fake_fly:
+    module: startup_script
+    name: fake_fly
+    parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: mtr
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: start
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: stop
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: exp_time
     properties:
       is_generator: true
   fly:

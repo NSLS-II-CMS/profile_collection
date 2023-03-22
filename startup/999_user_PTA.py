@@ -922,16 +922,23 @@ class Sample(SampleGISAXS):
 
             if direct_beam_int is not None:
                 value = direct_beam_int
+            elif hasattr(cms, "direct_beam_int") and cms.direct_beam_int is not None:
+                value = cms.direct_beam_int
             else:
-                value = None
+                value = 0
                 # You can eliminate this, in which case RE.md['beam_intensity_expected'] is used by default
-                self.yr(-0.5)
-                # detector = gs.DETS[0]
-                detector = get_beamline().detector[0]
-                value_name = get_beamline().TABLE_COLS[0]
-                yield from bps.trigger_and_read([detector, *motors_for_table])
-                value = detector.read()[value_name]["value"]
-                self.yr(0.5)
+                for n in range(1, 4):
+                    self.yr(-0.5)
+                    # detector = gs.DETS[0]
+                    detector = get_beamline().detector[0]
+                    value_name = get_beamline().TABLE_COLS[0]
+                    yield from bps.trigger_and_read([detector, *motors_for_table])
+                    value = detector.read()[value_name]["value"]
+                    if value > 100:
+                        cms.direct_beam_int = value
+                        self.yr(0.5)
+                        break
+
 
             if "beam_intensity_expected" in RE.md:
                 if value < RE.md["beam_intensity_expected"] * 0.75:
@@ -1253,13 +1260,21 @@ class Sample(SampleGISAXS):
             #     return False, ii
 
         group_name = "setup_aligment"
+
+        #alignment mode
         yield from bps.abs_set(bsx, cms.bsx_pos + 3, group=group_name)
         beam.setTransmission(1e-6)
 
+        #align as abovve
         yield from inner_align(group=group_name)
 
+        #move bs back
         yield from bps.abs_set(bsx, cms.bsx_pos, group=group_name)
         yield from bps.wait(group_name)
+
+        #set the position for sample
+        # self.thr(reflection_angle)
+        # self.setOrigin(['y', 'th'])
 
     def swing_v2(
         self, step=0, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, int_threshold=10, verbosity=3
@@ -2328,6 +2343,84 @@ class Sample(SampleGISAXS):
 
         # bec.enable_table()
 
+    # def calc_lookuptable(self,target_x):
+    #     #make a look up table for 
+
+    #     start_x = self.start_x
+    #     start_y = self.start_y
+    #     start_th = self.start_th
+        
+    #     end_x = self.end_x
+    #     end_y = self.end_y
+    #     end_th = self.end_th
+       
+    #     target_y = (target_x-end_x)/(start_x-end_x)*(start_y-end_y)+end_y
+    #     target_th = (target_x-end_x)/(start_x-end_x)*(start_th-end_th)+end_th
+
+    #     return target_x, target_y, target_th
+
+    def run_initial_alignment(self,start_x=0, end_x=22, direct_beam_int=None):
+        #make a look up table for 
+
+
+        yield from bps.mv(smx, start_x)
+        yield from self.align_crazy_v3_plan(direct_beam_int=direct_beam_int)
+
+        start_x = smx.position
+        start_y = smy.position
+        start_th = sth.position
+
+        yield from bps.mv(smx, end_x)
+        yield from self.align_crazy_v3_plan(direct_beam_int=direct_beam_int)
+
+
+        end_x = smx.position
+        end_y = smy.position
+        end_th = sth.position
+
+        self.start_x = start_x
+        self.start_y = start_y
+        self.start_th = start_th
+        self.end_x = end_x
+        self.end_y = end_y
+        self.end_th = end_th
+        # start_x = self.start_x
+        # start_y = self.start_y
+        # start_th = self.start_th
+        
+        # end_x = self.end_x
+        # end_y = self.end_y
+        # end_th = self.end_th
+        # return self.calc_lookuptable()
+
+    def calc_lookuptable(self, target_x):
+
+        start_x = self.start_x
+        start_y = self.start_y
+        start_th = self.start_th
+        
+        end_x = self.end_x
+        end_y = self.end_y
+        end_th = self.end_th
+
+        target_y = (target_x-end_x)/(start_x-end_x)*(start_y-end_y)+end_y
+        target_th = (target_x-end_x)/(start_x-end_x)*(start_th-end_th)+end_th
+
+        return target_x, target_y, target_th
+
+
+    def align_lookup(self, target_x, direct_beam_int=None):
+        
+        xpos, ypos, thpos = self.calc_lookuptable(target_x)
+        
+        #move to the position in lookup table
+        yield from bps.mv(smx, xpos, smy, ypos, sth, thpos)
+        
+        yield from self.align_crazy_v3_plan(direct_beam_int=direct_beam_int)
+
+
+
+
     def search_plan2(
         self,
         motor=smy,
@@ -3076,3 +3169,107 @@ def sam_measure(
         stitchback=stitchback,
         **md,
     )
+
+
+
+'''
+Notes at Mar 22, 2023, the 4th day at CMS
+
+#quick alignment for Si wafer
+
+#check the beam position in USB cam1
+#
+
+#the start edge 
+In [165]: wsam()
+smx = 0.0
+smy = 39.23188125
+sth = 1.086875000000001
+
+In [166]: sam.pos()
+test.th = 0.157 deg (origin = 0.930)
+test.x = 0.000 mm (origin = 0.000)
+test.y = -0.028 mm (origin = 39.260)
+Out[166]: {'th': 0.15687500000000087, 'x': 0.0, 'y': -0.028118749999997306}
+
+
+#the end edge
+
+In [173]: wsam()
+smx = 22.0005
+smy = 40.072500000000005
+sth = 1.0865624999999994
+
+In [174]: sam.pos()
+test.th = 0.157 deg (origin = 0.930)
+test.x = 22.000 mm (origin = 0.000)
+test.y = 0.813 mm (origin = 39.260)
+
+'''
+
+
+'''
+Notes March 22, 2023
+17:18 KY loaded "real scientific sample
+name='GD4-113-4-2nd_Tb50C'
+
+smx = 3.7 ; laserx = 11.5 # IR laser is hitting edge of sample
+smx = 8.7 ; laserx = 11.5 # IR laser is hitting edge of sample
+
+'''
+
+
+def fake_fly(mtr, start, stop, exp_time):
+    det = pilatus2M
+
+    det.tiff.kind = 'omitted'
+    det.tiff.disable_on_stage()
+    det.stats4.total.kind='hinted'
+   
+
+    @bpp.stage_decorator([det])
+    @bpp.monitor_during_decorator([det.stats4.total, mtr])
+    @bpp.run_decorator()
+    @bpp.finalize_decorator(final_plan=shutter_off)
+    def inner():
+        yield from shutter_on()
+
+        yield from bps.trigger(det, group='fake_fly')
+        yield from bps.abs_set(mtr, stop, group='fake_fly')
+        yield from bps.wait(group='fake_fly')
+
+    @bpp.reset_positions_decorator([det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period])
+    def inner2():
+        yield from bps.mv(det.cam.acquire_time, exp_time)
+        yield from bps.mv(det.cam.acquire_period, exp_time +.05)
+        total_time = np.abs(stop - start)
+
+        yield from bps.mv(det.cam.num_images, num)
+        yield from bps.mv(mtr, start)
+        yield from inner()
+
+    group_name = "setup_aligment"
+    yield from bps.abs_set(bsx, cms.bsx_pos + 3, group=group_name)
+    yield from bps.wait(group=group_name)
+
+    beam.setTransmission(1e-6)
+
+    yield from inner2()
+
+    yield from bps.abs_set(bsx, cms.bsx_pos, group=group_name)
+    yield from bps.wait(group_name)
+
+
+
+def agent_feedback_plan(sample_x, md=None):
+    md = md or {}
+
+    yield from sam.align_lookup(sample_x)
+    print("ALIGN DONE")
+    yield from cms.modeMeasurement_plan()
+    print("IN MEASUE MODE")
+    yield from sam.measure(1, **md)
+    print("DONE")
+
+def agent_bootstrap_alignment():
+    yield from sam.run_initial_alignment()
