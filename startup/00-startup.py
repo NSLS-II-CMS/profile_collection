@@ -36,9 +36,6 @@ runengine_metadata_dir = "/nsls2/data/cms/shared/config/runengine-metadata"
 # PersistentDict will create the directory if it does not exist
 RE.md = PersistentDict(runengine_metadata_dir)
 
-print("a new version of bsui")
-print("sth is happening")
-
 # The following plan stubs are automatically imported in global namespace by 'nslsii.configure_base',
 # but have signatures that are not compatible with the Queue Server. They should not exist in the global
 # namespace, but can be accessed as 'bps.one_1d_step' etc. from other plans.
