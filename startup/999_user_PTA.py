@@ -3314,10 +3314,16 @@ def fake_fly(mtr, start, stop, exp_time):
     yield from bps.wait(group_name)
 
 
-def fake_fly2_test(mtr, start, stop, num, exp_time):
+def fake_fly2_test(mtr, start, stop, step, exp_time):
 
     # motors: smy (+/- 2), sth (+/- 1)
     det = pilatus2M
+
+    # It takes 0.4 to 0.7 s longer to complete motion, so let's add 1 s for now
+    #   It should be computed/estimated more accurately
+    num = int(np.abs(stop - start) / step)
+    total_time = num * exp_time
+    velocity = np.abs(stop - start) / total_time
 
     det.tiff.kind = 'omitted'
     det.tiff.disable_on_stage()
@@ -3325,16 +3331,23 @@ def fake_fly2_test(mtr, start, stop, num, exp_time):
 
     frame_numbers = []
     frame_timestamps = []
+    frame_mtr_pos = []
     frame_roi2_int = []
+    frame_roi3_int = []
     frame_roi4_int = []
 
     def accumulate(value, old_value, timestamp, **kwargs):
         frame_numbers.append(value)
         frame_timestamps.append(timestamp)
+        frame_mtr_pos.append(mtr.position)
 
     def accumulate_roi2(value, old_value, timestamp, **kwargs):
         roi2_int = pilatus2M.stats2.total.get()
         frame_roi2_int.append(roi2_int)
+
+    def accumulate_roi3(value, old_value, timestamp, **kwargs):
+        roi3_int = pilatus2M.stats3.total.get()
+        frame_roi3_int.append(roi3_int)
 
     def accumulate_roi4(value, old_value, timestamp, **kwargs):
         roi4_int = pilatus2M.stats4.total.get()
@@ -3344,29 +3357,53 @@ def fake_fly2_test(mtr, start, stop, num, exp_time):
     def inner():
         cid = pilatus2M.cam.array_counter.subscribe(accumulate)
         cid2 = pilatus2M.stats2.array_counter.subscribe(accumulate_roi2)
+        cid3 = pilatus2M.stats3.array_counter.subscribe(accumulate_roi3)
         cid4 = pilatus2M.stats4.array_counter.subscribe(accumulate_roi4)
         try:
             yield from bps.trigger(det, group='fake_fly')
+            yield from bps.abs_set(mtr, stop, group='fake_fly')
             yield from bps.wait(group='fake_fly')
         finally:
             pilatus2M.cam.array_counter.unsubscribe(cid)
             pilatus2M.stats2.array_counter.unsubscribe(cid2)
+            pilatus2M.stats3.array_counter.unsubscribe(cid3)
             pilatus2M.stats4.array_counter.unsubscribe(cid4)
 
-    @bpp.reset_positions_decorator([det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period])
+    @bpp.reset_positions_decorator([det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period,
+                                    mtr.velocity])
     def inner2():
-        yield from bps.mv(det.cam.acquire_time, exp_time)
-        yield from bps.mv(det.cam.acquire_period, exp_time +.05)
-        # total_time = np.abs(stop - start)
+        yield from bps.abs_set(mtr, start, wait=True)
+        yield from bps.mv(mtr.velocity, velocity)
+
+        print(f"Number of acquired images: {num}. Exposure time: {exp_time}")
+        
+        yield from bps.mv(det.cam.acquire_time, exp_time - 0.005)
+        yield from bps.mv(det.cam.acquire_period, exp_time)
 
         yield from bps.mv(det.cam.num_images, num)
         yield from inner()
-        print(f"frame_numbers = {frame_numbers}")
-        print(f"frame_timestamps = {frame_timestamps}")
-        print(f"roi2 = {frame_roi2_int}")
-        print(f"roi4 = {frame_roi4_int}")
 
     yield from inner2()
+
+    def trim_list(v, num):
+        n_first = max(len(v) - num, 0)
+        return v[n_first:]
+
+    frame_numbers = trim_list(frame_numbers, num)
+    frame_timestamps = trim_list(frame_timestamps, num)
+    frame_mtr_pos = trim_list(frame_mtr_pos, num)
+    frame_roi2_int = trim_list(frame_roi2_int, num)
+    frame_roi3_int = trim_list(frame_roi3_int, num)
+    frame_roi4_int = trim_list(frame_roi4_int, num)
+    
+    print(f"frame_numbers = {frame_numbers}")
+    print(f"frame_timestamps = {frame_timestamps}")
+    print(f"mtr_pos = {frame_mtr_pos}")
+    print(f"roi2 = {frame_roi2_int}")
+    print(f"roi3 = {frame_roi3_int}")
+    print(f"roi4 = {frame_roi4_int}")
+
+    return frame_mtr_pos, frame_roi2_int, frame_roi3_int, frame_roi4_int
 
 
 def agent_feedback_plan(sample_x, md=None):
