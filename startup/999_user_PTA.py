@@ -73,6 +73,7 @@ def get_default_stage():
 class Laser(Device):
     pulse_width = Cpt(EpicsSignal, 'Width-SP')
     cmd = Cpt(EpicsSignal, 'Cmd')
+    turn_on = Cpt(EpicsSignal, 'Out-Sel')
 
 laser = Laser('biome:{Trigger}', name="laser")
 
@@ -2821,6 +2822,17 @@ class Sample(SampleGISAXS):
                 [0.08, 0.1, 0.12, 0.15, 0.18, 0.2, 0.25], exposure_time=exposure_time, extra="FINAL"
             )
 
+    def alignment_set(self):
+        self.start_x = 0
+        self.end_x = 22
+        self.start_y = 39.2196
+        self.end_y = 40.037
+        self.start_th = 1.2
+        self.end_th = 1.198
+        cms.direct_beam_int = 22245
+        yield from bps.null()
+
+
 
 # cms.SAXS.setCalibration([758, 1680-607], 5.0, [-65, -73]) # 13.5 keV
 # cms.SAXS.setCalibration([754, 1076], 5.03, [-65, -73])  #20190320, 13.5 keV
@@ -3213,11 +3225,53 @@ Notes March 22, 2023
 17:18 KY loaded "real scientific sample
 name='GD4-113-4-2nd_Tb50C'
 
+laserPower = 1.4V (4.6w)
+
 smx = 3.7 ; laserx = 11.5 # IR laser is hitting edge of sample
 smx = 8.7 ; laserx = 11.5 # IR laser is hitting edge of sample
 
-'''
 
+Notes March 23, 2023
+10:40 KY loaded "real scientific sample 2
+name='GD4-113-1_Tb50C'
+laserPower = 1.1V (2.3w)
+
+there is unexpected ~10s delay on every point during alignment. the bug is gone after restart. 
+
+10:40 KY loaded "real scientific sample 3
+name='GD4-113-1-2nd_Tb50C'
+laserPower = 1.1V (2.3w)
+
+In [7]: sam.start_x
+Out[7]: 0.0
+
+In [8]: sam.start_y
+Out[8]: 39.218578125
+
+In [9]: sam.start_th
+Out[9]: 1.2006250000000005
+
+In [10]: sam.end_x
+Out[10]: 22.0005
+
+In [11]: sam.end_y
+Out[11]: 40.037328125
+
+In [12]: sam.end_th
+Out[12]: 1.1979687500000011
+
+
+#####protocol
+=============bsui==================
+#change sample --mov smx -100 and mount the fresh sample
+RE(sam.run_initial_alignment(start_x=0, end_x=22))  #align samples at smx=0 and 22 and calculate the lookup table for smy and th
+#print out sam.start_x/y/th and smx.end_x/y/th and HARD code them in sam.alignment_set()
+=============bsui part is done. exit bsui=============================
+#restart the env in Queue monitor
+#pre-load 'agent_alignemnt_set' and 'agent_laser_on'
+==>>ws2, agent.start(True)
+==>>ws1, start the queue
+'''
 
 def fake_fly(mtr, start, stop, exp_time):
     det = pilatus2M
@@ -3259,6 +3313,60 @@ def fake_fly(mtr, start, stop, exp_time):
     yield from bps.abs_set(bsx, cms.bsx_pos, group=group_name)
     yield from bps.wait(group_name)
 
+
+def fake_fly2_test(mtr, start, stop, num, exp_time):
+
+    # motors: smy (+/- 2), sth (+/- 1)
+    det = pilatus2M
+
+    det.tiff.kind = 'omitted'
+    det.tiff.disable_on_stage()
+    det.stats4.total.kind='hinted'
+
+    frame_numbers = []
+    frame_timestamps = []
+    frame_roi2_int = []
+    frame_roi4_int = []
+
+    def accumulate(value, old_value, timestamp, **kwargs):
+        frame_numbers.append(value)
+        frame_timestamps.append(timestamp)
+
+    def accumulate_roi2(value, old_value, timestamp, **kwargs):
+        roi2_int = pilatus2M.stats2.total.get()
+        frame_roi2_int.append(roi2_int)
+
+    def accumulate_roi4(value, old_value, timestamp, **kwargs):
+        roi4_int = pilatus2M.stats4.total.get()
+        frame_roi4_int.append(roi4_int)
+
+    @bpp.stage_decorator([det])
+    def inner():
+        cid = pilatus2M.cam.array_counter.subscribe(accumulate)
+        cid2 = pilatus2M.stats2.array_counter.subscribe(accumulate_roi2)
+        cid4 = pilatus2M.stats4.array_counter.subscribe(accumulate_roi4)
+        try:
+            yield from bps.trigger(det, group='fake_fly')
+            yield from bps.wait(group='fake_fly')
+        finally:
+            pilatus2M.cam.array_counter.unsubscribe(cid)
+            pilatus2M.stats2.array_counter.unsubscribe(cid2)
+            pilatus2M.stats4.array_counter.unsubscribe(cid4)
+
+    @bpp.reset_positions_decorator([det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period])
+    def inner2():
+        yield from bps.mv(det.cam.acquire_time, exp_time)
+        yield from bps.mv(det.cam.acquire_period, exp_time +.05)
+        # total_time = np.abs(stop - start)
+
+        yield from bps.mv(det.cam.num_images, num)
+        yield from inner()
+        print(f"frame_numbers = {frame_numbers}")
+        print(f"frame_timestamps = {frame_timestamps}")
+        print(f"roi2 = {frame_roi2_int}")
+        print(f"roi4 = {frame_roi4_int}")
+
+    yield from inner2()
 
 
 def agent_feedback_plan(sample_x, md=None):
