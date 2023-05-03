@@ -3406,6 +3406,168 @@ def fake_fly2_test(mtr, start, stop, step, exp_time):
     return frame_mtr_pos, frame_roi2_int, frame_roi3_int, frame_roi4_int
 
 
+def fake_fly3_test(mtr, start, stop, step, exp_time):
+
+    # motors: smy (+/- 2), sth (+/- 1)
+    det = pilatus2M
+
+    # It takes 0.4 to 0.7 s longer to complete motion, so let's add 1 s for now
+    #   It should be computed/estimated more accurately
+    num = int(np.abs(stop - start) / step)
+    total_time = num * exp_time
+    velocity = np.abs(stop - start) / total_time
+
+    det.tiff.kind = 'omitted'
+    det.tiff.disable_on_stage()
+    det.stats4.total.kind='hinted'
+
+    frame_numbers = []
+    frame_timestamps = []
+    frame_mtr_pos = []
+    frame_roi2_ts = []
+    frame_roi3_ts = []
+    frame_roi4_ts = []
+    # frame_roi2_int = []
+    # frame_roi3_int = []
+    # frame_roi4_int = []
+
+    frame_roi2_total_ts = []
+    frame_roi3_total_ts = []
+    frame_roi4_total_ts = []
+    frame_roi2_total = []
+    frame_roi3_total = []
+    frame_roi4_total = []
+
+
+    def accumulate(value, old_value, timestamp, **kwargs):
+        frame_numbers.append(value)
+        frame_timestamps.append(timestamp)
+        frame_mtr_pos.append(mtr.position)
+
+    def accumulate_roi2(value, old_value, timestamp, **kwargs):
+        frame_roi2_ts.append(timestamp)
+        #roi2_int = pilatus2M.stats2.total.get()
+        #frame_roi2_int.append(roi2_int)
+
+    def accumulate_roi3(value, old_value, timestamp, **kwargs):
+        frame_roi3_ts.append(timestamp)
+        #roi3_int = pilatus2M.stats3.total.get()
+        #frame_roi3_int.append(roi3_int)
+
+    def accumulate_roi4(value, old_value, timestamp, **kwargs):
+        frame_roi4_ts.append(timestamp)
+        #roi4_int = pilatus2M.stats4.total.get()
+        #frame_roi4_int.append(roi4_int)
+
+    def accumulate_roi2_total(value, old_value, timestamp, **kwargs):
+        frame_roi2_total_ts.append(timestamp)
+        frame_roi2_total.append(value)
+
+    def accumulate_roi3_total(value, old_value, timestamp, **kwargs):
+        frame_roi3_total_ts.append(timestamp)
+        frame_roi3_total.append(value)
+
+    def accumulate_roi4_total(value, old_value, timestamp, **kwargs):
+        frame_roi4_total_ts.append(timestamp)
+        frame_roi4_total.append(value)
+
+    @bpp.stage_decorator([det])
+    def inner():
+        cid = pilatus2M.cam.array_counter.subscribe(accumulate)
+        cid2 = pilatus2M.stats2.array_counter.subscribe(accumulate_roi2)
+        cid3 = pilatus2M.stats3.array_counter.subscribe(accumulate_roi3)
+        cid4 = pilatus2M.stats4.array_counter.subscribe(accumulate_roi4)
+        cid2a = pilatus2M.stats2.total.subscribe(accumulate_roi2_total)
+        cid3a = pilatus2M.stats3.total.subscribe(accumulate_roi3_total)
+        cid4a = pilatus2M.stats4.total.subscribe(accumulate_roi4_total)
+        try:
+            yield from bps.trigger(det, group='fake_fly')
+            yield from bps.abs_set(mtr, stop, group='fake_fly')
+            yield from bps.wait(group='fake_fly')
+        finally:
+            pilatus2M.cam.array_counter.unsubscribe(cid)
+            pilatus2M.stats2.array_counter.unsubscribe(cid2)
+            pilatus2M.stats3.array_counter.unsubscribe(cid3)
+            pilatus2M.stats4.array_counter.unsubscribe(cid4)
+            pilatus2M.stats2.total.unsubscribe(cid2a)
+            pilatus2M.stats3.total.unsubscribe(cid3a)
+            pilatus2M.stats4.total.unsubscribe(cid4a)
+
+    @bpp.reset_positions_decorator([det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period,
+                                    mtr.velocity])
+    def inner2():
+        yield from bps.abs_set(mtr, start, wait=True)
+        yield from bps.mv(mtr.velocity, velocity)
+
+        print(f"Number of acquired images: {num}. Exposure time: {exp_time}")
+        
+        yield from bps.mv(det.cam.acquire_time, exp_time - 0.005)
+        yield from bps.mv(det.cam.acquire_period, exp_time)
+
+        yield from bps.mv(det.cam.num_images, num)
+        yield from inner()
+
+    yield from inner2()
+
+    def trim_list(v, num):
+        n_first = max(len(v) - num, 0)
+        return v[n_first:]
+
+    def set_total_values(frame_roi_ts, total_ts, total, dt=0.25 * exp_time):
+        total_ts = [_ - dt for _ in total_ts]
+        vals = [0] * len(frame_roi_ts)
+        n_current, v_current = 0, 0
+        for n in range(len(vals)):
+            if n_current < len(total_ts) and total_ts[n_current] < frame_roi_ts[n]:
+                v_current = total[n_current]
+                n_current += 1
+            vals[n] = v_current
+        return vals
+    
+    # 0-th frame is discarded during trimming
+    _ = frame_mtr_pos
+    frame_mtr_pos = [_[0]] + [(_[n] + _[n - 1]) / 2 for n in range(1, len(_))]
+
+    total_roi2 = set_total_values(frame_roi2_ts, frame_roi2_total_ts, frame_roi2_total)
+    total_roi3 = set_total_values(frame_roi3_ts, frame_roi3_total_ts, frame_roi3_total)
+    total_roi4 = set_total_values(frame_roi4_ts, frame_roi4_total_ts, frame_roi4_total)
+
+    frame_numbers = trim_list(frame_numbers, num)
+    frame_timestamps = trim_list(frame_timestamps, num)
+    frame_mtr_pos = trim_list(frame_mtr_pos, num)
+    # frame_roi2_int = trim_list(frame_roi2_int, num)
+    # frame_roi3_int = trim_list(frame_roi3_int, num)
+    # frame_roi4_int = trim_list(frame_roi4_int, num)
+    frame_roi2_ts = trim_list(frame_roi2_ts, num)
+    frame_roi3_ts = trim_list(frame_roi3_ts, num)
+    frame_roi4_ts = trim_list(frame_roi4_ts, num)
+    total_roi2 = trim_list(total_roi2, num)
+    total_roi3 = trim_list(total_roi3, num)
+    total_roi4 = trim_list(total_roi4, num)
+    
+    print(f"frame_numbers = {frame_numbers}")
+    print(f"frame_timestamps = {frame_timestamps}")
+    print(f"mtr_pos = {frame_mtr_pos}")
+
+    print(f"roi2_ts = {frame_roi2_ts}")
+    print(f"roi3_ts = {frame_roi3_ts}")
+    print(f"roi4_ts = {frame_roi4_ts}")
+
+    print(f"frame_roi2_total_ts = {frame_roi2_total_ts}")
+    print(f"frame_roi3_total_ts = {frame_roi3_total_ts}")
+    print(f"frame_roi4_total_ts = {frame_roi4_total_ts}")
+
+    print(f"frame_roi2_total = {frame_roi2_total}")
+    print(f"frame_roi3_total = {frame_roi3_total}")
+    print(f"frame_roi4_total = {frame_roi4_total}")
+
+    print(f"total_roi2 = {total_roi2}")
+    print(f"total_roi3 = {total_roi2}")
+    print(f"total_roi4 = {total_roi4}")
+
+    return frame_mtr_pos, total_roi2, total_roi3, total_roi4
+
+
 def agent_feedback_plan(sample_x, md=None):
     md = md or {}
 
