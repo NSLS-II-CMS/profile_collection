@@ -3496,7 +3496,9 @@ def fake_fly3_test(mtr, start, stop, step, exp_time):
     @bpp.reset_positions_decorator([det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period,
                                     mtr.velocity])
     def inner2():
+        print(f"setting motor start position")
         yield from bps.abs_set(mtr, start, wait=True)
+        print(f"setting motor start velocity: {velocity}")
         yield from bps.mv(mtr.velocity, velocity)
 
         print(f"Number of acquired images: {num}. Exposure time: {exp_time}")
@@ -3562,10 +3564,60 @@ def fake_fly3_test(mtr, start, stop, step, exp_time):
     print(f"frame_roi4_total = {frame_roi4_total}")
 
     print(f"total_roi2 = {total_roi2}")
-    print(f"total_roi3 = {total_roi2}")
+    print(f"total_roi3 = {total_roi3}")
     print(f"total_roi4 = {total_roi4}")
 
     return frame_mtr_pos, total_roi2, total_roi3, total_roi4
+
+
+def align_motor_y_test(mtr, start_rel, stop_rel, step, exp_time):
+    
+    mtr_current = mtr.position
+    start, stop = mtr_current + start_rel, mtr_current + stop_rel
+
+    @bpp.finalize_decorator(final_plan=shutter_off)
+    def inner():
+        yield from shutter_on()
+        pos, roi2, roi3, roi4 = yield from fake_fly3_test(mtr, start, stop, step, exp_time)
+
+        max_roi4 = max(roi4)
+        n_half = 0
+        for n in range(len(roi4)):
+            if roi4[n] < max_roi4 / 2:
+                n_half = n
+                break
+        
+        yield from bps.abs_set(mtr, pos[n_half], wait=True)
+
+    yield from inner()
+
+
+def align_motor_th_test(mtr, start_rel, stop_rel, step, exp_time, fine_scan=True):
+    
+    mtr_current = mtr.position
+    start, stop = mtr_current + start_rel, mtr_current + stop_rel
+
+    @bpp.finalize_decorator(final_plan=shutter_off)
+    def inner():
+        yield from shutter_on()
+        pos, roi2, roi3, roi4 = yield from fake_fly3_test(mtr, start, stop, step, exp_time)
+
+        if fine_scan:
+            n_max = np.argmax(roi3)
+        else:
+            n_max = np.argmax(roi2)
+
+        yield from bps.abs_set(mtr, pos[n_max], wait=True)
+
+    yield from inner()
+
+
+def align_test():
+    exp_time = 0.3
+    yield from align_motor_y_test(smy, -2, 2, 0.1, exp_time)
+    yield from align_motor_th_test(sth, -1, 1, 0.05, exp_time, fine_scan=False)
+    yield from align_motor_y_test(smy, -0.2, 0.2, 0.005, exp_time)
+    yield from align_motor_th_test(sth, -0.1, 0.1, 0.0025, exp_time, fine_scan=True)
 
 
 def agent_feedback_plan(sample_x, md=None):
