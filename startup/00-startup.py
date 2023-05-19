@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 import nslsii
 from bluesky.magics import BlueskyMagics
 from bluesky.preprocessors import pchain

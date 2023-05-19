@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 def detselect(detector_object, suffix="_stats4_total"):
     """Switch the active detector and set some internal state"""
 

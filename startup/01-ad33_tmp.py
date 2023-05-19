@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 from ophyd.areadetector.base import ADComponent as C, ad_group, EpicsSignalWithRBV as SignalWithRBV
 from ophyd.areadetector.plugins import PluginBase
 from ophyd.device import DynamicDeviceComponent as DDC, Staged

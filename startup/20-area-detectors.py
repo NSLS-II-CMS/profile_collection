@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # import time as ttime  # tea time
 # from datetime import datetime
 from ophyd import (

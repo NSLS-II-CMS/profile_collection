@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # Classes and functions to make it easy to do a dscan with realtime fitting to
 # a custom function.
 

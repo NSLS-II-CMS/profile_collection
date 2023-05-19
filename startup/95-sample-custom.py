@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 ################################################################################
 # Code for customer-made holders and sample stages,
 # Samples include :

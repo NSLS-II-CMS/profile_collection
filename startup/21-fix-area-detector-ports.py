@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # for cam_number, fs in zip([1,2,3,4], [fs1, fs2, fs3, fs4]):
 
 if not testing:

@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 ##### Experimental shutters #####
 # updated by RL, 20210901
 # These shutters are controlled by sending a TTL pulse via Ecat controller.

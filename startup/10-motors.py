@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 from ophyd import EpicsMotor, Device, Component as Cpt
 
 # slity = EpicsMotor('XF:11BMA-OP{Slt:0-Ax:T}Mtr', name='slity')

@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # adopted from CHX
 
 # imports for accessing data from channel archiver

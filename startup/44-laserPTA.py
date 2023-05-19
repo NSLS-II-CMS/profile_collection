@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 from epics import caput, caget
 
 

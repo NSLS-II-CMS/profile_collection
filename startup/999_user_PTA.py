@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # vi: ts=4 sw=4
 
+print(f"Loading {__file__!r} ...")
+
 #######
 # v3 -->  v4:  coord based on KY_coord_form.py
 

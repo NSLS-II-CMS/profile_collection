@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 from math import sin, cos, tan, asin, acos, atan, pi
 
 ##### mono utilities #####

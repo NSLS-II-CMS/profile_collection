@@ -312,7 +312,7 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   LThermal:
     classname: LinkamThermal
     components:
@@ -475,7 +475,7 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   MAXSx:
     classname: EpicsMotor
     components:
@@ -996,7 +996,7 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   TTL2:
     classname: EpicsSignal
     is_flyable: false
@@ -2351,13 +2351,13 @@ existing_devices:
     is_flyable: false
     is_movable: true
     is_readable: true
-    module: startup_script
+    module: __main__
   bim6_integrating:
     classname: EpicsSignalROIntegrate
     is_flyable: false
     is_movable: true
     is_readable: true
-    module: startup_script
+    module: __main__
   bsphi:
     classname: EpicsMotor
     components:
@@ -2968,7 +2968,7 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   camx:
     classname: EpicsMotor
     components:
@@ -3235,7 +3235,7 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   core_laser:
     classname: NuPhotoThermalAnnealer
     components:
@@ -3254,19 +3254,19 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   fs2:
     classname: StandardProsilicaV33
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   fs3:
     classname: StandardProsilicaV33
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   fs3y:
     classname: EpicsMotor
     components:
@@ -3393,7 +3393,7 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   gatex:
     classname: EpicsMotor
     components:
@@ -3520,7 +3520,7 @@ existing_devices:
     is_flyable: false
     is_movable: true
     is_readable: true
-    module: startup_script
+    module: __main__
   ion_chamber1:
     classname: EpicsSignalRO
     is_flyable: false
@@ -3581,7 +3581,7 @@ existing_devices:
     is_flyable: false
     is_movable: true
     is_readable: true
-    module: startup_script
+    module: __main__
   laser:
     classname: Laser
     components:
@@ -3597,252 +3597,16 @@ existing_devices:
         is_movable: true
         is_readable: true
         module: ophyd.signal
+      turn_on:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
-  laserx:
-    classname: EpicsMotor
-    components:
-      acceleration:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      direction_of_travel:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      high_limit_switch:
-        classname: EpicsSignalRO
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      high_limit_travel:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      home_forward:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      home_reverse:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      low_limit_switch:
-        classname: EpicsSignalRO
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      low_limit_travel:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      motor_done_move:
-        classname: EpicsSignalRO
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      motor_egu:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      motor_is_moving:
-        classname: EpicsSignalRO
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      motor_stop:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      offset_freeze_switch:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      set_use_switch:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      user_offset:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      user_offset_dir:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      user_readback:
-        classname: EpicsSignalRO
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      user_setpoint:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      velocity:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-    is_flyable: false
-    is_movable: true
-    is_readable: true
-    module: ophyd.epics_motor
-  lasery:
-    classname: EpicsMotor
-    components:
-      acceleration:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      direction_of_travel:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      high_limit_switch:
-        classname: EpicsSignalRO
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      high_limit_travel:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      home_forward:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      home_reverse:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      low_limit_switch:
-        classname: EpicsSignalRO
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      low_limit_travel:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      motor_done_move:
-        classname: EpicsSignalRO
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      motor_egu:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      motor_is_moving:
-        classname: EpicsSignalRO
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      motor_stop:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      offset_freeze_switch:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      set_use_switch:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      user_offset:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      user_offset_dir:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      user_readback:
-        classname: EpicsSignalRO
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      user_setpoint:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-      velocity:
-        classname: EpicsSignal
-        is_flyable: false
-        is_movable: true
-        is_readable: true
-        module: ophyd.signal
-    is_flyable: false
-    is_movable: true
-    is_readable: true
-    module: ophyd.epics_motor
+    module: __main__
   mir_bend:
     classname: EpicsMotor
     components:
@@ -5076,19 +4840,19 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
-  pilatus8002:
-    classname: Pilatus8002V33
+    module: __main__
+  pilatus800:
+    classname: Pilatus800V33
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   pilatus_name:
     classname: Pilatus2MV33
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   quad_electrometer1_1:
     classname: EpicsSignalRO
     is_flyable: false
@@ -6117,7 +5881,7 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   s1:
     classname: MotorCenterAndGap
     components:
@@ -6608,7 +6372,7 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   s2:
     classname: MotorCenterAndGap
     components:
@@ -7099,7 +6863,7 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   s3:
     classname: MotorCenterAndGap
     components:
@@ -7590,7 +7354,7 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   s4:
     classname: MotorCenterAndGap
     components:
@@ -8081,7 +7845,7 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   s5:
     classname: MotorCenterAndGap
     components:
@@ -8572,31 +8336,31 @@ existing_devices:
     is_flyable: false
     is_movable: false
     is_readable: true
-    module: startup_script
+    module: __main__
   scaled_ic1:
     classname: ScaleSignal
     is_flyable: false
     is_movable: true
     is_readable: true
-    module: startup_script
+    module: __main__
   scaled_ic2:
     classname: ScaleSignal
     is_flyable: false
     is_movable: true
     is_readable: true
-    module: startup_script
+    module: __main__
   scaled_ic3:
     classname: ScaleSignal
     is_flyable: false
     is_movable: true
     is_readable: true
-    module: startup_script
+    module: __main__
   scaled_ic4:
     classname: ScaleSignal
     is_flyable: false
     is_movable: true
     is_readable: true
-    module: startup_script
+    module: __main__
   schi:
     classname: EpicsMotor
     components:
@@ -9355,7 +9119,7 @@ existing_devices:
     module: ophyd.signal
 existing_plans:
   TTL2_on:
-    module: startup_script
+    module: __main__
     name: TTL2_on
     parameters: []
     properties:
@@ -9462,13 +9226,13 @@ existing_plans:
     properties:
       is_generator: true
   agent_bootstrap_alignment:
-    module: startup_script
+    module: __main__
     name: agent_bootstrap_alignment
     parameters: []
     properties:
       is_generator: true
   agent_feedback_plan:
-    module: startup_script
+    module: __main__
     name: agent_feedback_plan
     parameters:
     - kind:
@@ -9480,6 +9244,69 @@ existing_plans:
         name: POSITIONAL_OR_KEYWORD
         value: 1
       name: md
+    properties:
+      is_generator: true
+  align_motor_th_test:
+    module: __main__
+    name: align_motor_th_test
+    parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: mtr
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: start_rel
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: stop_rel
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: step
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: exp_time
+    - default: 'True'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: fine_scan
+    properties:
+      is_generator: true
+  align_motor_y_test:
+    module: __main__
+    name: align_motor_y_test
+    parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: mtr
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: start_rel
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: stop_rel
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: step
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: exp_time
+    properties:
+      is_generator: true
+  align_test:
+    module: __main__
+    name: align_test
+    parameters: []
     properties:
       is_generator: true
   broadcast_msg:
@@ -9542,11 +9369,13 @@ existing_plans:
     name: close_run
     parameters:
     - default: None
+      description: The exit status to report in the Stop document
       kind:
         name: POSITIONAL_OR_KEYWORD
         value: 1
       name: exit_status
     - default: None
+      description: Long-form description of why the run ended
       kind:
         name: POSITIONAL_OR_KEYWORD
         value: 1
@@ -9682,7 +9511,7 @@ existing_plans:
     properties:
       is_generator: true
   count_forever_plan:
-    module: startup_script
+    module: __main__
     name: count_forever_plan
     parameters:
     - kind:
@@ -9692,7 +9521,7 @@ existing_plans:
     properties:
       is_generator: true
   count_no_save_plan:
-    module: startup_script
+    module: __main__
     name: count_no_save_plan
     parameters:
     - kind:
@@ -9731,7 +9560,7 @@ existing_plans:
     properties:
       is_generator: true
   fake_coordinated_motion:
-    module: startup_script
+    module: __main__
     name: fake_coordinated_motion
     parameters:
     - kind:
@@ -9758,7 +9587,7 @@ existing_plans:
     properties:
       is_generator: true
   fake_coordinated_motionr:
-    module: startup_script
+    module: __main__
     name: fake_coordinated_motionr
     parameters:
     - kind:
@@ -9781,7 +9610,7 @@ existing_plans:
     properties:
       is_generator: true
   fake_fly:
-    module: startup_script
+    module: __main__
     name: fake_fly
     parameters:
     - kind:
@@ -9796,6 +9625,58 @@ existing_plans:
         name: POSITIONAL_OR_KEYWORD
         value: 1
       name: stop
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: exp_time
+    properties:
+      is_generator: true
+  fake_fly2_test:
+    module: __main__
+    name: fake_fly2_test
+    parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: mtr
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: start
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: stop
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: step
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: exp_time
+    properties:
+      is_generator: true
+  fake_fly3_test:
+    module: __main__
+    name: fake_fly3_test
+    parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: mtr
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: start
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: stop
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: step
     - kind:
         name: POSITIONAL_OR_KEYWORD
         value: 1
@@ -10324,7 +10205,7 @@ existing_plans:
     properties:
       is_generator: true
   pump_chm:
-    module: startup_script
+    module: __main__
     name: pump_chm
     parameters:
     - kind:
@@ -11446,7 +11327,7 @@ existing_plans:
     description: 'rock/swing a motor contineously while taking images
 
       use ''per_step'' function in scan plan to rock the motor'
-    module: startup_script
+    module: __main__
     name: rock_motor_per_step
     parameters:
     - kind:
@@ -11474,7 +11355,7 @@ existing_plans:
     properties:
       is_generator: true
   sam_measure:
-    module: startup_script
+    module: __main__
     name: sam_measure
     parameters:
     - default: None
@@ -11595,7 +11476,7 @@ existing_plans:
     properties:
       is_generator: true
   shutter_off:
-    module: startup_script
+    module: __main__
     name: shutter_off
     parameters:
     - default: '3'
@@ -11606,7 +11487,7 @@ existing_plans:
     properties:
       is_generator: true
   shutter_on:
-    module: startup_script
+    module: __main__
     name: shutter_on
     parameters:
     - default: '3'
@@ -11872,7 +11753,7 @@ existing_plans:
     properties:
       is_generator: true
   stage_unstage_forever_plan:
-    module: startup_script
+    module: __main__
     name: stage_unstage_forever_plan
     parameters:
     - kind:
@@ -11882,7 +11763,7 @@ existing_plans:
     properties:
       is_generator: true
   stage_unstage_once_plan:
-    module: startup_script
+    module: __main__
     name: stage_unstage_once_plan
     parameters:
     - kind:
@@ -11922,7 +11803,7 @@ existing_plans:
     properties:
       is_generator: true
   test_plan:
-    module: startup_script
+    module: __main__
     name: test_plan
     parameters:
     - default: None
@@ -11933,7 +11814,7 @@ existing_plans:
     properties:
       is_generator: true
   tri_plan:
-    module: startup_script
+    module: __main__
     name: tri_plan
     parameters:
     - kind:
@@ -11993,7 +11874,7 @@ existing_plans:
     properties:
       is_generator: true
   trigger_forever_plan:
-    module: startup_script
+    module: __main__
     name: trigger_forever_plan
     parameters:
     - kind:
@@ -12219,7 +12100,7 @@ existing_plans:
     properties:
       is_generator: true
   xshutter_trigger_RE:
-    module: startup_script
+    module: __main__
     name: xshutter_trigger_RE
     parameters:
     - default: '3'

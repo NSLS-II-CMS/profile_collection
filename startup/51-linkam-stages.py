@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # EPICS interface developed by Jakub
 # Bsui code adopted from BMM/Bruce Ravel and modified by Ruipeng Li
 

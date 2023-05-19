@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 def xp_set(seconds):
     #    sleep_time=0.002
     # caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime',seconds)

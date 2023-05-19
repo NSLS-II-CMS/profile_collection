@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 from ophyd import PVPositionerPC
 from ophyd import FormattedComponent
 from ophyd import EpicsSignal, EpicsSignalRO
