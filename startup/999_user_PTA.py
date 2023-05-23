@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # vi: ts=4 sw=4
 
-print(f"Loading {__file__!r} ...")
+
 
 #######
 # v3 -->  v4:  coord based on KY_coord_form.py
@@ -18,12 +18,14 @@ print(f"Loading {__file__!r} ...")
 # the user's data directory, and use that as a working copy.
 ################################################################################
 
-
-from ophyd import EpicsSignal, Device, Component as Cpt
-from bluesky.suspenders import SuspendFloor, SuspendCeil
-from bluesky.preprocessors import stage_decorator
+from ophyd import Device, Component as Cpt, EpicsSignal, EpicsSignalRO
+from bluesky.suspenders import SuspendFloor
+import bluesky.plan_stubs as bps
+import bluesky.preprocessors as bpp
 
 import sympy as sym
+
+print(f"Loading {__file__!r} ...")
 
 if True:
     # Define suspenders to hold data collection if x-ray
@@ -72,31 +74,52 @@ INTENSITY_EXPECTED_025 = INTENSITY_EXPECTED_050 * 0.5
 def get_default_stage():
     return stg
 
-from ophyd import Device, Component as Cpt, EpicsSignal, EpicsSignalRO
 
+# TODO consider if this is better than using EpicsSignal with different read /
+# write PVs
 class PairSP(Device):
+    """
+    Hold a pair of PVs as a set-point / readback pair
+
+    set forwards to the set point.
+    """
     sp = Cpt(EpicsSignal, '-SP', kind='normal')
     rb = Cpt(EpicsSignalRO, '-RB', kind='hinted')
 
     def set(self, value, **kwargs):
         return self.sp.set(value, **kwargs)
 
+
 class PairSEL(Device):
+    """
+    Hold a pair of PVs as bool / readback pair
+
+    set forwards to the Select
+    """
     sel = Cpt(EpicsSignal, '-Sel', kind='normal')
-    rb = Cpt(EpicsSignalRO, '-RB', kind='hinted', string=True)
+    rb = Cpt(EpicsSignalRO, '-RB', kind='hinted', string=True, auto_monitor=True)
 
     def set(self, value, **kwargs):
         return self.sel.set(value, **kwargs)
-    
+
+
 class PairCMD(Device):
+    """
+    Hold a pair of PVs as CMD / readback pair
+
+    set forwards to the CMD
+    """
     cmd = Cpt(EpicsSignal, '-CMD', kind='omitted')
     rb = Cpt(EpicsSignalRO, '-RB', kind='hinted')
 
     def set(self, value, **kwargs):
-        return self.sel.set(value, **kwargs)
+        return self.cmd.set(value, **kwargs)
 
 
 class Laser(Device):
+    """
+    Class to represent the PTA laser as controlled by the beckoff I/O
+    """
     # Set pulse width for output
     # Milliseconds units
     width = Cpt(PairSP, 'OutWidthSet:1')
@@ -109,7 +132,7 @@ class Laser(Device):
     # Read inputs
     # 1 = PV trigger, 2 = physical trigger
     input1 = Cpt(EpicsSignalRO, 'Input:1-RB')
-    input2 = Cpt(EpicsSignalRO, 'Input:2-RB')    
+    input2 = Cpt(EpicsSignalRO, 'Input:2-RB')
 
     # Enable/disable trigger inputs
     # 1 = PV trigger, 2 = physical trigger
@@ -125,6 +148,18 @@ class Laser(Device):
     # Output override and output readback
     # Override only works when trigger disabled
     manual_button = Cpt(PairSEL, 'Output:1')
+
+    def manual_mode(self):
+        yield from bps.mv(self.trigger, 0)
+
+    def turn_on(self):
+        # TODO check if we are in manual mode
+        yield from bps.mv(self.manual_button, 1)
+
+    def turn_off(self):
+        # TODO check if we are in manual mode
+        yield from bps.mv(self.manual_button, 0)
+
 
 laser = Laser('XF:11BM-CT{BIOME-MTO:1}', name='laser')
 
@@ -181,7 +216,7 @@ class Sample(SampleGISAXS):
 
         #default position for laser position on the edge of the sample (5mm offset)
         #smx = -1.5, laserx = 0
-        #smx and laserx should move simultaneously. 
+        #smx and laserx should move simultaneously.
 
     # def get_attribute(self, attribute):
     #     '''Return the value of the requested md.'''
@@ -1043,7 +1078,7 @@ class Sample(SampleGISAXS):
                         norm_stats4 = abs(pilatus2M.stats4.total.get() - beam_int) / beam_int
                         print(f"ii={ii} norm_stats4={norm_stats4}")
 
-                        if ii > 0 and norm_stats4 > 0.2: 
+                        if ii > 0 and norm_stats4 > 0.2:
                             break
 
                         # Find the step-edge
@@ -1733,7 +1768,7 @@ class Sample(SampleGISAXS):
         #     self.thr(-reflection_angle)
         #     beam.off()
         #     return False, ii
-        
+
     def swing(
         self, step=0, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, int_threshold=10, verbosity=3
     ):
@@ -2397,23 +2432,23 @@ class Sample(SampleGISAXS):
         # bec.enable_table()
 
     # def calc_lookuptable(self,target_x):
-    #     #make a look up table for 
+    #     #make a look up table for
 
     #     start_x = self.start_x
     #     start_y = self.start_y
     #     start_th = self.start_th
-        
+
     #     end_x = self.end_x
     #     end_y = self.end_y
     #     end_th = self.end_th
-       
+
     #     target_y = (target_x-end_x)/(start_x-end_x)*(start_y-end_y)+end_y
     #     target_th = (target_x-end_x)/(start_x-end_x)*(start_th-end_th)+end_th
 
     #     return target_x, target_y, target_th
 
     def run_initial_alignment(self,start_x=0, end_x=22, direct_beam_int=None):
-        #make a look up table for 
+        #make a look up table for
 
 
         yield from bps.mv(smx, start_x)
@@ -2440,7 +2475,7 @@ class Sample(SampleGISAXS):
         # start_x = self.start_x
         # start_y = self.start_y
         # start_th = self.start_th
-        
+
         # end_x = self.end_x
         # end_y = self.end_y
         # end_th = self.end_th
@@ -2451,7 +2486,7 @@ class Sample(SampleGISAXS):
         start_x = self.start_x
         start_y = self.start_y
         start_th = self.start_th
-        
+
         end_x = self.end_x
         end_y = self.end_y
         end_th = self.end_th
@@ -2463,12 +2498,12 @@ class Sample(SampleGISAXS):
 
 
     def align_lookup(self, target_x, direct_beam_int=None):
-        
+
         xpos, ypos, thpos = self.calc_lookuptable(target_x)
-        
+
         #move to the position in lookup table
         yield from bps.mv(smx, xpos, smy, ypos, sth, thpos)
-        
+
         yield from self.align_crazy_v3_plan(direct_beam_int=direct_beam_int)
 
 
@@ -2915,11 +2950,11 @@ def parallel_fake_coordinated_motion(mtr1, target1, mtr2, target2):
     ...
 
 def fake_coordinated_motionr(mtr1, mtr2, delta, step=0.1):
-    
+
     real_step= step*abs(delta)/delta
 
     for j in range(int(abs(delta)/ step)):
-        
+
         yield from bps.mvr(mtr1, real_step, mtr2, real_step)
 
 
@@ -2981,7 +3016,7 @@ smx = 93.55
 smy = 15.7754375
 sth = 0.9976562500000004
 
-1.89deg offset in schi 
+1.89deg offset in schi
 
 
 ============
@@ -2990,26 +3025,26 @@ y scan at the aligned position to verify the stats2/stat4.
 |   seq_num |       time |        smy | smy_user_setpoint | pilatus2M_stats1_total | pilatus2M_stats2_total | pilatus2M_stats3_total | pilatus2M_stats4_total |
 +-----------+------------+------------+-------------------+------------------------+------------------------+------------------------+------------------------+
 |         1 | 12:02:13.5 |    15.5819 |           15.5819 |                      1 |                    -89 |                      0 |                  20095 |
-|         2 | 12:02:15.4 |    15.6019 |           15.6019 |                      1 |                    -90 |                      0 |                  20221 |                 
-|         3 | 12:02:17.3 |    15.6219 |           15.6219 |                      0 |                    -90 |                      0 |                  20026 |                 
-|         4 | 12:02:19.1 |    15.6419 |           15.6419 |                      0 |                    -90 |                      0 |                  20337 |                 
-|         5 | 12:02:21.1 |    15.6619 |           15.6619 |                      1 |                    -90 |                      0 |                  20427 |                 
-|         6 | 12:02:22.9 |    15.6819 |           15.6819 |                      2 |                    -87 |                      0 |                  20053 |                 
-|         7 | 12:02:24.7 |    15.7019 |           15.7019 |                      2 |                    -84 |                      3 |                  20383 |                 
-|         8 | 12:02:26.5 |    15.7219 |           15.7219 |                     19 |                    -51 |                      3 |                  20052 |                 
-|         9 | 12:02:28.4 |    15.7419 |           15.7419 |                    186 |                    328 |                     75 |                  19790 |                 
-|        10 | 12:02:30.4 |    15.7619 |           15.7619 |                   1450 |                   3553 |                    718 |                  16054 |                 
-|        11 | 12:02:32.3 |    15.7819 |           15.7819 |                   3974 |                   8884 |                   2697 |                   7412 |                 
-|        12 | 12:02:34.2 |    15.8019 |           15.8019 |                   2783 |                   5922 |                   1889 |                   1563 |                 
-|        13 | 12:02:36.1 |    15.8219 |           15.8219 |                    705 |                   1368 |                    558 |                    114 |                 
-|        14 | 12:02:38.0 |    15.8419 |           15.8419 |                     65 |                     39 |                     61 |                      2 |                 
-|        15 | 12:02:39.9 |    15.8619 |           15.8619 |                     15 |                    -66 |                     10 |                      0 |                 
-|        16 | 12:02:41.8 |    15.8819 |           15.8819 |                      7 |                    -70 |                      0 |                      0 |                 
-|        17 | 12:02:43.5 |    15.9019 |           15.9019 |                      0 |                    -89 |                      0 |                      0 |                 
-|        18 | 12:02:45.5 |    15.9219 |           15.9219 |                      0 |                    -90 |                      0 |                      0 |                 
-|        19 | 12:02:47.4 |    15.9419 |           15.9419 |                      0 |                    -90 |                      0 |                      0 |                 
-|        20 | 12:02:49.4 |    15.9619 |           15.9619 |                      0 |                    -90 |                      0 |                      0 |                 
-|        21 | 12:02:51.3 |    15.9819 |           15.9819 |                      0 |                    -90 |                      0 |                      0 |                 
+|         2 | 12:02:15.4 |    15.6019 |           15.6019 |                      1 |                    -90 |                      0 |                  20221 |
+|         3 | 12:02:17.3 |    15.6219 |           15.6219 |                      0 |                    -90 |                      0 |                  20026 |
+|         4 | 12:02:19.1 |    15.6419 |           15.6419 |                      0 |                    -90 |                      0 |                  20337 |
+|         5 | 12:02:21.1 |    15.6619 |           15.6619 |                      1 |                    -90 |                      0 |                  20427 |
+|         6 | 12:02:22.9 |    15.6819 |           15.6819 |                      2 |                    -87 |                      0 |                  20053 |
+|         7 | 12:02:24.7 |    15.7019 |           15.7019 |                      2 |                    -84 |                      3 |                  20383 |
+|         8 | 12:02:26.5 |    15.7219 |           15.7219 |                     19 |                    -51 |                      3 |                  20052 |
+|         9 | 12:02:28.4 |    15.7419 |           15.7419 |                    186 |                    328 |                     75 |                  19790 |
+|        10 | 12:02:30.4 |    15.7619 |           15.7619 |                   1450 |                   3553 |                    718 |                  16054 |
+|        11 | 12:02:32.3 |    15.7819 |           15.7819 |                   3974 |                   8884 |                   2697 |                   7412 |
+|        12 | 12:02:34.2 |    15.8019 |           15.8019 |                   2783 |                   5922 |                   1889 |                   1563 |
+|        13 | 12:02:36.1 |    15.8219 |           15.8219 |                    705 |                   1368 |                    558 |                    114 |
+|        14 | 12:02:38.0 |    15.8419 |           15.8419 |                     65 |                     39 |                     61 |                      2 |
+|        15 | 12:02:39.9 |    15.8619 |           15.8619 |                     15 |                    -66 |                     10 |                      0 |
+|        16 | 12:02:41.8 |    15.8819 |           15.8819 |                      7 |                    -70 |                      0 |                      0 |
+|        17 | 12:02:43.5 |    15.9019 |           15.9019 |                      0 |                    -89 |                      0 |                      0 |
+|        18 | 12:02:45.5 |    15.9219 |           15.9219 |                      0 |                    -90 |                      0 |                      0 |
+|        19 | 12:02:47.4 |    15.9419 |           15.9419 |                      0 |                    -90 |                      0 |                      0 |
+|        20 | 12:02:49.4 |    15.9619 |           15.9619 |                      0 |                    -90 |                      0 |                      0 |
+|        21 | 12:02:51.3 |    15.9819 |           15.9819 |                      0 |                    -90 |                      0 |                      0 |
 
 
 
@@ -3023,7 +3058,7 @@ laser power <24
 heater @50C @100C.
 
 
-#laser @ the edge of Si wafer 
+#laser @ the edge of Si wafer
 In [850]: wsam()
 smx = 86.2495
 smy = 15.778553125
@@ -3047,7 +3082,7 @@ FIX the offfset between smx and laserx as 88.25
 RE(fake_coordinated_motion(smx, 82, laserx, -6.25, N=120))
 #set power
 for power in np.arange(0, 24.1, 6):
-    
+
     pta.setLaserPower(power)
     #set x position
     if power==0:
@@ -3061,7 +3096,7 @@ for power in np.arange(0, 24.1, 6):
         sam.align()
         if xpos<4:
             RE(fake_coordinated_motionr(smx, laserx, delta=6))
-    
+
     pta.laserOff()
 
     RE(fake_coordinated_motion(smx, 82, laserx, -6.25, N=120))
@@ -3073,116 +3108,116 @@ pta.setLaserPower(power)
 """
 
 
-# camonitor -S XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 
+# camonitor -S XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV
 # XF:11BMB-ES{Det:PIL2M}:cam1:Acquire
 
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:18:45.322852 Waiting for acquire command  
-# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:18:45.406499 Done  
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:18:45.332771 23333  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:18:45.332854 10  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:18:45.562211 Done  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:10.780798 0  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.563899 Acquiring data  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:11.563945 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:18:45.322852 Waiting for acquire command
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:18:45.406499 Done
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:18:45.332771 23333
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:18:45.332854 10
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:18:45.562211 Done
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:10.780798 0
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.563899 Acquiring data
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:11.563945 Acquire
 # XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:11.563973 Acquiring STATE MINOR
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.632702 Waiting for 7OK response  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.937539 Reading image file /ramdisk/current_0000.tiff  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:11.953721 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.953786 Waiting for acquire command  
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:11.963590 23334  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:11.963779 1  
-# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:12.055200 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.278970 Acquiring data  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:12.279087 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.632702 Waiting for 7OK response
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.937539 Reading image file /ramdisk/current_0000.tiff
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:11.953721 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:11.953786 Waiting for acquire command
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:11.963590 23334
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:11.963779 1
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:12.055200 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.278970 Acquiring data
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:12.279087 Acquire
 # XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:12.279116 Acquiring STATE MINOR
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.347917 Waiting for 7OK response  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.653034 Reading image file /ramdisk/current_0000.tiff  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:12.666444 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.666491 Waiting for acquire command  
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:12.674896 23335  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:12.674989 2  
-# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:12.806157 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.929527 Acquiring data  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:12.929575 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.347917 Waiting for 7OK response
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.653034 Reading image file /ramdisk/current_0000.tiff
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:12.666444 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.666491 Waiting for acquire command
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:12.674896 23335
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:12.674989 2
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:12.806157 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.929527 Acquiring data
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:12.929575 Acquire
 # XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:12.929593 Acquiring STATE MINOR
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.998175 Waiting for 7OK response  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.301574 Reading image file /ramdisk/current_0000.tiff  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:13.316497 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.316522 Waiting for acquire command  
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:13.325644 23336  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:13.325764 3  
-# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:13.452583 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.567623 Acquiring data  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:13.567675 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:12.998175 Waiting for 7OK response
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.301574 Reading image file /ramdisk/current_0000.tiff
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:13.316497 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.316522 Waiting for acquire command
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:13.325644 23336
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:13.325764 3
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:13.452583 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.567623 Acquiring data
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:13.567675 Acquire
 # XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:13.567699 Acquiring STATE MINOR
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.636079 Waiting for 7OK response  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.153505 Reading image file /ramdisk/current_0000.tiff  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.168763 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.168805 Waiting for acquire command  
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:14.178550 23337  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:14.178706 4  
-# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:14.252755 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.380508 Acquiring data  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.380533 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:13.636079 Waiting for 7OK response
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.153505 Reading image file /ramdisk/current_0000.tiff
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.168763 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.168805 Waiting for acquire command
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:14.178550 23337
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:14.178706 4
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:14.252755 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.380508 Acquiring data
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.380533 Acquire
 # XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:14.380543 Acquiring STATE MINOR
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.449284 Waiting for 7OK response  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.756593 Reading image file /ramdisk/current_0000.tiff  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.772070 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.772109 Waiting for acquire command  
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:14.781253 23338  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:14.781299 5  
-# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:14.859708 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.982903 Acquiring data  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.982950 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.449284 Waiting for 7OK response
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.756593 Reading image file /ramdisk/current_0000.tiff
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.772070 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.772109 Waiting for acquire command
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:14.781253 23338
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:14.781299 5
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:14.859708 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:14.982903 Acquiring data
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:14.982950 Acquire
 # XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:14.982985 Acquiring STATE MINOR
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.051642 Waiting for 7OK response  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.661136 Reading image file /ramdisk/current_0000.tiff  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:15.676297 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.676319 Waiting for acquire command  
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:15.685042 23339  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:15.685210 6  
-# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:15.816051 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.932728 Acquiring data  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:15.932767 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.051642 Waiting for 7OK response
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.661136 Reading image file /ramdisk/current_0000.tiff
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:15.676297 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.676319 Waiting for acquire command
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:15.685042 23339
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:15.685210 6
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:15.816051 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:15.932728 Acquiring data
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:15.932767 Acquire
 # XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:15.932785 Acquiring STATE MINOR
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.001699 Waiting for 7OK response  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.305201 Reading image file /ramdisk/current_0000.tiff  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:16.319495 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.319542 Waiting for acquire command  
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:16.329081 23340  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:16.329159 7  
-# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:16.408806 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.533301 Acquiring data  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:16.533346 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.001699 Waiting for 7OK response
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.305201 Reading image file /ramdisk/current_0000.tiff
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:16.319495 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.319542 Waiting for acquire command
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:16.329081 23340
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:16.329159 7
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:16.408806 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.533301 Acquiring data
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:16.533346 Acquire
 # XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:16.533364 Acquiring STATE MINOR
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.602075 Waiting for 7OK response  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.143514 Reading image file /ramdisk/current_0000.tiff  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:17.157371 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.157411 Waiting for acquire command  
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:17.167105 23341  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:17.167203 8  
-# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:17.245183 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.369047 Acquiring data  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:17.369103 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:16.602075 Waiting for 7OK response
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.143514 Reading image file /ramdisk/current_0000.tiff
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:17.157371 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.157411 Waiting for acquire command
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:17.167105 23341
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:17.167203 8
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:17.245183 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.369047 Acquiring data
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:17.369103 Acquire
 # XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:17.369129 Acquiring STATE MINOR
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.437877 Waiting for 7OK response  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.743062 Reading image file /ramdisk/current_0000.tiff  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:17.756966 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.757005 Waiting for acquire command  
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:17.766715 23342  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:17.766777 9  
-# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:17.919766 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.042324 Acquiring data  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:18.042377 Acquire  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.437877 Waiting for 7OK response
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.743062 Reading image file /ramdisk/current_0000.tiff
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:17.756966 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:17.757005 Waiting for acquire command
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:17.766715 23342
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:17.766777 9
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:17.919766 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.042324 Acquiring data
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:18.042377 Acquire
 # XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:18.042401 Acquiring STATE MINOR
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.111180 Waiting for 7OK response  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.673632 Reading image file /ramdisk/current_0000.tiff  
-# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:18.688266 Done  
-# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.688318 Waiting for acquire command  
-# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:18.697376 23343  
-# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:18.697448 10  
-# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:18.825073 Done  
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.111180 Waiting for 7OK response
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.673632 Reading image file /ramdisk/current_0000.tiff
+# XF:11BMB-ES{Det:PIL2M}:cam1:Acquire 2023-03-20 15:25:18.688266 Done
+# XF:11BMB-ES{Det:PIL2M}:cam1:StatusMessage_RBV 2023-03-20 15:25:18.688318 Waiting for acquire command
+# XF:11BMB-ES{Det:PIL2M}:Trans1:ArrayCounter_RBV 2023-03-20 15:25:18.697376 23343
+# XF:11BMB-ES{Det:PIL2M}:TIFF1:ArrayCounter_RBV 2023-03-20 15:25:18.697448 10
+# XF:11BMB-ES{Det:PIL2M}:cam1:AcquireBusy 2023-03-20 15:25:18.825073 Done
 
 
 def test_plan(detector=None):
@@ -3246,7 +3281,7 @@ Notes at Mar 22, 2023, the 4th day at CMS
 #check the beam position in USB cam1
 #
 
-#the start edge 
+#the start edge
 In [165]: wsam()
 smx = 0.0
 smy = 39.23188125
@@ -3290,7 +3325,7 @@ Notes March 23, 2023
 name='GD4-113-1_Tb50C'
 laserPower = 1.1V (2.3w)
 
-there is unexpected ~10s delay on every point during alignment. the bug is gone after restart. 
+there is unexpected ~10s delay on every point during alignment. the bug is gone after restart.
 
 10:40 KY loaded "real scientific sample 3
 name='GD4-113-1-2nd_Tb50C'
@@ -3333,7 +3368,7 @@ RE(sam.run_initial_alignment(start_x=0, end_x=22))  #align samples at smx=0 and 
 #     det.tiff.kind = 'omitted'
 #     det.tiff.disable_on_stage()
 #     det.stats4.total.kind='hinted'
-   
+
 
 #     @bpp.stage_decorator([det])
 #     @bpp.monitor_during_decorator([det.stats4.total, mtr])
@@ -3430,7 +3465,7 @@ RE(sam.run_initial_alignment(start_x=0, end_x=22))  #align samples at smx=0 and 
 #         yield from bps.mv(mtr.velocity, velocity)
 
 #         print(f"Number of acquired images: {num}. Exposure time: {exp_time}")
-        
+
 #         yield from bps.mv(det.cam.acquire_time, exp_time - 0.005)
 #         yield from bps.mv(det.cam.acquire_period, exp_time)
 
@@ -3449,7 +3484,7 @@ RE(sam.run_initial_alignment(start_x=0, end_x=22))  #align samples at smx=0 and 
 #     frame_roi2_int = trim_list(frame_roi2_int, num)
 #     frame_roi3_int = trim_list(frame_roi3_int, num)
 #     frame_roi4_int = trim_list(frame_roi4_int, num)
-    
+
 #     print(f"frame_numbers = {frame_numbers}")
 #     print(f"frame_timestamps = {frame_timestamps}")
 #     print(f"mtr_pos = {frame_mtr_pos}")
@@ -3546,7 +3581,7 @@ def fake_fly3(det, mtr, start, stop, step, exp_time):
         yield from bps.mv(mtr.velocity, velocity)
 
         print(f"Number of acquired images: {num}. Exposure time: {exp_time}")
-        
+
         yield from bps.mv(det.cam.acquire_time, exp_time - 0.005)
         yield from bps.mv(det.cam.acquire_period, exp_time)
 
@@ -3569,7 +3604,7 @@ def fake_fly3(det, mtr, start, stop, step, exp_time):
                 n_current += 1
             vals[n] = v_current
         return vals
-    
+
     # 0-th frame is discarded during trimming
     _ = frame_mtr_pos
     frame_mtr_pos = [_[0]] + [(_[n] + _[n - 1]) / 2 for n in range(1, len(_))]
@@ -3616,7 +3651,7 @@ def fake_fly3(det, mtr, start, stop, step, exp_time):
 
 
 def align_motor_y(det, mtr, start_rel, stop_rel, step, exp_time):
-    
+
     mtr_current = mtr.position
     start, stop = mtr_current + start_rel, mtr_current + stop_rel
 
@@ -3642,13 +3677,13 @@ def align_motor_y(det, mtr, start_rel, stop_rel, step, exp_time):
         yield from bps.mv(det.cam.num_images, 1)
         yield from bps.trigger(det, group='fake_fly')
         yield from bps.wait(group='fake_fly')
-        return cen        
+        return cen
 
     return (yield from inner())
 
 
 def align_motor_th(det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True):
-    
+
     mtr_current = mtr.position
     start, stop = mtr_current + start_rel, mtr_current + stop_rel
 
@@ -3675,7 +3710,7 @@ def align_motor_th(det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True
 
         yield from bps.mv(det.cam.num_images, 1)
         yield from bps.trigger(det, group='fake_fly')
-        yield from bps.wait(group='fake_fly')        
+        yield from bps.wait(group='fake_fly')
         return cen
 
     return (yield from inner())
@@ -3690,13 +3725,43 @@ def align_stub(det, exp_time=0.5):
     return ceny, centh
 
 
-def fast_align(det=None, reflection_angle=0.12):
+def align_test2():
+    det = pilatus2M
+
+    @bpp.stage_decorator([det])
+    def inner():
+        yield from align_stub(det)
+
+    yield from inner()
+
+
+def fast_align(det=None):
+    """
+    Attempt to align the detector.
+
+    This is not a plan (produces no events), but expects the detector to be
+    unstaged.
+
+    This will:
+
+    1. use a software flyscan to collect measurements
+    2. fit a peak
+    3. move to the center of the peak
+
+    in both the smy and sth motors.
+
+    If too far from aligned will fail catastrophically.
+
+    Returns
+    -------
+    y_center, th_center
+    """
     if det is None:
         det = pilatus2M
     exp_time = 0.3
     yield from cms.modeAlignment()
     # beam.setTransmission(1e-6)
-    
+
 
     @bpp.stage_decorator([det])
     def inner():
@@ -3709,18 +3774,10 @@ def fast_align(det=None, reflection_angle=0.12):
         det.tiff.enable_on_stage()
 
 
-def align_test2():
-    det = pilatus2M
-
-    @bpp.stage_decorator([det])
-    def inner():
-        yield from align_stub(det)
-
-    yield from inner()
-
-
-
 def agent_feedback_plan(sample_x, md=None):
+    """
+    Plan for adaptive round 2}
+    """
     md = md or {}
 
     yield from sam.align_lookup(sample_x)
@@ -3730,13 +3787,32 @@ def agent_feedback_plan(sample_x, md=None):
     yield from sam.measure(1, **md)
     print("DONE")
 
+
 def agent_bootstrap_alignment():
     yield from sam.run_initial_alignment()
 
 # from collections.abc import List
 
+
 def agent_start_sample(init_x_pos: list[float]):
-    
+    """
+    The plan to start an adaptive experiment.
+
+    This plan:
+
+    - goes to the first point
+    - turns on the laser
+    - restarts the "clock"
+    - aligns the sample
+    - sets the state for the look up to align along the length
+    - takes the first N points to prime the agents
+
+
+    Parameters
+    ----------
+    init_x_pos : list[float]
+        The initial sample positions to take data at.
+    """
     sam.end_x = 61.8545
     sam.end_y = 17.918750000000003
     sam.end_th = 1.0806249999999995
@@ -3744,7 +3820,7 @@ def agent_start_sample(init_x_pos: list[float]):
     calib_x, *_ = init_x_pos
     yield from move_sample_with_laser(calib_x)
     yield from cms.modeAlignment()
-    
+
     sam.reset_clock()
     RE.md['sample_clock_zero'] = sam.clock_zero
     yield from bps.mv(laser.manual_button, 1)
@@ -3756,10 +3832,20 @@ def agent_start_sample(init_x_pos: list[float]):
 
 
 def agent_stop_sample():
+    """
+    Plan to run when the agent is done and would like no more data.
+
+    Turns off the laser.
+    """
     yield from bps.mv(laser.manual_button, 0)
 
 
 def move_sample_with_laser(xpos):
+    """
+    Moves the sample x and laserx in sync
+
+    TODO: make this a pseudo positioner
+    """
     cur_x = yield from bps.rd(smx)
 
     delta = xpos - cur_x
@@ -3767,28 +3853,54 @@ def move_sample_with_laser(xpos):
     yield from bps.mvr(smx, delta, laserx, -delta)
 
 
-def agent_feedback_time_plan(sample_x: float, target_time: float, align: bool =False, exposure:float=1,  md=None):
+def agent_feedback_time_plan(
+        sample_x: float,
+        target_time: float,
+        align: bool = False,
+        exposure: float = 1,
+        md=None
+):
+    """
+    The main data acqusition plan for the adaptive experiments
+
+    Parameters
+    ----------
+    sample_x : float
+        The absolute position to measure the sample at transverse to beam (and along gradient)
+
+    target_time : float
+        Seconds from epoch.  Do not take the data before this wall time.  If in the past, take
+        data as soon as possible
+
+    align : bool, optional
+        If `fast_align` should be used before taking data
+
+    exposure : float, optional
+        The exposure time in seconds.
+
+    md : dict, optional
+        Any additional payload to put in the start document.
+
+
+    """
     import time as ttime
 
     md = md or {}
 
-    
-    # yield from sam.align_lookup(sample_x)
-    # yield from  
+    # this lookup table is primed by agent_start_sample
+    # it is just linear interpolation
     xpos, ypos, thpos = sam.calc_lookuptable(sample_x)
 
     yield from move_sample_with_laser(xpos)
     yield from bps.mv(smy, ypos, sth, thpos)
-        
-    if align:    
-        #move to the position in lookup table
-        yield from cms.modeAlignment()
+
+    if align:
         yield from fast_align()
-    
-    now = ttime.time()
-    lag = target_time - now
 
     yield from cms.modeMeasurement_plan()
+
+    now = ttime.time()
+    lag = target_time - now
 
     if lag > 0:
         yield from bps.sleep(lag)
@@ -3805,8 +3917,8 @@ sth = 1.2385937499999997
 
 2023,May, 22
 
-align with bare Si wafer. 
-Laser is set 4mm away from the edge of the diving board. 
+align with bare Si wafer.
+Laser is set 4mm away from the edge of the diving board.
 
 The clamp edge of the diving board
 In [84]: wsam()
@@ -3856,7 +3968,7 @@ Transient Scan ID: 1060961     Time: 2023-05-22 19:58:21
 Persistent Unique Scan ID: 'afb1ed8e-0363-4d59-a23c-5a446d3a09cf'
 /nsls2/conda/envs/2023-2.0-py310-tiled/lib/python3.10/site-packages/nslsii/ad33.py:82: UserWarning: .dispatch is deprecated, use .generate_datum instead
   self.dispatch(self._image_name, ttime.time())
-New stream: 'primary'                                                          
+New stream: 'primary'
 +-----------+------------+------------------------+------------------------+------------------------+
 |   seq_num |       time | pilatus2M_stats2_total | pilatus2M_stats3_total | pilatus2M_stats4_total |
 +-----------+------------+------------------------+------------------------+------------------------+
@@ -3979,10 +4091,10 @@ In [100]: def tmp():
      ...:     yield from bp.count([pilatus2M, core_laser], 100)
      ...:     yield from bps.mv(laser.manual_button, 0)
      ...:     yield from beam.off()
-     ...: 
-     ...: 
+     ...:
+     ...:
 
-In [101]: 
+In [101]:
 
 In [101]: pta.setLaserPower(8)
 PTA> Setting laser to 8.00 W (using control voltage of 1.86 V)
@@ -3994,7 +4106,7 @@ Transient Scan ID: 1060962     Time: 2023-05-22 20:00:43
 Persistent Unique Scan ID: '21042f80-ae1a-4b9b-bd8a-7158ec0dad77'
 /nsls2/conda/envs/2023-2.0-py310-tiled/lib/python3.10/site-packages/nslsii/ad33.py:82: UserWarning: .dispatch is deprecated, use .generate_datum instead
   self.dispatch(self._image_name, ttime.time())
-New stream: 'primary'                                                          
+New stream: 'primary'
 +-----------+------------+------------------------+------------------------+------------------------+
 |   seq_num |       time | pilatus2M_stats2_total | pilatus2M_stats3_total | pilatus2M_stats4_total |
 +-----------+------------+------------------------+------------------------+------------------------+
