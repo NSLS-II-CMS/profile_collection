@@ -15,9 +15,10 @@ class PhotoThermalAnnealer:
     def __init__(self, print_code="PTA> "):
 
         # self.controlTTL_PV = 'XF:11BMB-ES{IO}AO:3-SP'
-        self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
+        # self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
         # self.powerV_PV = 'XF:11BMB-ES{IO}AO:4-SP'
         self.powerV_PV = "XF:11BM-ES{Ecat:AO1}1"
+        self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
 
         self.print_code = print_code
         # if verbosity>=3:

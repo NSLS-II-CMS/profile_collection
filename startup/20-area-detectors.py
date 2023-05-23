@@ -42,7 +42,7 @@ print("The current stage is {}".format(beamline_stage))
 # beamline_stage = 'open_MAXS' #for using the upstream stage
 if beamline_stage == "open_MAXS" or beamline_stage == "BigHuber":
     Pilatus800_on = False
-    Pilatus800_2_on = True
+    Pilatus800_2_on = False
 elif beamline_stage == "default":
     Pilatus800_on = True
     Pilatus800_2_on = False

@@ -72,12 +72,62 @@ INTENSITY_EXPECTED_025 = INTENSITY_EXPECTED_050 * 0.5
 def get_default_stage():
     return stg
 
-class Laser(Device):
-    pulse_width = Cpt(EpicsSignal, 'Width-SP')
-    cmd = Cpt(EpicsSignal, 'Cmd')
-    turn_on = Cpt(EpicsSignal, 'Out-Sel')
+from ophyd import Device, Component as Cpt, EpicsSignal, EpicsSignalRO
 
-laser = Laser('biome:{Trigger}', name="laser")
+class PairSP(Device):
+    sp = Cpt(EpicsSignal, '-SP', kind='normal')
+    rb = Cpt(EpicsSignalRO, '-RB', kind='hinted')
+
+    def set(self, value, **kwargs):
+        return self.sp.set(value, **kwargs)
+
+class PairSEL(Device):
+    sel = Cpt(EpicsSignal, '-Sel', kind='normal')
+    rb = Cpt(EpicsSignalRO, '-RB', kind='hinted', string=True)
+
+    def set(self, value, **kwargs):
+        return self.sel.set(value, **kwargs)
+    
+class PairCMD(Device):
+    cmd = Cpt(EpicsSignal, '-CMD', kind='omitted')
+    rb = Cpt(EpicsSignalRO, '-RB', kind='hinted')
+
+    def set(self, value, **kwargs):
+        return self.sel.set(value, **kwargs)
+
+
+class Laser(Device):
+    # Set pulse width for output
+    # Milliseconds units
+    width = Cpt(PairSP, 'OutWidthSet:1')
+    # Set delay between input trigger and output trigger
+    # Milliseconds units
+    delay = Cpt(PairSP, 'OutDelaySet:1')
+    # Set number of discrete pulses per trigger event
+    pulses = Cpt(PairSP, 'OutPulsesSet:1')
+
+    # Read inputs
+    # 1 = PV trigger, 2 = physical trigger
+    input1 = Cpt(EpicsSignalRO, 'Input:1-RB')
+    input2 = Cpt(EpicsSignalRO, 'Input:2-RB')    
+
+    # Enable/disable trigger inputs
+    # 1 = PV trigger, 2 = physical trigger
+    pv_bitmask = Cpt(PairSEL, 'InMaskBit:1')
+    physical_bitmank = Cpt(PairSEL, 'InMaskBit:2')
+
+    # PV Trigger
+    pv_trigger = Cpt(PairCMD, 'Trigger:PV')
+
+    # Enable/disable output trigger mode
+    trigger_mode = Cpt(PairSEL, 'OutMaskBit:1')
+
+    # Output override and output readback
+    # Override only works when trigger disabled
+    manual_button = Cpt(PairSEL, 'Output:1')
+
+laser = Laser('XF:11BM-CT{BIOME-MTO:1}', name='laser')
+
 
 class SampleTSAXS(SampleTSAXS_Generic):
     def __init__(self, name, base=None, **md):
@@ -2847,7 +2897,7 @@ cms.SAXS.setCalibration([756, 1079], 5.83, [-65, -73])  # 20201021, 13.5 keV
 # RE.md['experiment_group'] = 'MNoack'
 RE.md["experiment_group"] = "KYager"
 # RE.md['experiment_alias_directory'] = '/nsls2/xf11bm/data/2020_3/MNoack/Exp1/'
-RE.md["experiment_alias_directory"] = "/nsls2/data/cms/legacy/xf11bm/data/2023_1/beamline/PTA2/"
+RE.md["experiment_alias_directory"] = "/nsls2/data/cms/legacy/xf11bm/data/2023_2/PTA/"
 RE.md["experiment_user"] = "TBD"
 RE.md["experiment_type"] = "SAXS"
 RE.md["experiment_project"] = "TBD"
@@ -2861,6 +2911,8 @@ def fake_coordinated_motion(mtr1, target1, mtr2, target2, N=1000):
     for j in range(int(N)):
         yield from bps.mv(mtr1, start1 + j * step1, mtr2, start2 + j * step2)
 
+def parallel_fake_coordinated_motion(mtr1, target1, mtr2, target2):
+    ...
 
 def fake_coordinated_motionr(mtr1, mtr2, delta, step=0.1):
     
@@ -3275,143 +3327,143 @@ RE(sam.run_initial_alignment(start_x=0, end_x=22))  #align samples at smx=0 and 
 ==>>ws1, start the queue
 '''
 
-def fake_fly(mtr, start, stop, exp_time):
-    det = pilatus2M
+# def fake_fly(mtr, start, stop, exp_time):
+#     det = pilatus2M
 
-    det.tiff.kind = 'omitted'
-    det.tiff.disable_on_stage()
-    det.stats4.total.kind='hinted'
+#     det.tiff.kind = 'omitted'
+#     det.tiff.disable_on_stage()
+#     det.stats4.total.kind='hinted'
    
 
-    @bpp.stage_decorator([det])
-    @bpp.monitor_during_decorator([det.stats4.total, mtr])
-    @bpp.run_decorator()
-    @bpp.finalize_decorator(final_plan=shutter_off)
-    def inner():
-        yield from shutter_on()
+#     @bpp.stage_decorator([det])
+#     @bpp.monitor_during_decorator([det.stats4.total, mtr])
+#     @bpp.run_decorator()
+#     @bpp.finalize_decorator(final_plan=shutter_off)
+#     def inner():
+#         yield from shutter_on()
 
-        yield from bps.trigger(det, group='fake_fly')
-        yield from bps.abs_set(mtr, stop, group='fake_fly')
-        yield from bps.wait(group='fake_fly')
+#         yield from bps.trigger(det, group='fake_fly')
+#         yield from bps.abs_set(mtr, stop, group='fake_fly')
+#         yield from bps.wait(group='fake_fly')
 
-    @bpp.reset_positions_decorator([det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period])
-    def inner2():
-        yield from bps.mv(det.cam.acquire_time, exp_time)
-        yield from bps.mv(det.cam.acquire_period, exp_time +.05)
-        total_time = np.abs(stop - start)
+#     @bpp.reset_positions_decorator([det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period])
+#     def inner2():
+#         yield from bps.mv(det.cam.acquire_time, exp_time)
+#         yield from bps.mv(det.cam.acquire_period, exp_time +.05)
+#         total_time = np.abs(stop - start)
 
-        yield from bps.mv(det.cam.num_images, num)
-        yield from bps.mv(mtr, start)
-        yield from inner()
+#         yield from bps.mv(det.cam.num_images, num)
+#         yield from bps.mv(mtr, start)
+#         yield from inner()
 
-    group_name = "setup_aligment"
-    yield from bps.abs_set(bsx, cms.bsx_pos + 3, group=group_name)
-    yield from bps.wait(group=group_name)
+#     group_name = "setup_aligment"
+#     yield from bps.abs_set(bsx, cms.bsx_pos + 3, group=group_name)
+#     yield from bps.wait(group=group_name)
 
-    beam.setTransmission(1e-6)
+#     beam.setTransmission(1e-6)
 
-    yield from inner2()
+#     yield from inner2()
 
-    yield from bps.abs_set(bsx, cms.bsx_pos, group=group_name)
-    yield from bps.wait(group_name)
+#     yield from bps.abs_set(bsx, cms.bsx_pos, group=group_name)
+#     yield from bps.wait(group_name)
 
 
-def fake_fly2_test(mtr, start, stop, step, exp_time):
+# def fake_fly2_test(mtr, start, stop, step, exp_time):
 
-    # motors: smy (+/- 2), sth (+/- 1)
-    det = pilatus2M
+#     # motors: smy (+/- 2), sth (+/- 1)
+#     det = pilatus2M
 
-    # It takes 0.4 to 0.7 s longer to complete motion, so let's add 1 s for now
-    #   It should be computed/estimated more accurately
-    num = int(np.abs(stop - start) / step)
-    total_time = num * exp_time
-    velocity = np.abs(stop - start) / total_time
+#     # It takes 0.4 to 0.7 s longer to complete motion, so let's add 1 s for now
+#     #   It should be computed/estimated more accurately
+#     num = int(np.abs(stop - start) / step)
+#     total_time = num * exp_time
+#     velocity = np.abs(stop - start) / total_time
 
-    det.tiff.kind = 'omitted'
-    det.tiff.disable_on_stage()
-    det.stats4.total.kind='hinted'
+#     det.tiff.kind = 'omitted'
+#     det.tiff.disable_on_stage()
+#     det.stats4.total.kind='hinted'
 
-    frame_numbers = []
-    frame_timestamps = []
-    frame_mtr_pos = []
-    frame_roi2_int = []
-    frame_roi3_int = []
-    frame_roi4_int = []
+#     frame_numbers = []
+#     frame_timestamps = []
+#     frame_mtr_pos = []
+#     frame_roi2_int = []
+#     frame_roi3_int = []
+#     frame_roi4_int = []
 
-    def accumulate(value, old_value, timestamp, **kwargs):
-        frame_numbers.append(value)
-        frame_timestamps.append(timestamp)
-        frame_mtr_pos.append(mtr.position)
+#     def accumulate(value, old_value, timestamp, **kwargs):
+#         frame_numbers.append(value)
+#         frame_timestamps.append(timestamp)
+#         frame_mtr_pos.append(mtr.position)
 
-    def accumulate_roi2(value, old_value, timestamp, **kwargs):
-        roi2_int = pilatus2M.stats2.total.get()
-        frame_roi2_int.append(roi2_int)
+#     def accumulate_roi2(value, old_value, timestamp, **kwargs):
+#         roi2_int = pilatus2M.stats2.total.get()
+#         frame_roi2_int.append(roi2_int)
 
-    def accumulate_roi3(value, old_value, timestamp, **kwargs):
-        roi3_int = pilatus2M.stats3.total.get()
-        frame_roi3_int.append(roi3_int)
+#     def accumulate_roi3(value, old_value, timestamp, **kwargs):
+#         roi3_int = pilatus2M.stats3.total.get()
+#         frame_roi3_int.append(roi3_int)
 
-    def accumulate_roi4(value, old_value, timestamp, **kwargs):
-        roi4_int = pilatus2M.stats4.total.get()
-        frame_roi4_int.append(roi4_int)
+#     def accumulate_roi4(value, old_value, timestamp, **kwargs):
+#         roi4_int = pilatus2M.stats4.total.get()
+#         frame_roi4_int.append(roi4_int)
 
-    @bpp.stage_decorator([det])
-    def inner():
-        cid = pilatus2M.cam.array_counter.subscribe(accumulate)
-        cid2 = pilatus2M.stats2.array_counter.subscribe(accumulate_roi2)
-        cid3 = pilatus2M.stats3.array_counter.subscribe(accumulate_roi3)
-        cid4 = pilatus2M.stats4.array_counter.subscribe(accumulate_roi4)
-        try:
-            yield from bps.trigger(det, group='fake_fly')
-            yield from bps.abs_set(mtr, stop, group='fake_fly')
-            yield from bps.wait(group='fake_fly')
-        finally:
-            pilatus2M.cam.array_counter.unsubscribe(cid)
-            pilatus2M.stats2.array_counter.unsubscribe(cid2)
-            pilatus2M.stats3.array_counter.unsubscribe(cid3)
-            pilatus2M.stats4.array_counter.unsubscribe(cid4)
+#     @bpp.stage_decorator([det])
+#     def inner():
+#         cid = pilatus2M.cam.array_counter.subscribe(accumulate)
+#         cid2 = pilatus2M.stats2.array_counter.subscribe(accumulate_roi2)
+#         cid3 = pilatus2M.stats3.array_counter.subscribe(accumulate_roi3)
+#         cid4 = pilatus2M.stats4.array_counter.subscribe(accumulate_roi4)
+#         try:
+#             yield from bps.trigger(det, group='fake_fly')
+#             yield from bps.abs_set(mtr, stop, group='fake_fly')
+#             yield from bps.wait(group='fake_fly')
+#         finally:
+#             pilatus2M.cam.array_counter.unsubscribe(cid)
+#             pilatus2M.stats2.array_counter.unsubscribe(cid2)
+#             pilatus2M.stats3.array_counter.unsubscribe(cid3)
+#             pilatus2M.stats4.array_counter.unsubscribe(cid4)
 
-    @bpp.reset_positions_decorator([det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period,
-                                    mtr.velocity])
-    def inner2():
-        yield from bps.abs_set(mtr, start, wait=True)
-        yield from bps.mv(mtr.velocity, velocity)
+#     @bpp.reset_positions_decorator([det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period,
+#                                     mtr.velocity])
+#     def inner2():
+#         yield from bps.abs_set(mtr, start, wait=True)
+#         yield from bps.mv(mtr.velocity, velocity)
 
-        print(f"Number of acquired images: {num}. Exposure time: {exp_time}")
+#         print(f"Number of acquired images: {num}. Exposure time: {exp_time}")
         
-        yield from bps.mv(det.cam.acquire_time, exp_time - 0.005)
-        yield from bps.mv(det.cam.acquire_period, exp_time)
+#         yield from bps.mv(det.cam.acquire_time, exp_time - 0.005)
+#         yield from bps.mv(det.cam.acquire_period, exp_time)
 
-        yield from bps.mv(det.cam.num_images, num)
-        yield from inner()
+#         yield from bps.mv(det.cam.num_images, num)
+#         yield from inner()
 
-    yield from inner2()
+#     yield from inner2()
 
-    def trim_list(v, num):
-        n_first = max(len(v) - num, 0)
-        return v[n_first:]
+#     def trim_list(v, num):
+#         n_first = max(len(v) - num, 0)
+#         return v[n_first:]
 
-    frame_numbers = trim_list(frame_numbers, num)
-    frame_timestamps = trim_list(frame_timestamps, num)
-    frame_mtr_pos = trim_list(frame_mtr_pos, num)
-    frame_roi2_int = trim_list(frame_roi2_int, num)
-    frame_roi3_int = trim_list(frame_roi3_int, num)
-    frame_roi4_int = trim_list(frame_roi4_int, num)
+#     frame_numbers = trim_list(frame_numbers, num)
+#     frame_timestamps = trim_list(frame_timestamps, num)
+#     frame_mtr_pos = trim_list(frame_mtr_pos, num)
+#     frame_roi2_int = trim_list(frame_roi2_int, num)
+#     frame_roi3_int = trim_list(frame_roi3_int, num)
+#     frame_roi4_int = trim_list(frame_roi4_int, num)
     
-    print(f"frame_numbers = {frame_numbers}")
-    print(f"frame_timestamps = {frame_timestamps}")
-    print(f"mtr_pos = {frame_mtr_pos}")
-    print(f"roi2 = {frame_roi2_int}")
-    print(f"roi3 = {frame_roi3_int}")
-    print(f"roi4 = {frame_roi4_int}")
+#     print(f"frame_numbers = {frame_numbers}")
+#     print(f"frame_timestamps = {frame_timestamps}")
+#     print(f"mtr_pos = {frame_mtr_pos}")
+#     print(f"roi2 = {frame_roi2_int}")
+#     print(f"roi3 = {frame_roi3_int}")
+#     print(f"roi4 = {frame_roi4_int}")
 
-    return frame_mtr_pos, frame_roi2_int, frame_roi3_int, frame_roi4_int
+#     return frame_mtr_pos, frame_roi2_int, frame_roi3_int, frame_roi4_int
 
 
-def fake_fly3_test(mtr, start, stop, step, exp_time):
+def fake_fly3(det, mtr, start, stop, step, exp_time):
 
     # motors: smy (+/- 2), sth (+/- 1)
-    det = pilatus2M
+    # det = pilatus2M
 
     # It takes 0.4 to 0.7 s longer to complete motion, so let's add 1 s for now
     #   It should be computed/estimated more accurately
@@ -3429,9 +3481,6 @@ def fake_fly3_test(mtr, start, stop, step, exp_time):
     frame_roi2_ts = []
     frame_roi3_ts = []
     frame_roi4_ts = []
-    # frame_roi2_int = []
-    # frame_roi3_int = []
-    # frame_roi4_int = []
 
     frame_roi2_total_ts = []
     frame_roi3_total_ts = []
@@ -3448,18 +3497,12 @@ def fake_fly3_test(mtr, start, stop, step, exp_time):
 
     def accumulate_roi2(value, old_value, timestamp, **kwargs):
         frame_roi2_ts.append(timestamp)
-        #roi2_int = pilatus2M.stats2.total.get()
-        #frame_roi2_int.append(roi2_int)
 
     def accumulate_roi3(value, old_value, timestamp, **kwargs):
         frame_roi3_ts.append(timestamp)
-        #roi3_int = pilatus2M.stats3.total.get()
-        #frame_roi3_int.append(roi3_int)
 
     def accumulate_roi4(value, old_value, timestamp, **kwargs):
         frame_roi4_ts.append(timestamp)
-        #roi4_int = pilatus2M.stats4.total.get()
-        #frame_roi4_int.append(roi4_int)
 
     def accumulate_roi2_total(value, old_value, timestamp, **kwargs):
         frame_roi2_total_ts.append(timestamp)
@@ -3473,7 +3516,6 @@ def fake_fly3_test(mtr, start, stop, step, exp_time):
         frame_roi4_total_ts.append(timestamp)
         frame_roi4_total.append(value)
 
-    @bpp.stage_decorator([det])
     def inner():
         cid = pilatus2M.cam.array_counter.subscribe(accumulate)
         cid2 = pilatus2M.stats2.array_counter.subscribe(accumulate_roi2)
@@ -3536,30 +3578,31 @@ def fake_fly3_test(mtr, start, stop, step, exp_time):
     total_roi3 = set_total_values(frame_roi3_ts, frame_roi3_total_ts, frame_roi3_total)
     total_roi4 = set_total_values(frame_roi4_ts, frame_roi4_total_ts, frame_roi4_total)
 
+    num = num - 1  # Discard the 1st point
+
     frame_numbers = trim_list(frame_numbers, num)
     frame_timestamps = trim_list(frame_timestamps, num)
     frame_mtr_pos = trim_list(frame_mtr_pos, num)
-    # frame_roi2_int = trim_list(frame_roi2_int, num)
-    # frame_roi3_int = trim_list(frame_roi3_int, num)
-    # frame_roi4_int = trim_list(frame_roi4_int, num)
     frame_roi2_ts = trim_list(frame_roi2_ts, num)
     frame_roi3_ts = trim_list(frame_roi3_ts, num)
     frame_roi4_ts = trim_list(frame_roi4_ts, num)
     total_roi2 = trim_list(total_roi2, num)
     total_roi3 = trim_list(total_roi3, num)
     total_roi4 = trim_list(total_roi4, num)
-    
-    print(f"frame_numbers = {frame_numbers}")
-    print(f"frame_timestamps = {frame_timestamps}")
+
+    print("**********************************************************************")
+
+    # print(f"frame_numbers = {frame_numbers}")
+    # print(f"frame_timestamps = {frame_timestamps}")
     print(f"mtr_pos = {frame_mtr_pos}")
 
-    print(f"roi2_ts = {frame_roi2_ts}")
-    print(f"roi3_ts = {frame_roi3_ts}")
-    print(f"roi4_ts = {frame_roi4_ts}")
+    # print(f"roi2_ts = {frame_roi2_ts}")
+    # print(f"roi3_ts = {frame_roi3_ts}")
+    # print(f"roi4_ts = {frame_roi4_ts}")
 
-    print(f"frame_roi2_total_ts = {frame_roi2_total_ts}")
-    print(f"frame_roi3_total_ts = {frame_roi3_total_ts}")
-    print(f"frame_roi4_total_ts = {frame_roi4_total_ts}")
+    # print(f"frame_roi2_total_ts = {frame_roi2_total_ts}")
+    # print(f"frame_roi3_total_ts = {frame_roi3_total_ts}")
+    # print(f"frame_roi4_total_ts = {frame_roi4_total_ts}")
 
     print(f"frame_roi2_total = {frame_roi2_total}")
     print(f"frame_roi3_total = {frame_roi3_total}")
@@ -3572,7 +3615,7 @@ def fake_fly3_test(mtr, start, stop, step, exp_time):
     return frame_mtr_pos, total_roi2, total_roi3, total_roi4
 
 
-def align_motor_y_test(mtr, start_rel, stop_rel, step, exp_time):
+def align_motor_y(det, mtr, start_rel, stop_rel, step, exp_time):
     
     mtr_current = mtr.position
     start, stop = mtr_current + start_rel, mtr_current + stop_rel
@@ -3580,21 +3623,31 @@ def align_motor_y_test(mtr, start_rel, stop_rel, step, exp_time):
     @bpp.finalize_decorator(final_plan=shutter_off)
     def inner():
         yield from shutter_on()
-        pos, roi2, roi3, roi4 = yield from fake_fly3_test(mtr, start, stop, step, exp_time)
+        pos, roi2, roi3, roi4 = yield from fake_fly3(det, mtr, start, stop, step, exp_time)
 
-        max_roi4 = max(roi4)
-        n_half = 0
-        for n in range(len(roi4)):
-            if roi4[n] < max_roi4 / 2:
-                n_half = n
-                break
-        
-        yield from bps.abs_set(mtr, pos[n_half], wait=True)
+        # max_roi4 = max(roi4)
+        # n_half = 0
+        # for n in range(len(roi4)):
+        #     if roi4[n] < max_roi4 / 2:
+        #         n_half = n        print(f"Center: {cen}")
 
-    yield from inner()
+        #         break
+
+        # yield from bps.abs_set(mtr, pos[n_half], wait=True)
+
+        cen, _, _ = do_fitting(pos, roi4, model_type="step")
+        print(f"Center: {cen}")
+        yield from bps.abs_set(mtr, cen, wait=True)
+
+        yield from bps.mv(det.cam.num_images, 1)
+        yield from bps.trigger(det, group='fake_fly')
+        yield from bps.wait(group='fake_fly')
+        return cen        
+
+    return (yield from inner())
 
 
-def align_motor_th_test(mtr, start_rel, stop_rel, step, exp_time, fine_scan=True):
+def align_motor_th(det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True):
     
     mtr_current = mtr.position
     start, stop = mtr_current + start_rel, mtr_current + stop_rel
@@ -3602,24 +3655,69 @@ def align_motor_th_test(mtr, start_rel, stop_rel, step, exp_time, fine_scan=True
     @bpp.finalize_decorator(final_plan=shutter_off)
     def inner():
         yield from shutter_on()
-        pos, roi2, roi3, roi4 = yield from fake_fly3_test(mtr, start, stop, step, exp_time)
+        pos, roi2, roi3, roi4 = yield from fake_fly3(det, mtr, start, stop, step, exp_time)
 
-        if fine_scan:
-            n_max = np.argmax(roi3)
-        else:
-            n_max = np.argmax(roi2)
+        # if fine_scan:
+        #     n_max = np.argmax(roi3)
+        # else:
+        #     n_max = np.argmax(roi2)
 
-        yield from bps.abs_set(mtr, pos[n_max], wait=True)
+        # yield from bps.abs_set(mtr, pos[n_max], wait=True)
 
-    yield from inner()
+        roi = roi3 if fine_scan else roi2
+        cen, _, _ = do_fitting(pos, roi, model_type="peak")
+        print(f"Center: {cen}")
+        bl_abs = 0.1
+        backlash = bl_abs if stop_rel > start_rel else -bl_abs
+        yield from bps.abs_set(mtr, cen - backlash, wait=True)
+        yield from bps.abs_set(mtr, cen, wait=True)
 
 
-def align_test():
+        yield from bps.mv(det.cam.num_images, 1)
+        yield from bps.trigger(det, group='fake_fly')
+        yield from bps.wait(group='fake_fly')        
+        return cen
+
+    return (yield from inner())
+
+
+def align_stub(det, exp_time=0.5):
+    # yield from align_motor_y(det, smy, -0.5, 0.5, 0.02, exp_time)
+    # yield from align_motor_th(det, sth, -1, 1, 0.02, exp_time, fine_scan=False)
+    ceny = yield from align_motor_y(det, smy, -0.2, 0.2, 0.01, exp_time)
+    centh = yield from align_motor_th(det, sth, -0.1, 0.1, 0.0025, exp_time, fine_scan=True)
+
+    return ceny, centh
+
+
+def fast_align(det=None, reflection_angle=0.12):
+    if det is None:
+        det = pilatus2M
     exp_time = 0.3
-    yield from align_motor_y_test(smy, -2, 2, 0.1, exp_time)
-    yield from align_motor_th_test(sth, -1, 1, 0.05, exp_time, fine_scan=False)
-    yield from align_motor_y_test(smy, -0.2, 0.2, 0.005, exp_time)
-    yield from align_motor_th_test(sth, -0.1, 0.1, 0.0025, exp_time, fine_scan=True)
+    yield from cms.modeAlignment()
+    # beam.setTransmission(1e-6)
+    
+
+    @bpp.stage_decorator([det])
+    def inner():
+        return (yield from align_stub(det=det, exp_time=exp_time))
+
+    det.tiff.disable_on_stage()
+    try:
+        return (yield from inner())
+    finally:
+        det.tiff.enable_on_stage()
+
+
+def align_test2():
+    det = pilatus2M
+
+    @bpp.stage_decorator([det])
+    def inner():
+        yield from align_stub(det)
+
+    yield from inner()
+
 
 
 def agent_feedback_plan(sample_x, md=None):
@@ -3634,3 +3732,379 @@ def agent_feedback_plan(sample_x, md=None):
 
 def agent_bootstrap_alignment():
     yield from sam.run_initial_alignment()
+
+# from collections.abc import List
+
+def agent_start_sample(init_x_pos: list[float]):
+    
+    sam.end_x = 61.8545
+    sam.end_y = 17.918750000000003
+    sam.end_th = 1.0806249999999995
+
+    calib_x, *_ = init_x_pos
+    yield from move_sample_with_laser(calib_x)
+    yield from cms.modeAlignment()
+    
+    sam.reset_clock()
+    RE.md['sample_clock_zero'] = sam.clock_zero
+    yield from bps.mv(laser.manual_button, 1)
+
+    sam.start_x = calib_x
+    sam.start_y, sam.start_th = yield from fast_align()
+    for x in init_x_pos:
+        yield from agent_feedback_time_plan(x, 0, align=False)
+
+
+def agent_stop_sample():
+    yield from bps.mv(laser.manual_button, 0)
+
+
+def move_sample_with_laser(xpos):
+    cur_x = yield from bps.rd(smx)
+
+    delta = xpos - cur_x
+
+    yield from bps.mvr(smx, delta, laserx, -delta)
+
+
+def agent_feedback_time_plan(sample_x: float, target_time: float, align: bool =False, exposure:float=1,  md=None):
+    import time as ttime
+
+    md = md or {}
+
+    
+    # yield from sam.align_lookup(sample_x)
+    # yield from  
+    xpos, ypos, thpos = sam.calc_lookuptable(sample_x)
+
+    yield from move_sample_with_laser(xpos)
+    yield from bps.mv(smy, ypos, sth, thpos)
+        
+    if align:    
+        #move to the position in lookup table
+        yield from cms.modeAlignment()
+        yield from fast_align()
+    
+    now = ttime.time()
+    lag = target_time - now
+
+    yield from cms.modeMeasurement_plan()
+
+    if lag > 0:
+        yield from bps.sleep(lag)
+
+    yield from sam.measure(exposure, **md)
+
+'''
+In [84]: wsam()
+smx = 0.0
+smy = 17.543750000000003
+sth = 1.2385937499999997
+
+
+
+2023,May, 22
+
+align with bare Si wafer. 
+Laser is set 4mm away from the edge of the diving board. 
+
+The clamp edge of the diving board
+In [84]: wsam()
+smx = 62.554
+smy = 17.543750000000003
+sth = 1.2385937499999997
+
+The laser edge of the diving board
+In [95]: wsam()
+smx = 41.8545
+smy = 17.6
+sth = 1.3318750000000001
+
+
+align at laser position
+In [102]: wsam()
+smx = 45.8545
+smy = 17.1875
+sth = 1.0812500000000007
+
+align at the clamp position
+In [119]: wsam()
+smx = 61.8545
+smy = 17.918750000000003
+sth = 1.0806249999999995
+
+
+
+align at laser position with laser ON=2.3
+In [64]: wsam()
+smx = 45.7995
+smy = 17.16690625
+sth = 1.22453125
+
+
+
+
+===================Heat equilibrium --30-50s at 8 and 16w
+
+In [98]: pta.setLaserPower(16)
+PTA> Setting laser to 16.00 W (using control voltage of 2.93 V)
+
+In [99]: RE(tmp())
+
+
+Transient Scan ID: 1060961     Time: 2023-05-22 19:58:21
+Persistent Unique Scan ID: 'afb1ed8e-0363-4d59-a23c-5a446d3a09cf'
+/nsls2/conda/envs/2023-2.0-py310-tiled/lib/python3.10/site-packages/nslsii/ad33.py:82: UserWarning: .dispatch is deprecated, use .generate_datum instead
+  self.dispatch(self._image_name, ttime.time())
+New stream: 'primary'                                                          
++-----------+------------+------------------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats2_total | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+------------------------+
+|         1 | 19:58:22.2 |                   1018 |                    202 |                   2028 |
+|         2 | 19:58:23.1 |                    995 |                    183 |                   2130 |
+|         3 | 19:58:24.0 |                    847 |                    135 |                   2037 |
+|         4 | 19:58:24.9 |                    864 |                    133 |                   1949 |
+|         5 | 19:58:25.7 |                    939 |                    141 |                   1888 |
+|         6 | 19:58:26.6 |                   1012 |                    158 |                   1966 |
+|         7 | 19:58:27.4 |                    946 |                    154 |                   1971 |
+|         8 | 19:58:28.4 |                    849 |                    128 |                   2100 |
+|         9 | 19:58:29.2 |                    938 |                    147 |                   2093 |
+|        10 | 19:58:30.1 |                    960 |                    154 |                   2165 |
+|        11 | 19:58:30.9 |                    968 |                    162 |                   2168 |
+|        12 | 19:58:31.9 |                    909 |                    131 |                   2202 |
+|        13 | 19:58:32.7 |                    892 |                    113 |                   2254 |
+|        14 | 19:58:33.6 |                    896 |                    121 |                   2063 |
+|        15 | 19:58:34.4 |                    864 |                    117 |                   2317 |
+|        16 | 19:58:35.4 |                    835 |                    114 |                   2369 |
+|        17 | 19:58:36.2 |                    809 |                    102 |                   2271 |
+|        18 | 19:58:37.1 |                    763 |                     94 |                   2303 |
+|        19 | 19:58:38.0 |                    847 |                    119 |                   2424 |
+|        20 | 19:58:38.9 |                    762 |                    106 |                   2531 |
+|        21 | 19:58:39.7 |                    733 |                    103 |                   2521 |
+|        22 | 19:58:40.5 |                    704 |                     95 |                   2512 |
+|        23 | 19:58:41.4 |                    719 |                     91 |                   2552 |
+|        24 | 19:58:42.4 |                    721 |                     89 |                   2597 |
+|        25 | 19:58:43.2 |                    693 |                     75 |                   2636 |
+|        26 | 19:58:44.0 |                    721 |                     80 |                   2629 |
+|        27 | 19:58:44.9 |                    694 |                     81 |                   2630 |
+|        28 | 19:58:45.9 |                    694 |                     80 |                   2806 |
+|        29 | 19:58:46.7 |                    638 |                     75 |                   2750 |
+|        30 | 19:58:47.5 |                    648 |                     85 |                   2895 |
+|        31 | 19:58:48.3 |                    731 |                     79 |                   2905 |
+|        32 | 19:58:49.1 |                    586 |                     74 |                   2703 |
+|        33 | 19:58:50.0 |                    644 |                     67 |                   2970 |
+|        34 | 19:58:50.9 |                    651 |                     72 |                   2824 |
+|        35 | 19:58:51.7 |                    696 |                     91 |                   3065 |
+|        36 | 19:58:52.5 |                    617 |                     64 |                   3013 |
+|        37 | 19:58:53.3 |                    605 |                     72 |                   2701 |
+|        38 | 19:58:54.2 |                    533 |                     70 |                   2638 |
+|        39 | 19:58:55.0 |                    571 |                     74 |                   2897 |
+|        40 | 19:58:55.8 |                    618 |                     84 |                   3018 |
+|        41 | 19:58:56.7 |                    585 |                     69 |                   3036 |
+|        42 | 19:58:57.5 |                    546 |                     73 |                   2883 |
+|        43 | 19:58:58.4 |                    564 |                     64 |                   2906 |
+|        44 | 19:58:59.3 |                    544 |                     62 |                   2928 |
+|        45 | 19:59:00.1 |                    580 |                     73 |                   3029 |
+|        46 | 19:59:00.9 |                    545 |                     67 |                   3123 |
+|        47 | 19:59:01.8 |                    540 |                     81 |                   2943 |
+|        48 | 19:59:02.6 |                    536 |                     83 |                   3071 |
+|        49 | 19:59:03.5 |                    517 |                     72 |                   3167 |
++-----------+------------+------------------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats2_total | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+------------------------+
+|        50 | 19:59:04.3 |                    526 |                     74 |                   3077 |
+|        51 | 19:59:05.1 |                    522 |                     77 |                   3213 |
+|        52 | 19:59:05.9 |                    500 |                     63 |                   2978 |
+|        53 | 19:59:06.9 |                    504 |                     59 |                   3044 |
+|        54 | 19:59:07.7 |                    555 |                     92 |                   3196 |
+|        55 | 19:59:08.6 |                    494 |                     76 |                   3231 |
+|        56 | 19:59:09.4 |                    512 |                     83 |                   3030 |
+|        57 | 19:59:10.3 |                    509 |                     71 |                   2946 |
+|        58 | 19:59:11.2 |                    480 |                     76 |                   3116 |
+|        59 | 19:59:12.0 |                    492 |                     70 |                   3052 |
+|        60 | 19:59:12.8 |                    515 |                     78 |                   3137 |
+|        61 | 19:59:13.8 |                    490 |                     79 |                   3064 |
+|        62 | 19:59:14.7 |                    496 |                     70 |                   3200 |
+|        63 | 19:59:15.5 |                    513 |                     89 |                   3085 |
+|        64 | 19:59:16.3 |                    520 |                     80 |                   3298 |
+|        65 | 19:59:17.2 |                    493 |                     59 |                   3052 |
+|        66 | 19:59:18.0 |                    489 |                     76 |                   3338 |
+|        67 | 19:59:18.8 |                    470 |                     61 |                   3167 |
+|        68 | 19:59:19.8 |                    471 |                     53 |                   3013 |
+|        69 | 19:59:20.7 |                    476 |                     65 |                   3124 |
+|        70 | 19:59:21.5 |                    526 |                     87 |                   3250 |
+|        71 | 19:59:22.3 |                    471 |                     67 |                   3093 |
+|        72 | 19:59:23.1 |                    508 |                     75 |                   3123 |
+|        73 | 19:59:23.9 |                    471 |                     75 |                   3171 |
+|        74 | 19:59:24.8 |                    481 |                     77 |                   3360 |
+|        75 | 19:59:25.6 |                    444 |                     75 |                   3163 |
+|        76 | 19:59:26.5 |                    510 |                     61 |                   3186 |
+|        77 | 19:59:27.3 |                    469 |                     80 |                   3092 |
+|        78 | 19:59:28.1 |                    460 |                     71 |                   3079 |
+|        79 | 19:59:28.9 |                    428 |                     88 |                   3428 |
+|        80 | 19:59:29.9 |                    511 |                     98 |                   3118 |
+|        81 | 19:59:30.7 |                    499 |                     76 |                   3169 |
+|        82 | 19:59:31.5 |                    474 |                     69 |                   3112 |
+|        83 | 19:59:32.3 |                    470 |                     83 |                   3045 |
+|        84 | 19:59:33.1 |                    503 |                     85 |                   3140 |
+|        85 | 19:59:34.0 |                    422 |                     70 |                   3265 |
+|        86 | 19:59:34.8 |                    452 |                     71 |                   3226 |
+|        87 | 19:59:35.7 |                    445 |                     83 |                   3250 |
+|        88 | 19:59:36.5 |                    456 |                     73 |                   3069 |
+|        89 | 19:59:37.4 |                    445 |                     66 |                   3219 |
+|        90 | 19:59:38.4 |                    447 |                     68 |                   3137 |
+|        91 | 19:59:39.1 |                    421 |                     49 |                   2991 |
+|        92 | 19:59:39.9 |                    479 |                     75 |                   3266 |
+|        93 | 19:59:40.9 |                    459 |                     61 |                   3229 |
+|        94 | 19:59:41.7 |                    463 |                     92 |                   3273 |
+|        95 | 19:59:42.5 |                    482 |                     75 |                   3366 |
+|        96 | 19:59:43.3 |                    469 |                     77 |                   2825 |
+|        97 | 19:59:44.4 |                    454 |                     65 |                   3137 |
+|        98 | 19:59:45.2 |                    536 |                    103 |                   3153 |
+|        99 | 19:59:46.0 |                    504 |                     59 |                   3197 |
++-----------+------------+------------------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats2_total | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+------------------------+
+|       100 | 19:59:46.9 |                    512 |                     80 |                   3354 |
++-----------+------------+------------------------+------------------------+------------------------+
+generator count ['afb1ed8e'] (scan num: 1060961)
+
+
+
+Out[99]: ('afb1ed8e-0363-4d59-a23c-5a446d3a09cf',)
+
+In [100]: def tmp():
+     ...:     yield from beam.on()
+     ...:     yield from bps.mv(laser.manual_button, 1)
+     ...:     yield from bp.count([pilatus2M, core_laser], 100)
+     ...:     yield from bps.mv(laser.manual_button, 0)
+     ...:     yield from beam.off()
+     ...: 
+     ...: 
+
+In [101]: 
+
+In [101]: pta.setLaserPower(8)
+PTA> Setting laser to 8.00 W (using control voltage of 1.86 V)
+
+In [102]: RE(tmp())
+
+
+Transient Scan ID: 1060962     Time: 2023-05-22 20:00:43
+Persistent Unique Scan ID: '21042f80-ae1a-4b9b-bd8a-7158ec0dad77'
+/nsls2/conda/envs/2023-2.0-py310-tiled/lib/python3.10/site-packages/nslsii/ad33.py:82: UserWarning: .dispatch is deprecated, use .generate_datum instead
+  self.dispatch(self._image_name, ttime.time())
+New stream: 'primary'                                                          
++-----------+------------+------------------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats2_total | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+------------------------+
+|         1 | 20:00:44.2 |                    997 |                    252 |                   1635 |
+|         2 | 20:00:45.1 |                   1014 |                    269 |                   1715 |
+|         3 | 20:00:46.0 |                    968 |                    226 |                   1641 |
+|         4 | 20:00:46.9 |                    918 |                    215 |                   1635 |
+|         5 | 20:00:47.9 |                    946 |                    204 |                   1637 |
+|         6 | 20:00:48.8 |                    957 |                    245 |                   1667 |
+|         7 | 20:00:49.7 |                   1078 |                    265 |                   1608 |
+|         8 | 20:00:50.6 |                    995 |                    229 |                   1729 |
+|         9 | 20:00:51.5 |                    964 |                    236 |                   1608 |
+|        10 | 20:00:52.4 |                    977 |                    256 |                   1757 |
+|        11 | 20:00:53.4 |                    944 |                    225 |                   1723 |
+|        12 | 20:00:54.2 |                    997 |                    244 |                   1826 |
+|        13 | 20:00:55.1 |                   1010 |                    242 |                   1678 |
+|        14 | 20:00:56.0 |                    907 |                    235 |                   1819 |
+|        15 | 20:00:56.9 |                   1014 |                    249 |                   1835 |
+|        16 | 20:00:57.8 |                    996 |                    235 |                   1935 |
+|        17 | 20:00:58.7 |                   1025 |                    225 |                   1919 |
+|        18 | 20:00:59.5 |                    981 |                    234 |                   1829 |
+|        19 | 20:01:00.5 |                    956 |                    194 |                   1848 |
+|        20 | 20:01:01.4 |                   1094 |                    236 |                   1904 |
+|        21 | 20:01:02.4 |                    926 |                    193 |                   2014 |
+|        22 | 20:01:03.3 |                    992 |                    221 |                   2068 |
+|        23 | 20:01:04.2 |                    863 |                    182 |                   2027 |
+|        24 | 20:01:05.0 |                    951 |                    204 |                   2019 |
+|        25 | 20:01:05.9 |                    961 |                    212 |                   2087 |
+|        26 | 20:01:06.8 |                   1031 |                    225 |                   2172 |
+|        27 | 20:01:07.7 |                    980 |                    205 |                   2035 |
+|        28 | 20:01:08.6 |                    974 |                    209 |                   2145 |
+|        29 | 20:01:09.4 |                    971 |                    202 |                   2233 |
+|        30 | 20:01:10.3 |                   1042 |                    220 |                   2190 |
+|        31 | 20:01:11.4 |                    940 |                    222 |                   2094 |
+|        32 | 20:01:12.3 |                    794 |                    170 |                   2154 |
+|        33 | 20:01:13.2 |                    862 |                    188 |                   2019 |
+|        34 | 20:01:14.2 |                    900 |                    184 |                   2265 |
+|        35 | 20:01:15.0 |                    993 |                    189 |                   2259 |
+|        36 | 20:01:15.9 |                    842 |                    161 |                   2128 |
+|        37 | 20:01:16.8 |                    836 |                    169 |                   2199 |
+|        38 | 20:01:17.7 |                    886 |                    171 |                   2317 |
+|        39 | 20:01:18.5 |                    871 |                    176 |                   2229 |
+|        40 | 20:01:19.4 |                    917 |                    166 |                   2140 |
+|        41 | 20:01:20.3 |                    880 |                    175 |                   2266 |
+|        42 | 20:01:21.2 |                    890 |                    194 |                   2316 |
+|        43 | 20:01:22.1 |                    854 |                    185 |                   2217 |
+|        44 | 20:01:23.0 |                    854 |                    180 |                   2224 |
+|        45 | 20:01:23.9 |                    978 |                    199 |                   2277 |
+|        46 | 20:01:24.8 |                    837 |                    171 |                   2287 |
+|        47 | 20:01:25.7 |                    816 |                    171 |                   2376 |
+|        48 | 20:01:26.6 |                    863 |                    188 |                   2275 |
+|        49 | 20:01:27.5 |                    903 |                    189 |                   2409 |
++-----------+------------+------------------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats2_total | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+------------------------+
+|        50 | 20:01:28.4 |                    828 |                    177 |                   2349 |
+|        51 | 20:01:29.4 |                    834 |                    168 |                   2273 |
+|        52 | 20:01:30.3 |                    829 |                    168 |                   2308 |
+|        53 | 20:01:31.1 |                    807 |                    161 |                   2391 |
+|        54 | 20:01:32.0 |                    808 |                    149 |                   2413 |
+|        55 | 20:01:32.9 |                    839 |                    172 |                   2408 |
+|        56 | 20:01:33.7 |                    864 |                    186 |                   2403 |
+|        57 | 20:01:34.6 |                    864 |                    170 |                   2368 |
+|        58 | 20:01:35.5 |                    738 |                    162 |                   2294 |
+|        59 | 20:01:36.4 |                    805 |                    171 |                   2385 |
+|        60 | 20:01:37.4 |                    866 |                    185 |                   2551 |
+|        61 | 20:01:38.3 |                    826 |                    167 |                   2312 |
+|        62 | 20:01:39.1 |                    799 |                    161 |                   2322 |
+|        63 | 20:01:40.1 |                    818 |                    164 |                   2438 |
+|        64 | 20:01:41.0 |                    806 |                    177 |                   2416 |
+|        65 | 20:01:42.0 |                    783 |                    175 |                   2356 |
+|        66 | 20:01:42.9 |                    839 |                    195 |                   2388 |
+|        67 | 20:01:43.9 |                    822 |                    153 |                   2446 |
+|        68 | 20:01:44.8 |                    853 |                    182 |                   2498 |
+|        69 | 20:01:45.7 |                    865 |                    167 |                   2309 |
+|        70 | 20:01:46.6 |                    771 |                    160 |                   2539 |
+|        71 | 20:01:47.5 |                    773 |                    145 |                   2486 |
+|        72 | 20:01:48.4 |                    829 |                    172 |                   2399 |
+|        73 | 20:01:49.3 |                    891 |                    167 |                   2633 |
+|        74 | 20:01:50.2 |                    855 |                    184 |                   2512 |
+|        75 | 20:01:51.1 |                    811 |                    173 |                   2426 |
+|        76 | 20:01:52.0 |                    804 |                    167 |                   2271 |
+|        77 | 20:01:52.9 |                    873 |                    174 |                   2407 |
+|        78 | 20:01:53.8 |                    880 |                    147 |                   2634 |
+|        79 | 20:01:54.7 |                    778 |                    140 |                   2431 |
+|        80 | 20:01:55.6 |                    887 |                    153 |                   2510 |
+|        81 | 20:01:56.5 |                    821 |                    157 |                   2531 |
+|        82 | 20:01:57.4 |                    788 |                    169 |                   2441 |
+|        83 | 20:01:58.4 |                    762 |                    146 |                   2341 |
+|        84 | 20:01:59.3 |                    793 |                    168 |                   2433 |
+|        85 | 20:02:00.2 |                    735 |                    143 |                   2471 |
+|        86 | 20:02:01.1 |                    798 |                    181 |                   2408 |
+|        87 | 20:02:02.0 |                    876 |                    188 |                   2537 |
+|        88 | 20:02:02.9 |                    792 |                    163 |                   2518 |
+|        89 | 20:02:03.8 |                    747 |                    163 |                   2430 |
+|        90 | 20:02:04.7 |                    682 |                    146 |                   2400 |
+|        91 | 20:02:05.6 |                    723 |                    154 |                   2477 |
+|        92 | 20:02:06.5 |                    837 |                    173 |                   2471 |
+|        93 | 20:02:07.4 |                    798 |                    153 |                   2382 |
+|        94 | 20:02:08.4 |                    767 |                    146 |                   2424 |
+|        95 | 20:02:09.2 |                    765 |                    153 |                   2486 |
+|        96 | 20:02:10.1 |                    736 |                    154 |                   2538 |
+|        97 | 20:02:11.0 |                    801 |                    123 |                   2515 |
+|        98 | 20:02:11.8 |                    771 |                    161 |                   2547 |
+|        99 | 20:02:12.8 |                    698 |                    140 |                   2474 |
++-----------+------------+------------------------+------------------------+------------------------+
+|   seq_num |       time | pilatus2M_stats2_total | pilatus2M_stats3_total | pilatus2M_stats4_total |
++-----------+------------+------------------------+------------------------+------------------------+
+|       100 | 20:02:13.7 |                    748 |                    142 |                   2401 |
++-----------+------------+------------------------+------------------------+------------------------+
+generator count ['21042f80'] (scan num: 1060962)
+
+'''
