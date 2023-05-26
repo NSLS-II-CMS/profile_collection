@@ -917,7 +917,7 @@ def fit_scan(
 
     fig = None
     for i in plt.get_fignums():
-        title_cur = plt.figure(i).canvas.manager.window.windowTitle()
+        # title_cur = plt.figure(i).canvas.manager.window.windowTitle()
         if title_cur == title:
             fig = plt.figure(i)
             break
@@ -928,7 +928,7 @@ def fit_scan(
         fig = plt.figure(figsize=(11, 7), facecolor="white")
         fig.canvas.manager.toolbar.pan()
 
-    fig.canvas.set_window_title(title)
+    # fig.canvas.set_window_title(title)
     ax = fig.gca()
 
     subs = []
@@ -1069,7 +1069,7 @@ def fit_edge(
         title = "fit_scan: {} vs. {}".format(detectors[0].name, motor.name)
         fig = None
         for i in plt.get_fignums():
-            title_cur = plt.figure(i).canvas.manager.window.windowTitle()
+            # title_cur = plt.figure(i).canvas.manager.window.windowTitle()
             if title_cur == title:
                 fig = plt.figure(i)
                 break
@@ -1080,7 +1080,7 @@ def fit_edge(
             fig = plt.figure(figsize=(11, 7), facecolor="white")
             fig.canvas.manager.toolbar.pan()
 
-        fig.canvas.set_window_title(title)
+        # fig.canvas.set_window_title(title)
         ax = fig.gca()
 
         liveplot = LivePlot_Custom(plot_y, motor.name, ax=ax)

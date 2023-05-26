@@ -389,32 +389,32 @@ class Sample(SampleGISAXS):
         ### save the alignment information
         align_time = time.time() - start_time
 
-        current_data = {
-            "a_sample": self.name,
-            "i_smx": smx.position,
-            "j_smy": smy.position,
-            "k_sth": sth.position,
-            "l_laserx": laserx.position,
-            "m_power": caget(pta.powerV_PV),
-            "b_quick_alignment": alignment,
-            "c_align_time": align_time,
-            "d_offset_y": smy.position - initial_y,
-            "e_offset_th": sth.position - initial_th,
-            "f_crazy_offset_y": smy.position - crazy_y,
-            "g_crazy_offset_th": sth.position - crazy_th,
-            "h_search_no": align_crazy[1],
-        }
+        # current_data = {
+        #     "a_sample": self.name,
+        #     "i_smx": smx.position,
+        #     "j_smy": smy.position,
+        #     "k_sth": sth.position,
+        #     "l_laserx": laserx.position,
+        #     "m_power": caget(pta.powerV_PV),
+        #     "b_quick_alignment": alignment,
+        #     "c_align_time": align_time,
+        #     "d_offset_y": smy.position - initial_y,
+        #     "e_offset_th": sth.position - initial_th,
+        #     "f_crazy_offset_y": smy.position - crazy_y,
+        #     "g_crazy_offset_th": sth.position - crazy_th,
+        #     "h_search_no": align_crazy[1],
+        # }
 
-        temp_data = pds.DataFrame([current_data])
+        # temp_data = pds.DataFrame([current_data])
 
-        INT_FILENAME = "{}/data/{}.csv".format(os.path.dirname(__file__), "alignment_results.csv")
+        # INT_FILENAME = "{}/data/{}.csv".format(os.path.dirname(__file__), "alignment_results.csv")
 
-        if os.path.isfile(INT_FILENAME):
-            output_data = pds.read_csv(INT_FILENAME, index_col=0)
-            output_data = output_data.append(temp_data, ignore_index=True)
-            output_data.to_csv(INT_FILENAME)
-        else:
-            temp_data.to_csv(INT_FILENAME)
+        # if os.path.isfile(INT_FILENAME):
+        #     output_data = pds.read_csv(INT_FILENAME, index_col=0)
+        #     output_data = output_data.append(temp_data, ignore_index=True)
+        #     output_data.to_csv(INT_FILENAME)
+        # else:
+        #     temp_data.to_csv(INT_FILENAME)
 
     def align_old(self, step=0, reflection_angle=0.12, verbosity=3):
         """Align the sample with respect to the beam. GISAXS alignment involves
@@ -2447,31 +2447,39 @@ class Sample(SampleGISAXS):
 
     #     return target_x, target_y, target_th
 
-    def run_initial_alignment(self,start_x=0, end_x=22, direct_beam_int=None):
+    def run_initial_alignment(self,start_x=60, end_x=30, direct_beam_int=None):
         #make a look up table for
 
+        yield from bps.mv(smx, 28.67)
+        yield from bps.mv(laserx, 0)
 
-        yield from bps.mv(smx, start_x)
+        yield from move_sample_with_laser(end_x)
+        yield from bps.mv(smy, 25.5)
+        # yield from bps.mv(smx, start_x)
         yield from self.align_crazy_v3_plan(direct_beam_int=direct_beam_int)
-
-        start_x = smx.position
-        start_y = smy.position
-        start_th = sth.position
-
-        yield from bps.mv(smx, end_x)
-        yield from self.align_crazy_v3_plan(direct_beam_int=direct_beam_int)
-
+        # yield from self.align()
 
         end_x = smx.position
         end_y = smy.position
         end_th = sth.position
 
-        self.start_x = start_x
-        self.start_y = start_y
-        self.start_th = start_th
         self.end_x = end_x
         self.end_y = end_y
         self.end_th = end_th
+
+        # yield from bps.mv(smx, end_x)
+        yield from move_sample_with_laser(start_x)
+        yield from bps.mv(smy, 24.5)
+        yield from self.align_crazy_v3_plan(direct_beam_int=direct_beam_int)
+        # yield from self.align()
+
+
+        start_x = smx.position
+        start_y = smy.position
+        start_th = sth.position
+        self.start_x = start_x
+        self.start_y = start_y
+        self.start_th = start_th
         # start_x = self.start_x
         # start_y = self.start_y
         # start_th = self.start_th
@@ -2958,8 +2966,34 @@ def fake_coordinated_motionr(mtr1, mtr2, delta, step=0.1):
         yield from bps.mvr(mtr1, real_step, mtr2, real_step)
 
 
-def changeSamplesa():
-    smx.move(-20)
+def changeSample():
+    #smx.move(-20)
+    yield from move_sample_with_laser(28.67)
+    yield from bps.mv(smx, -100)
+
+def newSample():
+    #smx.move(-20)
+    yield from bps.mv(smx, 28.67)
+    yield from bps.mv(laserx, 0)
+
+def alignNewSample():
+
+    yield from cms.modeAlignment()
+    #pos1
+    # yield from bps.mv(smx, 28.67)
+    yield from move_sample_with_laser(28.67)
+    yield from sam.align()
+    sam.start_x = smx.position
+    sam.start_y = smy.position
+    sam.start_th = sth.position
+    #pos2
+    # yield from bps.mv(smx, 28.67+33)
+    yield from move_sample_with_laser(28.67+33)
+    yield from sam.align()
+    sam.end_x = smx.position
+    sam.end_y = smy.position
+    sam.end_th = sth.position
+
 
 
 # the strips in the same materials system should have the same file name
@@ -3655,6 +3689,14 @@ def align_motor_y(det, mtr, start_rel, stop_rel, step, exp_time):
     mtr_current = mtr.position
     start, stop = mtr_current + start_rel, mtr_current + stop_rel
 
+    mtr_max_velocity = 0.08
+    max_step = exp_time * mtr_max_velocity
+    step = min(step, max_step)
+    print(f"Y-scan step: {step}")
+    # exp_time_min = step / mtr_max_velocity
+    # exp_time = max(exp_time, exp_time_min)
+    # print(f"Y-scan exposure time: {exp_time}")
+
     @bpp.finalize_decorator(final_plan=shutter_off)
     def inner():
         yield from shutter_on()
@@ -3687,6 +3729,14 @@ def align_motor_th(det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True
     mtr_current = mtr.position
     start, stop = mtr_current + start_rel, mtr_current + stop_rel
 
+    mtr_max_velocity = 0.1
+    max_step = exp_time * mtr_max_velocity
+    step = min(step, max_step)
+    print(f"TH-scan step: {step}")
+    # exp_time_min = step / mtr_max_velocity
+    # exp_time = max(exp_time, exp_time_min)
+    # print(f"TH-scan exposure time: {exp_time}")
+
     @bpp.finalize_decorator(final_plan=shutter_off)
     def inner():
         yield from shutter_on()
@@ -3711,17 +3761,19 @@ def align_motor_th(det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True
         yield from bps.mv(det.cam.num_images, 1)
         yield from bps.trigger(det, group='fake_fly')
         yield from bps.wait(group='fake_fly')
-        return cen
-
+        return cen-0.12 
+    
     return (yield from inner())
 
 
-def align_stub(det, exp_time=0.5):
-    # yield from align_motor_y(det, smy, -0.5, 0.5, 0.02, exp_time)
-    # yield from align_motor_th(det, sth, -1, 1, 0.02, exp_time, fine_scan=False)
-    ceny = yield from align_motor_y(det, smy, -0.2, 0.2, 0.01, exp_time)
-    centh = yield from align_motor_th(det, sth, -0.1, 0.1, 0.0025, exp_time, fine_scan=True)
+def align_stub(det, exp_time=0.3):
 
+    
+    #  yield from align_motor_y(det, smy, -0.5, 0.5, 0.05, exp_time)
+    # yield from align_motor_th(det, sth, -1, 1, 0.02, exp_time, fine_scan=False)
+    ceny = yield from align_motor_y(det, smy, -0.2, 0.2, 0.02, exp_time)
+    centh = yield from align_motor_th(det, sth, -0.1, 0.1, 0.0025, exp_time, fine_scan=True)
+    # centh = sth.position+0.12
     return ceny, centh
 
 
@@ -3760,6 +3812,7 @@ def fast_align(det=None):
         det = pilatus2M
     exp_time = 0.3
     yield from cms.modeAlignment()
+    
     # beam.setTransmission(1e-6)
 
 
@@ -3788,13 +3841,42 @@ def agent_feedback_plan(sample_x, md=None):
     print("DONE")
 
 
-def agent_bootstrap_alignment():
-    yield from sam.run_initial_alignment()
+def agent_bootstrap_alignment(end_x=60, start_x=35):
+    # yield from sam.run_initial_alignment()
 
+    smx.move(28.67)
+    laserx.move(0)
+    RE(cms.modeAlignment())
+
+    RE(move_sample_with_laser(end_x))
+    smy.move(25.5)
+    # yield from bps.mv(smx, start_x)
+    # yield from self.align_crazy_v3_plan(direct_beam_int=direct_beam_int)
+    sam.align()
+
+    sam.end_x = smx.position
+    sam.end_y = smy.position
+    sam.end_th = sth.position
+
+    # yield from bps.mv(smx, end_x)
+    RE(move_sample_with_laser(start_x))
+    smy.move(24.5)
+    # yield from bps.mv(smy, 24.5)
+    # yield from self.align_crazy_v3_plan(direct_beam_int=direct_beam_int)
+    sam.align()
+    # yield from self.align()
+
+
+    sam.start_x = smx.position
+    sam.start_y = smy.position
+    sam.start_th = sth.position
+
+    RE(cms.modeMeasurement_plan())
+    
 # from collections.abc import List
 
 
-def agent_start_sample(init_x_pos: list[float]):
+def agent_start_sample(init_x_pos: list[float], *, md=None):
     """
     The plan to start an adaptive experiment.
 
@@ -3813,13 +3895,21 @@ def agent_start_sample(init_x_pos: list[float]):
     init_x_pos : list[float]
         The initial sample positions to take data at.
     """
-    sam.end_x = 61.8545
-    sam.end_y = 17.918750000000003
-    sam.end_th = 1.0806249999999995
+    md = md or {}
+
+    # sam.end_x = 60
+    # sam.end_y = 18.2
+    # sam.end_th = 1.004
 
     calib_x, *_ = init_x_pos
-    yield from move_sample_with_laser(calib_x)
-    yield from cms.modeAlignment()
+
+    xpos, ypos, thpos = sam.calc_lookuptable(calib_x)
+
+    yield from move_sample_with_laser(xpos)
+    yield from bps.mv(smy, ypos, sth, thpos+0.12)
+
+    # yield from move_sample_with_laser(calib_x)
+    # yield from cms.modeAlignment()
 
     sam.reset_clock()
     RE.md['sample_clock_zero'] = sam.clock_zero
@@ -3831,12 +3921,13 @@ def agent_start_sample(init_x_pos: list[float]):
         yield from agent_feedback_time_plan(x, 0, align=False)
 
 
-def agent_stop_sample():
+def agent_stop_sample(*, md=None):
     """
     Plan to run when the agent is done and would like no more data.
 
     Turns off the laser.
     """
+    md = md or {}
     yield from bps.mv(laser.manual_button, 0)
 
 
@@ -3886,18 +3977,25 @@ def agent_feedback_time_plan(
     import time as ttime
 
     md = md or {}
+    md.setdefault('PTA', True)
 
     # this lookup table is primed by agent_start_sample
     # it is just linear interpolation
     xpos, ypos, thpos = sam.calc_lookuptable(sample_x)
 
     yield from move_sample_with_laser(xpos)
-    yield from bps.mv(smy, ypos, sth, thpos)
+    yield from bps.mv(smy, ypos, sth, thpos+0.12)
 
     if align:
-        yield from fast_align()
+        ypos_align, thpos_align = yield from fast_align()
+        #sam.start_x = xpos
+        #sam.start_y = ypos_align
+        #sam.start_th = thpos_align
+    else:
+        yield from bps.mv(sth, thpos+.12)
 
     yield from cms.modeMeasurement_plan()
+
 
     now = ttime.time()
     lag = target_time - now
@@ -3906,6 +4004,30 @@ def agent_feedback_time_plan(
         yield from bps.sleep(lag)
 
     yield from sam.measure(exposure, **md)
+
+
+def changeSample():
+    yield from move_sample_with_laser(28.67)
+    yield from bps.mv(smx, -100)
+
+
+
+def calcTemperature(xpos):
+
+    slope = (245-70)/(21.8-6.3)
+    xpos = 62.67-xpos
+    T = (xpos-6.3)*slope+70
+
+    return T
+
+def calcXpos(T):
+
+    slope = (245-70)/(21.8-6.3)
+
+    xpos = (T-70)/slope+6.3
+
+    return 62.67-xpos
+
 
 '''
 In [84]: wsam()
@@ -4219,4 +4341,189 @@ New stream: 'primary'
 +-----------+------------+------------------------+------------------------+------------------------+
 generator count ['21042f80'] (scan num: 1060962)
 
+
+
+
+
+2023, 05, 23
+
+#change to standard REAL sample. 
+
+@the edge of the clamp side
+%mov smx 62.67 
+In [191]: wsam()
+     ...: 
+     ...: 
+smx = 61.67
+smy = 18.29416875
+sth = 0.9845312499999999
+
+
+@the edge of the laser side
+In [176]: wsam()
+
+smx = 30.3705
+smy = 17.268571875
+sth = 1.1320312500000007
+
+@the laser is located at 34mm away from the clamp
+Positioner                     Value       Low Limit   High Limit  Offset     
+laserx                         -0.0025     -100.0      100.0       0.0        
+smx                            28.67       -100.0      100.0       0.0 
+
+
+
+In [183]: wsam()
+smx = 28.67
+smy = 17.24416875
+sth = 1.1196874999999995
+
+
+Temperature calibration 
+
+turn on the laser at 17Watts 
+    the burn mark1 (245C) is 21.8mm away from the clamp
+    the burn mark2 (70C) is 6.3mm away from the clamp
+
+start the REAL sample
+
+align @ clamp edge
+In [333]: wsam()
+smx = 60.0
+smy = 18.2
+sth = 1.0035937500000003
+
+
+align @ smx = 40
+In [388]: wsam()
+smx = 40.0
+smy = 17.5
+sth = 1.0076562500000001
+
+align @ smx = 35
+smx = 35.0
+smy = 17.3375
+sth = 1.0935937500000001
+
+
+In [613]: sam.start_x, sam.start_y, sam.start_th, sam.end_x, sam.end_y, sam.end_th
+Out[613]: (35, 24.644, 1.057, 60, 25.4945, 1.0257999999999998)
+
+sam.start_x, sam.start_y, sam.start_th, sam.end_x, sam.end_y, sam.end_th = 35, 24.644, 1.057, 60, 25.4945, 1.0257999999999998
+
+
+
+#new sample  run2
+
+In [708]: sam.name
+Out[709]: 'C67_0HP_Tb50C_LP17w_run2'
+
+In [711]: sam.start_x, sam.start_y, sam.start_th, sam.end_x, sam.end_y, sam.end_th
+Out[711]: (35, 25.441634375, 1.069, 60, 25.81, 1.063)
+
+run lasted 30min with 52 data points. 
+
+
+#new sample  run3
+
+In [708]: sam.name
+Out[709]: 'C67_0HP_Tb50C_LP17w_run3'
+
+In [744]: sam.start_x, sam.start_y, sam.start_th, sam.end_x, sam.end_y, sam.end_th
+Out[745]: (35, 25.505, 1.092968, 60.0, 25.836803125, 1.0717187500000005)
+
+run3 will last 10 hours until the morning of May 24. 
+run3 actually was terminated in midnight due to an error of agent. 
+extra data was taken at 11hours after the start of laser
+
+
+In [852]: sam.name
+Out[852]: 'C67_40HP_Tb50C_LP17w_run4'
+
+In [851]: sam.start_x, sam.start_y, sam.start_th, sam.end_x, sam.end_y, sam.end_th
+Out[851]: (35, 25.175671875000003, 1.07, 60.0, 25.723056250000003, 1.0684375)
+
+
+In [852]: sam.name
+Out[852]: 'C67_40HP_Tb50C_LP17w_run5'
+In [868]: sam.start_x, sam.start_y, sam.start_th, sam.end_x, sam.end_y, sam.end_th
+Out[868]: (35.0, 25.382625, 1.04296875, 60.0, 25.825959375, 1.0212500000000002)
+
+
+In [852]: sam.name
+Out[852]: 'C67_20HP_Tb50C_LP17w_run6'
+In [868]: sam.start_x, sam.start_y, sam.start_th, sam.end_x, sam.end_y, sam.end_th
+Out[887]: 
+(35.0,
+ 25.457353125,
+ 1.1807812500000008,
+ 60.0,
+ 25.815703125000002,
+ 1.1545312499999998)
+
+In [852]: sam.name
+Out[852]: 'C67_40HP_Tb50C_LP17w_run7'
+In [897]: sam.start_x, sam.start_y, sam.start_th, sam.end_x, sam.end_y, sam.end_th
+Out[897]: 
+(35.0,
+ 25.4574,
+ 1.0407812500000002,
+ 60.0,
+ 25.818787500000003,
+ 1.0543750000000003)
+
+ 
+In [852]: sam.name
+Out[852]: 'C67_0HP_Tb50C_LP17w_run5' #should be run8, supposed to run 10hours 
+
+ In [903]: sam.start_x, sam.start_y, sam.start_th, sam.end_x, sam.end_y, sam.end_th
+Out[903]: (35.0, 25.32549375, 1.0982812499999994, 60.0, 25.76560625, 1.0948437500000008)
+
+In [852]: sam.name
+Out[852]: 'C67_20HP_Tb50C_LP17w_run9' 
+
+
+In [852]: sam.name
+Out[852]: 'C67_40HP_Tb50C_LP17w_run10' 
+
+In [919]: sam.start_x, sam.start_y, sam.start_th, sam.end_x, sam.end_y, sam.end_th
+Out[919]: 
+(35.0,
+ 25.629559375,
+ 1.1354687500000011,
+ 60.0,
+ 25.907678125,
+ 1.0960937499999996)
+
+In [852]: sam.name
+Out[852]: 'C67_0HP_Tb50C_LP17w_run11' 
+ 
+ In [935]: sam.start_x, sam.start_y, sam.start_th, sam.end_x, sam.end_y, sam.end_th
+Out[935]: (35.0, 24.944746875, 1.043906250000001, 60.0, 25.626225, 1.0310937500000001)
+
+
+protocol:
+changeSample()
+sam=Sample('test')
+agent_bootstrap_alignment()  #automatic alignment at smx = 35 and 60
+#save sam.start_x/y/th, sam.end_x/y/th position. 
+
+#start agent
+#start initial measurement
+
+#in a different python env, enable the autostart to automatically run the commands in qserver. 
+PYTHONPATH=/nsls2/data/cms/shared/config/bluesky_overlay/2023-2.0-py310-tiled/lib/python3.10/site-packages qserver queue autostart enable
+
+PYTHONPATH=/nsls2/data/cms/shared/config/bluesky_overlay/2023-2.0-py310-tiled/lib/python3.10/site-packages qserver status
+
+=========================================
+when the experiment is done--
+
+PYTHONPATH=/nsls2/data/cms/shared/config/bluesky_overlay/2023-2.0-py310-tiled/lib/python3.10/site-packages qserver queue autostart disable
+
 '''
+
+
+# smx = 38.9045
+# smy = 17.435846875000003
+# sth = 1.3117187500000007
