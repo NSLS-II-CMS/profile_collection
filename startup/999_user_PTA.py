@@ -131,8 +131,8 @@ class Laser(Device):
 
     # Read inputs
     # 1 = PV trigger, 2 = physical trigger
-    input1 = Cpt(EpicsSignalRO, 'Input:1-RB')
-    input2 = Cpt(EpicsSignalRO, 'Input:2-RB')
+    input1 = Cpt(EpicsSignalRO, 'Input:1-Sts')
+    input2 = Cpt(EpicsSignalRO, 'Input:2-Sts')
 
     # Enable/disable trigger inputs
     # 1 = PV trigger, 2 = physical trigger
