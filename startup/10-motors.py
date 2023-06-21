@@ -1,6 +1,7 @@
 print(f"Loading {__file__!r} ...")
 
 from ophyd import EpicsMotor, Device, Component as Cpt
+from ophyd.sim import SynAxis
 
 # slity = EpicsMotor('XF:11BMA-OP{Slt:0-Ax:T}Mtr', name='slity')
 
@@ -11,8 +12,8 @@ from ophyd import EpicsMotor, Device, Component as Cpt
 
 # beamline_stage = 'default'
 # beamline_stage = 'open_MAXS'
-beamline_stage = "BigHuber"
-
+# beamline_stage = "BigHuber"
+beamline_stage = 'testing'
 
 # slits = Slits('XF:11BMA-OP{Slt:0', name='slits')
 
@@ -138,6 +139,17 @@ elif beamline_stage == "BigHuber":
     smx = EpicsMotor("XF:11BMB-ES{PTA:Sample-Ax:X}Mtr", name="smx")
     laserx = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:X}Mtr", name="laserx")
     lasery = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:Y}Mtr", name="lasery")
+
+elif beamline_stage == 'testing':
+    # Huber
+    smy = SynAxis(name="smy")
+    sth = SynAxis(name="sth")
+    schi = SynAxis(name="schi")
+
+    # Newports
+    smx = SynAxis(name="smx")
+    laserx = SynAxis(name="laserx")
+    lasery = SynAxis(name="lasery")
 
 
 # goniometer
