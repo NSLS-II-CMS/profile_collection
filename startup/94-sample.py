@@ -1573,27 +1573,6 @@ class Sample_Generic(CoordinateSystem):
         else:
             return max(0.01, max(exposure_times))
 
-    def wait_for_detectors(self, wait_max=False, start_time=None, period=0.1):
-        max_exposure_time = yield from self.max_exposure_time()
-        timeout = time.time() + max_exposure_time + 20
-        if not wait_max:
-            status = True
-            while status and (time.time() < timeout):
-                if start_time is not None:
-                    percentage = 100 * (time.time() - start_time) / max_exposure_time
-                    print(
-                        "Exposing {:6.2f} s  ({:3.0f}%)      \r".format((time.time() - start_time), percentage),
-                        end="",
-                    )
-                time.sleep(period)
-                acquires = []
-                for detector in get_beamline().detector:
-                    acquire = yield from bps.rd(detector.cam.acquire)
-                    acquires.append(acquire)
-                status = any(acquires)
-        else:
-            time.sleep(max_exposure_time)
-
     # Measurement methods
     ########################################
 
@@ -4076,7 +4055,7 @@ if True:
     # For testing:
     # %run -i /opt/ipython_profiles/profile_collection/startup/94-sample.py
     sam = Sample_Generic("testing_of_code")
-    sam.mark("here")
+    # sam.mark("here")
     # sam.mark('XY_field', 'x', 'y')
     # sam.mark('specified', x=1, th=0.1)
     # sam.naming(['name', 'extra', 'clock', 'th', 'exposure_time', 'id'])
