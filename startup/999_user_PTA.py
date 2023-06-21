@@ -3286,26 +3286,7 @@ def test_plan(detector=None):
     yield from bps.abs_set(bsx, cms.bsx_pos, group=group_name)
     yield from bps.wait(group_name)
 
-sam = Sample('test')
-
-def sam_measure(
-    exposure_time=None, extra=None, measure_type="measure", verbosity=3, tiling=None, stitchback=False, **md
-):
-
-    if tiling is not None:
-        raise ValueError("Parameter 'tiling' must be None. Other values are not supported yet.")
-
-    yield from sam.measure(
-        exposure_time=exposure_time,
-        extra=extra,
-        measure_type=measure_type,
-        verbosity=verbosity,
-        tiling=tiling,
-        stitchback=stitchback,
-        **md,
-    )
-
-
+sample_pta = Sample('test')
 
 '''
 Notes at Mar 22, 2023, the 4th day at CMS
