@@ -46,6 +46,9 @@ if beamline_stage == "open_MAXS" or beamline_stage == "BigHuber":
 elif beamline_stage == "default":
     Pilatus800_on = True
     Pilatus800_2_on = False
+elif beamline_stage == "testing":
+    Pilatus800_on = True
+    Pilatus800_2_on = False
 
 # Pilatus800_on = True
 # # Pilatus800_2_on = False
