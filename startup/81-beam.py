@@ -4,6 +4,7 @@
 
 print(f"Loading {__file__!r} ...")
 
+import bluesky.plan_stubs as bps
 from epics import caput, caget
 
 
@@ -3190,14 +3191,14 @@ class CMS_Beamline(Beamline):
 
         # md_current['detector'] = self.detector
 
-        md_current["motor_SAXSx"] = SAXSx.user_readback.value
-        md_current["motor_SAXSy"] = SAXSy.user_readback.value
-        md_current["motor_WAXSx"] = WAXSx.user_readback.value
-        md_current["motor_WAXSy"] = WAXSy.user_readback.value
-        md_current["motor_WAXSz"] = WAXSz.user_readback.value
-        md_current["motor_smx"] = smx.user_readback.value
-        md_current["motor_smy"] = smy.user_readback.value
-        md_current["motor_sth"] = sth.user_readback.value
+        md_current["motor_SAXSx"] = yield from bps.rd(SAXSx)
+        md_current["motor_SAXSy"] = yield from bps.rd(SAXSy)
+        md_current["motor_WAXSx"] = yield from bps.rd(WAXSx)
+        md_current["motor_WAXSy"] = yield from bps.rd(WAXSy)
+        md_current["motor_WAXSz"] = yield from bps.rd(WAXSz)
+        md_current["motor_smx"] = yield from bps.rd(smx)
+        md_current["motor_smy"] = yield from bps.rd(smy)
+        md_current["motor_sth"] = yield from bps.rd(sth)
 
         # md_current['motor_bsx'] = bsx.user_readback.value
         # md_current['motor_bsy'] = bsy.user_readback.value
