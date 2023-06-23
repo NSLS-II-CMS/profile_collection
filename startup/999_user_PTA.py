@@ -149,6 +149,10 @@ class Laser(Device):
     # Override only works when trigger disabled
     manual_button = Cpt(PairSEL, 'Output:1')
 
+    # Set voltage to control laser intensity
+    # Volts units
+    laser_voltage = Cpt(PairSP, 'LaserVoltsSet:1')
+
     def manual_mode(self):
         yield from bps.mv(self.trigger, 0)
 
