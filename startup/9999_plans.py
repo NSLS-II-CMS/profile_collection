@@ -1,8 +1,8 @@
 import time
 import bluesky.preprocessors as bpp
 
-DETS = get_beamline().detector + [core_laser, laser, laserx, lasery, smy, smx, sth, schi]
-
+DETS = get_beamline().detector + [core_laser, laserx, lasery, smy, smx, sth, schi]
+sample_pta = Sample('test')
 
 @bpp.finalize_decorator(final_plan=shutter_off)
 def expose(detectors, exposure_time=None, extra=None, verbosity=3, md=None):
@@ -87,7 +87,7 @@ def measure_single(
     # We plan to remove this once kafka based linking is finished.
     if handlefile:
         for detector in detectors:
-            sample.handle_file(detector, extra=extra, verbosity=verbosity, md=md)
+            sample.handle_file(detector, extra=extra, verbosity=verbosity, **md_current)
 
     sample.md["measurement_ID"] += 1
 
@@ -146,43 +146,41 @@ def measure(
               'upper_left': "pos2" if extra is None else f"{extra}_pos2",
               'lower_right': "pos3" if extra is None else f"{extra}_pos3",
               'upper_right': "pos4" if extra is None else f"{extra}_pos4",
+              'default': extra
               }
 
-    # TODO: Maybe this should raise if 2M and 800 are not in detectors, and tiling is not None.
 
-    for position in positions[tiling]:
-
+    @bpp.reset_positions_decorator([SAXSy, SAXSx, WAXSy, WAXSx])
+    def tile_plan():
+        # TODO: Maybe this should raise if 2M and 800 are not in detectors, and tiling is not None.
         SAXSy_original = yield from bps.rd(SAXSy)
         SAXSx_original = yield from bps.rd(SAXSx)
         WAXSy_original = yield from bps.rd(WAXSy)
         WAXSx_original = yield from bps.rd(WAXSx)
+        
+        for position in positions[tiling]:
+            if pilatus2M in detectors:
+                yield from bps.mv(SAXSx, SAXSx_original + offsets[position]['saxs_x'])
+                yield from bps.mv(SAXSy, SAXSy_original + offsets[position]['saxs_y'])
+            if pilatus800 in detectors:
+                yield from bps.mv(WAXSx, WAXSx_original + offsets[position]['waxs_x'])
+                yield from bps.mv(WAXSy, WAXSy_original + offsets[position]['waxs_y'])
 
-        if pilatus2M in detectors:
-            yield from bps.mv(SAXSx, SAXSx_original + offsets[position]['saxs_x'])
-            yield from bps.mv(SAXSy, SAXSy_original + offsets[position]['saxs_y'])
-        if pilatus800 in detectors:
-            yield from bps.mv(WAXSx, WAXSx_original + offsets[position]['waxs_x'])
-            yield from bps.mv(WAXSy, WAXSy_original + offsets[position]['waxs_y'])
+            md["detector_position"] = position
+            extra_current = extras[position]
 
-        md["detector_position"] = position
-        extra_current = extras[position]
+            yield from measure_single(
+                sample,
+                detectors=detectors,
+                exposure_time=exposure_time,
+                extra=extra_current,
+                measure_type=measure_type,
+                verbosity=verbosity,
+                md=md,
+            )
+        
+    yield from tile_plan()
 
-        yield from measure_single(
-            sample,
-            detectors=detectors,
-            exposure_time=exposure_time,
-            extra=extra_current,
-            measure_type=measure_type,
-            verbosity=verbosity,
-            md=md,
-        )
-    
-    if pilatus2M in detectors:
-        yield from bps.mv(SAXSx, SAXSx_original)
-        yield from bps.mv(SAXSy, SAXSy_original)
-    if pilatus800 in detectors:
-        yield from bps.mv(WAXSx, SAXSx_original)
-        yield from bps.mv(WAXSy, SAXSy_original)
 
 
 def sam_measure(
