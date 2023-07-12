@@ -1,5 +1,7 @@
 import time
 import bluesky.preprocessors as bpp
+from bluesky.utils import short_uid
+from functools import partial
 
 DETS = get_beamline().detector + [core_laser, laserx, lasery, smy, smx, sth, schi]
 sample_pta = Sample('test')
@@ -91,18 +93,53 @@ def measure_single(
 
     sample.md["measurement_ID"] += 1
 
-def tiling_helper(motor_dict, dets, inner_plan):
-   @reset_position(list(motor_dict))
-   def inner():
-       for j in range(N):
-           for motor, offset in motor_dict.items():
-               yield from bps.mv(motor, target)
-          yield from inner_plan()
-   yield from inner()
 
+def tiling(detectors, inner_plan, tiling_type=None, md=None):
+    """
+    A helper function that applies tiling to a plan.
+    Tiling is used to fill gaps between the detector chips.
+    
+    There are 3 different tiling modes: None, xgaps, and xygaps.
+    
+    xgaps mode sets the detector positions to the upper position, calls the plan,
+    and then sets the detector position to the lower position and calls the plan again.
 
-def tiling(per_tile, detectors, tiling_type=None):
+    xygaps mode executes the plan for four different detector postions.
 
+    The motors that are used to tiling will be added on to the list of detectors
+    when passed to the inner plan.
+
+    Parameters
+    ----------
+    detectors: list
+        The list of detectors used in the plan.
+        Detectors in this list that we know how to tiled, will get tiled.
+    inner_plan: callable
+        expected signature:
+
+           def plan(detectors, md):
+               '''
+               Parameters
+               ----------
+               detectors: list
+                   The list of detectors to use in the plan.
+               md: dict
+                   Plan metadata.
+               '''
+               ...
+    tiling_type: str, None
+        has one of the following values: None, 'xgaps', 'xygaps'
+    md: dict
+        Plan metadata.
+
+    Returns
+    -------
+    list
+        accumulated results of inner_plan
+
+    """ 
+    md = dict(md or {})
+    md.setdefault('tile_id', short_uid('tile_id')) 
     GAP_SIZE = 5.16
 
     offsets = {
@@ -121,6 +158,15 @@ def tiling(per_tile, detectors, tiling_type=None):
         None: ["default"],
     }
 
+    extras = {'lower': "pos1" if extra is None else f"{extra}_pos1",
+              'upper': "pos2" if extra is None else f"{extra}_pos2",
+              'lower_left': "pos1" if extra is None else f"{extra}_pos1",
+              'upper_left': "pos2" if extra is None else f"{extra}_pos2",
+              'lower_right': "pos3" if extra is None else f"{extra}_pos3",
+              'upper_right': "pos4" if extra is None else f"{extra}_pos4",
+              'default': extra
+              }
+
     motors = []
     if pilatus2M in detectors:
         motors.extend([SAXSx, SAXSy]
@@ -128,7 +174,8 @@ def tiling(per_tile, detectors, tiling_type=None):
         motors.extend([WAXSx, WAXSy]
     
     @bpp.reset_positions_decorator(motors)
-    def inner():
+    def tiling_wrapper():
+        ret = []
         if pilatus2M in detectors:
             SAXSy_original = yield from bps.rd(SAXSy)
             SAXSx_original = yield from bps.rd(SAXSx)
@@ -137,13 +184,20 @@ def tiling(per_tile, detectors, tiling_type=None):
             WAXSx_original = yield from bps.rd(WAXSx)
 
         for tile in tile_types[tiling_type]:
+            
+            md["detector_position"] = position
+            extra_current = extras[position]
+            
             if pilatus2M in detectors:
                 yield from bps.mv(SAXSx, SAXSx_original + offsets[tile]['saxs_x'])
                 yield from bps.mv(SAXSy, SAXSy_original + offsets[tile]['saxs_y'])
             if pilatus800 in detectors:
                 yield from bps.mv(WAXSx, WAXSx_original + offsets[tile]['waxs_x'])
                 yield from bps.mv(WAXSy, WAXSy_original + offsets[tile]['waxs_y'])
-            yield from per_tile()
+                val = yield from inner_plan(detectors + motors, md={**md, 'extra':extra, 'detector_position': })
+            ret.append(val)
+        return ret
+    return (yield from tiling_wrapper())
 
 
 def measure(
@@ -174,64 +228,20 @@ def measure(
         None : regular measurement (single detector position)
         'ygaps' : try to cover the vertical gaps in the Pilatus detector
     """
-    GAP_SIZE = 5.16
-
     md = dict(md or {})
 
-    offsets = {
-        "lower": {"saxs_x": 0, "saxs_y": 0, "waxs_x": 0, "waxs_y": 0},
-        "upper": {"saxs_x": 0, "saxs_y": GAP_SIZE, "waxs_x": 0, "waxs_y": GAP_SIZE},
-        "lower_left": {"saxs_x": 0, "saxs_y": 0, "waxs_x": 0, "waxs_y": 0},
-        "upper_left": {"saxs_x": 0, "saxs_y": GAP_SIZE, "waxs_x": 0, "waxs_y": GAP_SIZE},
-        "lower_right": {"saxs_x": GAP_SIZE, "saxs_y": 0, "waxs_x": -GAP_SIZE, "waxs_y": 0},
-        "upper_right": {"saxs_x": GAP_SIZE, "saxs_y": GAP_SIZE, "waxs_x": -GAP_SIZE, "waxs_y": GAP_SIZE},
-        "default": {"saxs_x": 0, "saxs_y": 0, "waxs_x": 0, "waxs_y": 0},
-    }
-
-    positions = {
-        "xygaps": ["lower_left", "upper_left", "lower_right", "upper_right"],
-        "ygaps": ["upper", "lower"],
-        None: ["default"],
-    }
-
-    extras = {'lower': "pos1" if extra is None else f"{extra}_pos1",
-              'upper': "pos2" if extra is None else f"{extra}_pos2",
-              'lower_left': "pos1" if extra is None else f"{extra}_pos1",
-              'upper_left': "pos2" if extra is None else f"{extra}_pos2",
-              'lower_right': "pos3" if extra is None else f"{extra}_pos3",
-              'upper_right': "pos4" if extra is None else f"{extra}_pos4",
-              'default': extra
-              }
-
-
-    @bpp.reset_positions_decorator([SAXSy, SAXSx, WAXSy, WAXSx])
-    def tile_plan():
-        # TODO: Maybe this should raise if 2M and 800 are not in detectors, and tiling is not None.
-        SAXSy_original = yield from bps.rd(SAXSy)
-        SAXSx_original = yield from bps.rd(SAXSx)
-        WAXSy_original = yield from bps.rd(WAXSy)
-        WAXSx_original = yield from bps.rd(WAXSx)
-        
-        for tile in tiles[tiling]:
-            yield from set_tile(detectors, tile)
-
-
-            md["detector_position"] = position
-            extra_current = extras[position]
-
-            yield from measure_single(
+    yield from tiling(
+            detectors,
+            parital(measure_single,
                 sample,
-                detectors=detectors,
                 exposure_time=exposure_time,
                 extra=extra_current,
                 measure_type=measure_type,
-                verbosity=verbosity,
-                md=md,
+                verbosity=verbosity),
+            tiling_type=tiling,
+            md=md
             )
         
-    yield from tile_plan()
-
-
 
 def sam_measure(
     sample=sample_pta,
