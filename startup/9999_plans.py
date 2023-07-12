@@ -91,6 +91,60 @@ def measure_single(
 
     sample.md["measurement_ID"] += 1
 
+def tiling_helper(motor_dict, dets, inner_plan):
+   @reset_position(list(motor_dict))
+   def inner():
+       for j in range(N):
+           for motor, offset in motor_dict.items():
+               yield from bps.mv(motor, target)
+          yield from inner_plan()
+   yield from inner()
+
+
+def tiling(per_tile, detectors, tiling_type=None):
+
+    GAP_SIZE = 5.16
+
+    offsets = {
+        "lower": {"saxs_x": 0, "saxs_y": 0, "waxs_x": 0, "waxs_y": 0},
+        "upper": {"saxs_x": 0, "saxs_y": GAP_SIZE, "waxs_x": 0, "waxs_y": GAP_SIZE},
+        "lower_left": {"saxs_x": 0, "saxs_y": 0, "waxs_x": 0, "waxs_y": 0},
+        "upper_left": {"saxs_x": 0, "saxs_y": GAP_SIZE, "waxs_x": 0, "waxs_y": GAP_SIZE},
+        "lower_right": {"saxs_x": GAP_SIZE, "saxs_y": 0, "waxs_x": -GAP_SIZE, "waxs_y": 0},
+        "upper_right": {"saxs_x": GAP_SIZE, "saxs_y": GAP_SIZE, "waxs_x": -GAP_SIZE, "waxs_y": GAP_SIZE},
+        "default": {"saxs_x": 0, "saxs_y": 0, "waxs_x": 0, "waxs_y": 0},
+    }
+    
+    tile_types = {
+        "xygaps": ["lower_left", "upper_left", "lower_right", "upper_right"],
+        "ygaps": ["upper", "lower"],
+        None: ["default"],
+    }
+
+    motors = []
+    if pilatus2M in detectors:
+        motors.extend([SAXSx, SAXSy]
+    if pilatus2M in detectors:
+        motors.extend([WAXSx, WAXSy]
+    
+    @bpp.reset_positions_decorator(motors)
+    def inner():
+        if pilatus2M in detectors:
+            SAXSy_original = yield from bps.rd(SAXSy)
+            SAXSx_original = yield from bps.rd(SAXSx)
+        if pilatus800 in detectors:
+            WAXSy_original = yield from bps.rd(WAXSy)
+            WAXSx_original = yield from bps.rd(WAXSx)
+
+        for tile in tile_types[tiling_type]:
+            if pilatus2M in detectors:
+                yield from bps.mv(SAXSx, SAXSx_original + offsets[tile]['saxs_x'])
+                yield from bps.mv(SAXSy, SAXSy_original + offsets[tile]['saxs_y'])
+            if pilatus800 in detectors:
+                yield from bps.mv(WAXSx, WAXSx_original + offsets[tile]['waxs_x'])
+                yield from bps.mv(WAXSy, WAXSy_original + offsets[tile]['waxs_y'])
+            yield from per_tile()
+
 
 def measure(
     sample,
@@ -158,13 +212,9 @@ def measure(
         WAXSy_original = yield from bps.rd(WAXSy)
         WAXSx_original = yield from bps.rd(WAXSx)
         
-        for position in positions[tiling]:
-            if pilatus2M in detectors:
-                yield from bps.mv(SAXSx, SAXSx_original + offsets[position]['saxs_x'])
-                yield from bps.mv(SAXSy, SAXSy_original + offsets[position]['saxs_y'])
-            if pilatus800 in detectors:
-                yield from bps.mv(WAXSx, WAXSx_original + offsets[position]['waxs_x'])
-                yield from bps.mv(WAXSy, WAXSy_original + offsets[position]['waxs_y'])
+        for tile in tiles[tiling]:
+            yield from set_tile(detectors, tile)
+
 
             md["detector_position"] = position
             extra_current = extras[position]
