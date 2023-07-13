@@ -42,7 +42,6 @@ def measure_single(
     sample,
     detectors=DETS,
     exposure_time=None,
-    extra=None,
     measure_type="measure",
     verbosity=3,
     handlefile=True,
@@ -63,7 +62,7 @@ def measure_single(
         sample.set_attribute("exposure_time", exposure_time)
     # else:
     # exposure_time = sample.get_attribute('exposure_time')
-
+    extra = md.get('extra', None)
     savename = sample.get_savename(savename_extra=extra)
 
     if verbosity >= 2 and (get_beamline().current_mode != "measurement"):
@@ -89,7 +88,7 @@ def measure_single(
     # We plan to remove this once kafka based linking is finished.
     if handlefile:
         for detector in detectors:
-            sample.handle_file(detector, extra=extra, verbosity=verbosity, **md_current)
+            sample.handle_file(detector, verbosity=verbosity, **md_current)
 
     sample.md["measurement_ID"] += 1
 
@@ -157,7 +156,7 @@ def tiling(detectors, inner_plan, tiling_type=None, md=None):
         "ygaps": ["upper", "lower"],
         None: ["default"],
     }
-
+    extra = md.get('extra', None)
     extras = {'lower': "pos1" if extra is None else f"{extra}_pos1",
               'upper': "pos2" if extra is None else f"{extra}_pos2",
               'lower_left': "pos1" if extra is None else f"{extra}_pos1",
@@ -169,9 +168,9 @@ def tiling(detectors, inner_plan, tiling_type=None, md=None):
 
     motors = []
     if pilatus2M in detectors:
-        motors.extend([SAXSx, SAXSy]
-    if pilatus2M in detectors:
-        motors.extend([WAXSx, WAXSy]
+        motors.extend([SAXSx, SAXSy])
+    if pilatus800 in detectors:
+        motors.extend([WAXSx, WAXSy])
     
     @bpp.reset_positions_decorator(motors)
     def tiling_wrapper():
@@ -184,17 +183,14 @@ def tiling(detectors, inner_plan, tiling_type=None, md=None):
             WAXSx_original = yield from bps.rd(WAXSx)
 
         for tile in tile_types[tiling_type]:
-            
-            md["detector_position"] = position
-            extra_current = extras[position]
-            
             if pilatus2M in detectors:
                 yield from bps.mv(SAXSx, SAXSx_original + offsets[tile]['saxs_x'])
                 yield from bps.mv(SAXSy, SAXSy_original + offsets[tile]['saxs_y'])
             if pilatus800 in detectors:
                 yield from bps.mv(WAXSx, WAXSx_original + offsets[tile]['waxs_x'])
                 yield from bps.mv(WAXSy, WAXSy_original + offsets[tile]['waxs_y'])
-                val = yield from inner_plan(detectors + motors, md={**md, 'extra':extra, 'detector_position': })
+            val = yield from inner_plan(detectors + motors, 
+                                        md={**md, 'extra':extra, 'detector_position': tile})
             ret.append(val)
         return ret
     return (yield from tiling_wrapper())
@@ -207,7 +203,7 @@ def measure(
     extra=None,
     measure_type="measure",
     verbosity=3,
-    tiling=None,
+    tiling_type=None,
     md=None,
 ):
     """Measure data by triggering the area detectors.
@@ -232,13 +228,12 @@ def measure(
 
     yield from tiling(
             detectors,
-            parital(measure_single,
+            partial(measure_single,
                 sample,
                 exposure_time=exposure_time,
-                extra=extra_current,
                 measure_type=measure_type,
                 verbosity=verbosity),
-            tiling_type=tiling,
+            tiling_type=tiling_type,
             md=md
             )
         
