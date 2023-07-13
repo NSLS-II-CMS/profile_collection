@@ -10,10 +10,10 @@ from ophyd.sim import SynAxis
 #    top = Cpt(EpicsMotor, '-Ax:T}Mtr')
 #    bottom = Cpt(EpicsMotor, '-Ax:B}Mtr')
 
-# beamline_stage = 'default'
+beamline_stage = 'default'
 # beamline_stage = 'open_MAXS'
 # beamline_stage = "BigHuber"
-beamline_stage = 'testing'
+# beamline_stage = 'testing'
 
 # slits = Slits('XF:11BMA-OP{Slt:0', name='slits')
 

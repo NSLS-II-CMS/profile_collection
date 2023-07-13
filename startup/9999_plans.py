@@ -1,9 +1,15 @@
+print(f"Loading {__file__!r} ...")
+
 import time
 import bluesky.preprocessors as bpp
 from bluesky.utils import short_uid
 from functools import partial
 
-DETS = get_beamline().detector + [core_laser, laserx, lasery, smy, smx, sth, schi]
+try:
+    DETS = get_beamline().detector + [core_laser, laserx, lasery, smy, smx, sth, schi]
+except Exception:
+    DETS = get_beamline().detector + [smy, smx, sth, schi]
+
 sample_pta = Sample('test')
 
 @bpp.finalize_decorator(final_plan=shutter_off)

@@ -3644,7 +3644,7 @@ def fake_fly3(det, mtr, start, stop, step, exp_time):
 
     # print(f"frame_numbers = {frame_numbers}")
     # print(f"frame_timestamps = {frame_timestamps}")
-    print(f"mtr_pos = {frame_mtr_pos}")
+    # print(f"mtr_pos = {frame_mtr_pos}")
 
     # print(f"roi2_ts = {frame_roi2_ts}")
     # print(f"roi3_ts = {frame_roi3_ts}")
@@ -3654,23 +3654,44 @@ def fake_fly3(det, mtr, start, stop, step, exp_time):
     # print(f"frame_roi3_total_ts = {frame_roi3_total_ts}")
     # print(f"frame_roi4_total_ts = {frame_roi4_total_ts}")
 
-    print(f"frame_roi2_total = {frame_roi2_total}")
-    print(f"frame_roi3_total = {frame_roi3_total}")
-    print(f"frame_roi4_total = {frame_roi4_total}")
+    # print(f"frame_roi2_total = {frame_roi2_total}")
+    # print(f"frame_roi3_total = {frame_roi3_total}")
+    # print(f"frame_roi4_total = {frame_roi4_total}")
+    # print("\n")
 
-    print(f"total_roi2 = {total_roi2}")
-    print(f"total_roi3 = {total_roi3}")
-    print(f"total_roi4 = {total_roi4}")
+    # print(f"total_roi2 = {total_roi2}")
+    # print(f"total_roi3 = {total_roi3}")
+    # print(f"total_roi4 = {total_roi4}")
+
+    print(f"POSITION, TOTAL_ROI2, TOTAL_ROI3, TOTAL_ROI4")
+    for n, pos in enumerate(frame_mtr_pos):
+        print(f"{pos:11.5f} {total_roi2[n]:11.1f} {total_roi3[n]:11.1f} {total_roi4[n]:11.1f}")
+    print("**********************************************************************")
 
     return frame_mtr_pos, total_roi2, total_roi3, total_roi4
 
 
-def align_motor_y(det, mtr, start_rel, stop_rel, step, exp_time):
+
+# from matplotlib import pyplot as plt
+# fig_fast_scan, fig_fast_scan_ax1, fig_fast_scan_ax2 = None, None, None
+
+# def create_fig_fast_scan():
+#     global fig_fast_scan, fig_fast_scan_ax1, fig_fast_scan_ax2
+#     if not fig_fast_scan:
+#         fig_fast_scan = plt.figure()
+#         fig_fast_scan_ax1 = fig_fast_scan.add_subplot(2,1,1)
+#         fig_fast_scan_ax2 = fig_fast_scan.add_subplot(2,1,2)
+#     else:
+#         fig_fast_scan_ax1.clear()
+#         fig_fast_scan_ax2.clear()
+
+
+
+def align_motor_y(det, mtr, start_rel, stop_rel, step, exp_time, mtr_max_velocity = 0.08):
 
     mtr_current = mtr.position
     start, stop = mtr_current + start_rel, mtr_current + stop_rel
 
-    mtr_max_velocity = 0.08
     max_step = exp_time * mtr_max_velocity
     step = min(step, max_step)
     print(f"Y-scan step: {step}")
@@ -3693,24 +3714,30 @@ def align_motor_y(det, mtr, start_rel, stop_rel, step, exp_time):
 
         # yield from bps.abs_set(mtr, pos[n_half], wait=True)
 
-        cen, _, _ = do_fitting(pos, roi4, model_type="step")
-        print(f"Center: {cen}")
+        cen_return = None
+        try:
+            cen, _, _ = do_fitting(pos, roi4, model_type="step")
+            cen_return = cen
+            print(f"Center: {cen}")
+        except Exception as ex:
+            cen = mtr_current
+            print(f"ERROR: Failed to find the edge: {ex}")
+
         yield from bps.abs_set(mtr, cen, wait=True)
 
         yield from bps.mv(det.cam.num_images, 1)
         yield from bps.trigger(det, group='fake_fly')
         yield from bps.wait(group='fake_fly')
-        return cen
+        return cen_return
 
     return (yield from inner())
 
 
-def align_motor_th(det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True):
+def align_motor_th(det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True, mtr_backlash=0.1, mtr_max_velocity = 0.1):
 
     mtr_current = mtr.position
     start, stop = mtr_current + start_rel, mtr_current + stop_rel
 
-    mtr_max_velocity = 0.1
     max_step = exp_time * mtr_max_velocity
     step = min(step, max_step)
     print(f"TH-scan step: {step}")
@@ -3731,10 +3758,11 @@ def align_motor_th(det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True
         # yield from bps.abs_set(mtr, pos[n_max], wait=True)
 
         roi = roi3 if fine_scan else roi2
+        # roi = roi3 if fine_scan else roi4
+
         cen, _, _ = do_fitting(pos, roi, model_type="peak")
         print(f"Center: {cen}")
-        bl_abs = 0.1
-        backlash = bl_abs if stop_rel > start_rel else -bl_abs
+        backlash = mtr_backlash if stop_rel > start_rel else -mtr_backlash
         yield from bps.abs_set(mtr, cen - backlash, wait=True)
         yield from bps.abs_set(mtr, cen, wait=True)
 
@@ -3746,15 +3774,34 @@ def align_motor_th(det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True
     
     return (yield from inner())
 
+import time
 
 def align_stub(det, exp_time=0.3):
 
+    mtr_backlash=0
+    # mtr_backlash=0.1  # Use for PTA stages
     
-    #  yield from align_motor_y(det, smy, -0.5, 0.5, 0.05, exp_time)
-    # yield from align_motor_th(det, sth, -1, 1, 0.02, exp_time, fine_scan=False)
+    ceny, centh = 0, 0
+
+    # create_fig_fast_scan()
+
+    tstart = time.time()
+
+    ceny = yield from align_motor_y(det, smy, -2, 2, 0.05, exp_time)
+    if ceny is None:
+        print(f"Failed to find the edge. Repeating the scan with the wider range.")
+        ceny = yield from align_motor_y(det, smy, -4, 4, 0.05, exp_time)
+    if ceny is None:
+        raise RuntimeError(f"Failed to find the edge: the beam is blocked or the shutter is closed.")
+
+    yield from align_motor_th(det, sth, -1, 1, 0.02, exp_time, fine_scan=False, mtr_backlash=mtr_backlash)
+
     ceny = yield from align_motor_y(det, smy, -0.2, 0.2, 0.02, exp_time)
-    centh = yield from align_motor_th(det, sth, -0.1, 0.1, 0.0025, exp_time, fine_scan=True)
+    yield from bps.sleep(2)
+    centh = yield from align_motor_th(det, sth, -0.1, 0.1, 0.0025, exp_time, fine_scan=True, mtr_backlash=mtr_backlash)
     # centh = sth.position+0.12
+
+    print(f"Alignment completed: time {time.time() - tstart}")
     return ceny, centh
 
 
