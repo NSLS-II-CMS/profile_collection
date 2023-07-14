@@ -73,7 +73,11 @@ def measure_single(
     savename = sample.get_savename(savename_extra=extra)
 
     if verbosity >= 2 and (get_beamline().current_mode != "measurement"):
-        print("WARNING: Beamline is not in measurement mode (mode is '{}')".format(get_beamline().current_mode))
+        print(
+            "WARNING: Beamline is not in measurement mode (mode is '{}')".format(
+                get_beamline().current_mode
+            )
+        )
 
     if verbosity >= 1 and len(get_beamline().detector) < 1:
         raise ValueError("ERROR: No detectors defined in detectors")
@@ -148,13 +152,38 @@ def tiling(detectors, inner_plan, tiling_type=None, md=None):
     md.setdefault("tile_id", short_uid("tile_id"))
     GAP_SIZE = 5.16
 
+    # note: the incident angle plan does not set the maxs_y position for lower_right, and upper_right.
     offsets = {
-        "lower": {"saxs_x": 0, "saxs_y": 0, "waxs_x": 0, "waxs_y": 0},
-        "upper": {"saxs_x": 0, "saxs_y": GAP_SIZE, "waxs_x": 0, "waxs_y": GAP_SIZE},
-        "lower_left": {"saxs_x": 0, "saxs_y": 0, "waxs_x": 0, "waxs_y": 0},
-        "upper_left": {"saxs_x": 0, "saxs_y": GAP_SIZE, "waxs_x": 0, "waxs_y": GAP_SIZE},
-        "lower_right": {"saxs_x": GAP_SIZE, "saxs_y": 0, "waxs_x": -GAP_SIZE, "waxs_y": 0},
-        "upper_right": {"saxs_x": GAP_SIZE, "saxs_y": GAP_SIZE, "waxs_x": -GAP_SIZE, "waxs_y": GAP_SIZE},
+        "lower": {"saxs_x": 0, "saxs_y": 0, "waxs_x": 0, "waxs_y": 0, "maxs_y": 0},
+        "upper": {
+            "saxs_x": 0,
+            "saxs_y": GAP_SIZE,
+            "waxs_x": 0,
+            "waxs_y": GAP_SIZE,
+            "maxs_y": GAP_SIZE,
+        },
+        "lower_left": {"saxs_x": 0, "saxs_y": 0, "waxs_x": 0, "waxs_y": 0, "maxs_y": 0},
+        "upper_left": {
+            "saxs_x": 0,
+            "saxs_y": GAP_SIZE,
+            "waxs_x": 0,
+            "waxs_y": GAP_SIZE,
+            "maxs_y": GAP_SIZE,
+        },
+        "lower_right": {
+            "saxs_x": GAP_SIZE,
+            "saxs_y": 0,
+            "waxs_x": -GAP_SIZE,
+            "waxs_y": 0,
+            "maxs_y": 0,
+        },
+        "upper_right": {
+            "saxs_x": GAP_SIZE,
+            "saxs_y": GAP_SIZE,
+            "waxs_x": -GAP_SIZE,
+            "waxs_y": GAP_SIZE,
+            "maxs_y": 0,
+        },
         "default": {"saxs_x": 0, "saxs_y": 0, "waxs_x": 0, "waxs_y": 0},
     }
 
@@ -179,6 +208,8 @@ def tiling(detectors, inner_plan, tiling_type=None, md=None):
         motors.extend([SAXSx, SAXSy])
     if pilatus800 in detectors:
         motors.extend([WAXSx, WAXSy])
+    if pilatus8002 in detectors:
+        motors.extend([MAXSy])
 
     @bpp.reset_positions_decorator(motors)
     def tiling_wrapper():
@@ -189,6 +220,8 @@ def tiling(detectors, inner_plan, tiling_type=None, md=None):
         if pilatus800 in detectors:
             WAXSy_original = yield from bps.rd(WAXSy)
             WAXSx_original = yield from bps.rd(WAXSx)
+        if pilatus8002 in detectors:
+            MAXSy_original = yield from bps.rd(MAXSy)
 
         for tile in tile_types[tiling_type]:
             if pilatus2M in detectors:
@@ -197,7 +230,12 @@ def tiling(detectors, inner_plan, tiling_type=None, md=None):
             if pilatus800 in detectors:
                 yield from bps.mv(WAXSx, WAXSx_original + offsets[tile]["waxs_x"])
                 yield from bps.mv(WAXSy, WAXSy_original + offsets[tile]["waxs_y"])
-            val = yield from inner_plan(detectors + motors, md={**md, "extra": extra, "detector_position": tile})
+            if pilatus8002 in detectors:
+                yield from bps.mv(MAXSy, MAXSy_original + offsets[tile]["maxs_y"])
+
+            val = yield from inner_plan(
+                detectors + motors, md={**md, "extra": extra, "detector_position": tile}
+            )
             ret.append(val)
         return ret
 
@@ -242,7 +280,11 @@ def measure(
     yield from tiling(
         detectors,
         partial(
-            measure_single, sample, exposure_time=exposure_time, measure_type=measure_type, verbosity=verbosity
+            measure_single,
+            sample,
+            exposure_time=exposure_time,
+            measure_type=measure_type,
+            verbosity=verbosity,
         ),
         tiling_type=tiling_type,
         md=md,
@@ -271,5 +313,64 @@ def sam_measure(
         measure_type=measure_type,
         verbosity=verbosity,
         tiling=tiling,
+        md=md,
+    )
+
+
+def measure_incident(
+    sample,
+    angles=None,
+    detectors=DETS,
+    exposure_time=None,
+    extra=None,
+    measure_type="measure",
+    verbosity=3,
+    tiling_type=None,
+    md=None,
+):
+    """Measure data by triggering the area detectors.
+
+    Parameters
+    ----------
+    sample: Sample
+        The sample object to measure.
+    detectors: interable
+        The list of detectors.
+    exposure_time : float
+        How long to collect data
+    extra : string, optional
+        Extra information about this particular measurement (which is typically
+        included in the savename/filename).
+    tiling : string
+        Controls the detector tiling mode.
+        None : regular measurement (single detector position)
+        'ygaps' : try to cover the vertical gaps in the Pilatus detector
+    """
+
+    md = dict(md or {})
+
+    def measure_angles(detectors, md=None):
+        """
+        Take a measurement for each angle in angles.
+        This function has the signature that is needed by `tiling`
+        """
+
+        nonlocal angles, sample, exposure_time, measure_type, verbosity
+        incident_angles = angles or sample.incident_angles_default
+        for angle in incident_angles:
+            yield from bps.mv(sample.thabs, angle)
+            yield from measure_single(
+                sample,
+                detectors=detectors,
+                exposure_time=exposure_time,
+                measure_type=measure_type,
+                verbosity=verbosity,
+                md=md,
+            )
+
+    yield from tiling(
+        detectors,
+        measure_angle,
+        tiling_type=tiling_type,
         md=md,
     )
