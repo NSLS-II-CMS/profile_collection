@@ -234,6 +234,11 @@ def measure(
     """
     md = dict(md or {})
 
+    # The helper function `tiling` applies tiling to a plan. See the doc string.
+    # It takes the list of detectors, which should includes any device you want to measure at each iteration.
+    # So this should include motors or sensors that you would like to track to state of.
+    # It also takes a plan that has parameters: detectors, and md.
+    # Partial is used here to pre-set all of the parameters of measure single, except for detectors, and md.
     yield from tiling(
         detectors,
         partial(
