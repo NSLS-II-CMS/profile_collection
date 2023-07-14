@@ -192,6 +192,7 @@ def tiling(detectors, inner_plan, tiling_type=None, md=None):
         "ygaps": ["upper", "lower"],
         None: ["default"],
     }
+
     extra = md.get("extra", None)
     extras = {
         "lower": "pos1" if extra is None else f"{extra}_pos1",
@@ -287,7 +288,7 @@ def measure(
             verbosity=verbosity,
         ),
         tiling_type=tiling_type,
-        md=md,
+        md={**md, 'extra': extra},
     )
 
 
@@ -317,10 +318,10 @@ def sam_measure(
     )
 
 
-def measure_incident(
+def measure_incidents(
     sample,
-    angles=None,
     detectors=DETS,
+    angles=None,
     exposure_time=None,
     extra=None,
     measure_type="measure",
@@ -328,7 +329,7 @@ def measure_incident(
     tiling_type=None,
     md=None,
 ):
-    """Measure data by triggering the area detectors.
+    """Measure data at various incident angles.
 
     Parameters
     ----------
@@ -336,6 +337,9 @@ def measure_incident(
         The sample object to measure.
     detectors: interable
         The list of detectors.
+    angles: list, optional
+        The list of angles to measure at.
+        defaults to sample.incident_angle_defaults
     exposure_time : float
         How long to collect data
     extra : string, optional
@@ -372,5 +376,5 @@ def measure_incident(
         detectors,
         measure_angle,
         tiling_type=tiling_type,
-        md=md,
+        md={**md, extra=extra},
     )
