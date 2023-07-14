@@ -374,7 +374,7 @@ def measure_incidents(
 
     yield from tiling(
         detectors,
-        measure_angle,
+        measure_angles,
         tiling_type=tiling_type,
         md={**md, extra=extra},
     )
