@@ -1573,27 +1573,6 @@ class Sample_Generic(CoordinateSystem):
         else:
             return max(0.01, max(exposure_times))
 
-    def wait_for_detectors(self, wait_max=False, start_time=None, period=0.1):
-        max_exposure_time = yield from self.max_exposure_time()
-        timeout = time.time() + max_exposure_time + 20
-        if not wait_max:
-            status = True
-            while status and (time.time() < timeout):
-                if start_time is not None:
-                    percentage = 100 * (time.time() - start_time) / max_exposure_time
-                    print(
-                        "Exposing {:6.2f} s  ({:3.0f}%)      \r".format((time.time() - start_time), percentage),
-                        end="",
-                    )
-                time.sleep(period)
-                acquires = []
-                for detector in get_beamline().detector:
-                    acquire = yield from bps.rd(detector.cam.acquire)
-                    acquires.append(acquire)
-                status = any(acquires)
-        else:
-            time.sleep(max_exposure_time)
-
     # Measurement methods
     ########################################
 
@@ -1687,7 +1666,8 @@ class Sample_Generic(CoordinateSystem):
         # md.update(md_current)
 
         # uids = RE(count(get_beamline().detector, 1), **md)
-        uids = yield from count(get_beamline().detector + [core_laser, laser, laserx, lasery, smy, smx, sth, schi], md=md)
+        # uids = yield from count(get_beamline().detector + [core_laser, laser, laserx, lasery, smy, smx, sth, schi], md=md)
+        uids = yield from count(get_beamline().detector + [laserx, lasery, smy, smx, sth, schi], md=md)
         # yield from (count(get_beamline().detector), **md)
 
         # get_beamline().beam.off()
@@ -1695,7 +1675,7 @@ class Sample_Generic(CoordinateSystem):
 
         # Wait for detectors to be ready
         max_exposure_time = self.max_exposure_time()
-        yield from self.wait_for_detectors(start_time=start_time, period=poling_period)
+        # yield from self.wait_for_detectors(start_time=start_time, period=poling_period)
 
         # special solution for 2022_1/TKoga2
         if verbosity >= 5:
@@ -1872,148 +1852,6 @@ class Sample_Generic(CoordinateSystem):
             if verbosity >= 3:
                 print("  Data linked as: {}".format(link_name))
 
-    def _old_handle_file(self, detector, extra=None, verbosity=3, subdirs=True, linksave=True, **md):
-
-        subdir = ""
-
-        if detector.name == "pilatus300" or detector.name == "pilatus8002":
-            filename = detector.tiff.full_file_name.get()  # RL, 20210831
-
-            # Alternate method to get the last filename
-            # filename = '{:s}/{:s}.tiff'.format( detector.tiff.file_path.get(), detector.tiff.file_name.get()  )
-
-            if verbosity >= 3:
-                print("  Data saved to: {}".format(filename))
-
-            if subdirs:
-                subdir = "/maxs/raw/"
-                # TODO:
-                # subdir = '/maxs/raw/'
-
-            # if md['measure_type'] is not 'snap':
-            if True:
-                acquire_time = yield from bps.rd(detector.cam.acquire_time)
-                self.set_attribute("exposure_time", acquire_time)  # RL, 20210831
-
-                # Create symlink
-                # link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
-                # savename = md['filename'][:-5]
-
-                # savename = self.get_savename(savename_extra=extra)
-                savename = md["filename"]
-                # link_name = '{}/{}{}_{:04d}_maxs.tiff'.format(RE.md['experiment_alias_directory'], subdir, savename, RE.md['scan_id']-1)
-                link_name = "{}/{}{}_maxs.tiff".format(RE.md["experiment_alias_directory"], subdir, savename)
-
-                if os.path.isfile(link_name):
-                    i = 1
-                    while os.path.isfile("{}.{:d}".format(link_name, i)):
-                        i += 1
-                    os.rename(link_name, "{}.{:d}".format(link_name, i))
-                os.symlink(filename, link_name)
-
-                if verbosity >= 3:
-                    print("  Data linked as: {}".format(link_name))
-
-        elif detector.name == "pilatus2M":
-
-            foldername = "/nsls2/xf11bm/"
-
-            filename = detector.tiff.full_file_name.get()  # RL, 20210831
-
-            if verbosity >= 3:
-                print("  Data saved to: {}".format(filename))
-
-            if subdirs:
-                subdir = "/saxs/raw/"
-                # TODO:
-                # subdir = '/saxs/raw/'
-
-            # if md['measure_type'] is not 'snap':
-            if True:
-
-                acquire_time = yield from bps.rd(detector.cam.acquire_time)
-                self.set_attribute("exposure_time", acquire_time)  # RL, 20210831
-
-                # Create symlink
-                # link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
-                # savename = md['filename'][:-5]
-
-                # savename = self.get_savename(savename_extra=extra)
-                savename = md["filename"]
-                link_name = "{}/{}{}_saxs.tiff".format(RE.md["experiment_alias_directory"], subdir, savename)
-                # link_name = '{}/{}{}_{:04d}_saxs.tiff'.format(RE.md['experiment_alias_directory'], subdir, savename, RE.md['scan_id']-1)
-
-                if os.path.isfile(link_name):
-                    i = 1
-                    while os.path.isfile("{}.{:d}".format(link_name, i)):
-                        i += 1
-                    os.rename(link_name, "{}.{:d}".format(link_name, i))
-                os.symlink(filename, link_name)
-
-                if verbosity >= 3:
-                    print("  Data linked as: {}".format(link_name))
-
-        elif detector.name == "pilatus800":
-            foldername = "/nsls2/xf11bm/"
-
-            filename = detector.tiff.full_file_name.get()  # RL, 20210831
-
-            if verbosity >= 3:
-                print("  Data saved to: {}".format(filename))
-
-            if subdirs:
-                subdir = "/waxs/raw/"
-                # TODO:
-                # subdir = '/waxs/raw/'
-            # if md['measure_type'] is not 'snap':
-            if True:
-
-                acquire_time = yield from bps.rd(detector.cam.acquire_time)
-                self.set_attribute("exposure_time", acquire_time)  # RL, 20210831
-
-                # Create symlink
-                # link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
-                # savename = md['filename'][:-5]
-
-                # savename = self.get_savename(savename_extra=extra)
-                savename = md["filename"]
-
-                link_name = "{}/{}{}_waxs.tiff".format(RE.md["experiment_alias_directory"], subdir, savename)
-                # link_name = '{}/{}{}_{:04d}_saxs.tiff'.format(RE.md['experiment_alias_directory'], subdir, savename, RE.md['scan_id']-1)
-
-                if os.path.isfile(link_name):
-                    i = 1
-                    while os.path.isfile("{}.{:d}".format(link_name, i)):
-                        i += 1
-                    os.rename(link_name, "{}.{:d}".format(link_name, i))
-                os.symlink(filename, link_name)
-
-                if verbosity >= 3:
-                    print("  Data linked as: {}".format(link_name))
-
-        # elif detector.name is 'PhotonicSciences_CMS':
-
-        # self.set_attribute('exposure_time', detector.exposure_time)
-
-        # filename = '{:s}/{:s}.tif'.format( detector.file_path, detector.file_name )
-
-        # if subdirs:
-        # subdir = '/waxs/'
-
-        ##savename = md['filename'][:-5]
-        ##savename = self.get_savename(savename_extra=extra)
-        # savename = md['filename']
-        ##savename = '{}/{}{}_{:04d}_waxs.tiff'.format(RE.md['experiment_alias_directory'], subdir, savename, RE.md['scan_id']-1)
-        # savename = '{}/{}{}_waxs.tiff'.format(RE.md['experiment_alias_directory'], subdir, savename)
-
-        # shutil.copy(filename, savename)
-        # if verbosity>=3:
-        # print('  Data saved to: {}'.format(savename))
-
-        else:
-            if verbosity >= 1:
-                print("WARNING: Can't do file handling for detector '{}'.".format(detector.name))
-                return
 
     def snap(self, exposure_time=None, extra=None, measure_type="snap", verbosity=3, **md):
         """Take a quick exposure (without saving data)."""
@@ -4076,7 +3914,7 @@ if True:
     # For testing:
     # %run -i /opt/ipython_profiles/profile_collection/startup/94-sample.py
     sam = Sample_Generic("testing_of_code")
-    sam.mark("here")
+    # sam.mark("here")
     # sam.mark('XY_field', 'x', 'y')
     # sam.mark('specified', x=1, th=0.1)
     # sam.naming(['name', 'extra', 'clock', 'th', 'exposure_time', 'id'])

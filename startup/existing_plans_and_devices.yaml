@@ -476,6 +476,248 @@ existing_devices:
     is_movable: false
     is_readable: true
     module: __main__
+  MAXSbsx:
+    classname: EpicsMotor
+    components:
+      acceleration:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      direction_of_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      high_limit_switch:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      high_limit_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      home_forward:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      home_reverse:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      low_limit_switch:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      low_limit_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_done_move:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_egu:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_is_moving:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_stop:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      offset_freeze_switch:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      set_use_switch:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_offset:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_offset_dir:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_readback:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_setpoint:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      velocity:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+    is_flyable: false
+    is_movable: true
+    is_readable: true
+    module: ophyd.epics_motor
+  MAXSbsy:
+    classname: EpicsMotor
+    components:
+      acceleration:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      direction_of_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      high_limit_switch:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      high_limit_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      home_forward:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      home_reverse:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      low_limit_switch:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      low_limit_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_done_move:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_egu:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_is_moving:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_stop:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      offset_freeze_switch:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      set_use_switch:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_offset:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_offset_dir:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_readback:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_setpoint:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      velocity:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+    is_flyable: false
+    is_movable: true
+    is_readable: true
+    module: ophyd.epics_motor
   MAXSx:
     classname: EpicsMotor
     components:
@@ -3585,28 +3827,416 @@ existing_devices:
   laser:
     classname: Laser
     components:
-      cmd:
+      delay:
+        classname: PairSP
+        components:
+          rb:
+            classname: EpicsSignalRO
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+          sp:
+            classname: EpicsSignal
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: __main__
+      input1:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      input2:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      manual_button:
+        classname: PairSEL
+        components:
+          rb:
+            classname: EpicsSignalRO
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+          sel:
+            classname: EpicsSignal
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: __main__
+      physical_bitmank:
+        classname: PairSEL
+        components:
+          rb:
+            classname: EpicsSignalRO
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+          sel:
+            classname: EpicsSignal
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: __main__
+      pulses:
+        classname: PairSP
+        components:
+          rb:
+            classname: EpicsSignalRO
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+          sp:
+            classname: EpicsSignal
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: __main__
+      pv_bitmask:
+        classname: PairSEL
+        components:
+          rb:
+            classname: EpicsSignalRO
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+          sel:
+            classname: EpicsSignal
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: __main__
+      pv_trigger:
+        classname: PairCMD
+        components:
+          cmd:
+            classname: EpicsSignal
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+          rb:
+            classname: EpicsSignalRO
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: __main__
+      trigger_mode:
+        classname: PairSEL
+        components:
+          rb:
+            classname: EpicsSignalRO
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+          sel:
+            classname: EpicsSignal
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: __main__
+      width:
+        classname: PairSP
+        components:
+          rb:
+            classname: EpicsSignalRO
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+          sp:
+            classname: EpicsSignal
+            is_flyable: false
+            is_movable: true
+            is_readable: true
+            module: ophyd.signal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: __main__
+    is_flyable: false
+    is_movable: false
+    is_readable: true
+    module: __main__
+  laserx:
+    classname: EpicsMotor
+    components:
+      acceleration:
         classname: EpicsSignal
         is_flyable: false
         is_movable: true
         is_readable: true
         module: ophyd.signal
-      pulse_width:
+      direction_of_travel:
         classname: EpicsSignal
         is_flyable: false
         is_movable: true
         is_readable: true
         module: ophyd.signal
-      turn_on:
+      high_limit_switch:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      high_limit_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      home_forward:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      home_reverse:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      low_limit_switch:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      low_limit_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_done_move:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_egu:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_is_moving:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_stop:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      offset_freeze_switch:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      set_use_switch:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_offset:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_offset_dir:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_readback:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_setpoint:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      velocity:
         classname: EpicsSignal
         is_flyable: false
         is_movable: true
         is_readable: true
         module: ophyd.signal
     is_flyable: false
-    is_movable: false
+    is_movable: true
     is_readable: true
-    module: __main__
+    module: ophyd.epics_motor
+  lasery:
+    classname: EpicsMotor
+    components:
+      acceleration:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      direction_of_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      high_limit_switch:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      high_limit_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      home_forward:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      home_reverse:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      low_limit_switch:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      low_limit_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_done_move:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_egu:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_is_moving:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_stop:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      offset_freeze_switch:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      set_use_switch:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_offset:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_offset_dir:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_readback:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_setpoint:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      velocity:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+    is_flyable: false
+    is_movable: true
+    is_readable: true
+    module: ophyd.epics_motor
   mir_bend:
     classname: EpicsMotor
     components:
@@ -4817,32 +5447,14 @@ existing_devices:
     is_movable: true
     is_readable: true
     module: ophyd.epics_motor
-  photonshutter_cls:
-    classname: EpicsSignal
-    is_flyable: false
-    is_movable: true
-    is_readable: true
-    module: ophyd.signal
-  photonshutter_open:
-    classname: EpicsSignal
-    is_flyable: false
-    is_movable: true
-    is_readable: true
-    module: ophyd.signal
-  photonshutter_sts:
-    classname: EpicsSignal
-    is_flyable: false
-    is_movable: true
-    is_readable: true
-    module: ophyd.signal
   pilatus2M:
     classname: Pilatus2MV33
     is_flyable: false
     is_movable: false
     is_readable: true
     module: __main__
-  pilatus800:
-    classname: Pilatus800V33
+  pilatus8002:
+    classname: Pilatus8002V33
     is_flyable: false
     is_movable: false
     is_readable: true
@@ -8482,18 +9094,6 @@ existing_devices:
     is_movable: true
     is_readable: true
     module: ophyd.epics_motor
-  shutter_sts1_pv:
-    classname: EpicsSignal
-    is_flyable: false
-    is_movable: true
-    is_readable: true
-    module: ophyd.signal
-  shutter_sts2_pv:
-    classname: EpicsSignal
-    is_flyable: false
-    is_movable: true
-    is_readable: true
-    module: ophyd.signal
   smx:
     classname: EpicsMotor
     components:
@@ -8737,6 +9337,127 @@ existing_devices:
     is_readable: true
     module: ophyd.epics_motor
   smy2:
+    classname: EpicsMotor
+    components:
+      acceleration:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      direction_of_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      high_limit_switch:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      high_limit_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      home_forward:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      home_reverse:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      low_limit_switch:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      low_limit_travel:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_done_move:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_egu:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_is_moving:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      motor_stop:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      offset_freeze_switch:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      set_use_switch:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_offset:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_offset_dir:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_readback:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      user_setpoint:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      velocity:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+    is_flyable: false
+    is_movable: true
+    is_readable: true
+    module: ophyd.epics_motor
+  smz:
     classname: EpicsMotor
     components:
       acceleration:
@@ -9105,18 +9826,50 @@ existing_devices:
     is_movable: true
     is_readable: true
     module: ophyd.epics_motor
-  trigger_new_pv:
-    classname: EpicsSignal
+  tempCntlOmega:
+    classname: OmegaTempCntl78000
+    components:
+      temperature_current:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      temperature_setpoint:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+    is_flyable: false
+    is_movable: false
+    is_readable: true
+    module: __main__
+  two_blade_shutter:
+    classname: TwoBladeShutter
+    components:
+      blade1_pos:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      blade2_pos:
+        classname: EpicsSignalRO
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
+      cmd:
+        classname: EpicsSignal
+        is_flyable: false
+        is_movable: true
+        is_readable: true
+        module: ophyd.signal
     is_flyable: false
     is_movable: true
     is_readable: true
-    module: ophyd.signal
-  trigger_pv:
-    classname: EpicsSignal
-    is_flyable: false
-    is_movable: true
-    is_readable: true
-    module: ophyd.signal
+    module: __main__
 existing_plans:
   TTL2_on:
     module: __main__
@@ -9225,13 +9978,8 @@ existing_plans:
       name: md
     properties:
       is_generator: true
-  agent_bootstrap_alignment:
-    module: __main__
-    name: agent_bootstrap_alignment
-    parameters: []
-    properties:
-      is_generator: true
   agent_feedback_plan:
+    description: Plan for adaptive round 2}
     module: __main__
     name: agent_feedback_plan
     parameters:
@@ -9246,10 +9994,98 @@ existing_plans:
       name: md
     properties:
       is_generator: true
-  align_motor_th_test:
+  agent_feedback_time_plan:
+    description: The main data acqusition plan for the adaptive experiments
     module: __main__
-    name: align_motor_th_test
+    name: agent_feedback_time_plan
     parameters:
+    - annotation:
+        type: float
+      description: The absolute position to measure the sample at transverse to beam
+        (and along gradient)
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: sample_x
+    - annotation:
+        type: float
+      description: 'Seconds from epoch.  Do not take the data before this wall time.  If
+        in the past, take
+
+        data as soon as possible'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: target_time
+    - annotation:
+        type: bool
+      default: 'False'
+      description: If `fast_align` should be used before taking data
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: align
+    - annotation:
+        type: float
+      default: '5'
+      description: The exposure time in seconds.
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: exposure
+    - default: None
+      description: Any additional payload to put in the start document.
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: md
+    properties:
+      is_generator: true
+  agent_start_sample:
+    description: The plan to start an adaptive experiment.
+    module: __main__
+    name: agent_start_sample
+    parameters:
+    - annotation:
+        type: list[float]
+      description: The initial sample positions to take data at.
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: init_x_pos
+    - default: None
+      kind:
+        name: KEYWORD_ONLY
+        value: 3
+      name: md
+    properties:
+      is_generator: true
+  agent_stop_sample:
+    description: Plan to run when the agent is done and would like no more data.
+    module: __main__
+    name: agent_stop_sample
+    parameters:
+    - default: None
+      kind:
+        name: KEYWORD_ONLY
+        value: 3
+      name: md
+    properties:
+      is_generator: true
+  alignNewSample:
+    module: __main__
+    name: alignNewSample
+    parameters: []
+    properties:
+      is_generator: true
+  align_motor_th:
+    module: __main__
+    name: align_motor_th
+    parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: det
     - kind:
         name: POSITIONAL_OR_KEYWORD
         value: 1
@@ -9275,12 +10111,26 @@ existing_plans:
         name: POSITIONAL_OR_KEYWORD
         value: 1
       name: fine_scan
+    - default: '0.1'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: mtr_backlash
+    - default: '0.1'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: mtr_max_velocity
     properties:
       is_generator: true
-  align_motor_y_test:
+  align_motor_y:
     module: __main__
-    name: align_motor_y_test
+    name: align_motor_y
     parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: det
     - kind:
         name: POSITIONAL_OR_KEYWORD
         value: 1
@@ -9301,11 +10151,31 @@ existing_plans:
         name: POSITIONAL_OR_KEYWORD
         value: 1
       name: exp_time
+    - default: '0.08'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: mtr_max_velocity
     properties:
       is_generator: true
-  align_test:
+  align_stub:
     module: __main__
-    name: align_test
+    name: align_stub
+    parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: det
+    - default: '0.3'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: exp_time
+    properties:
+      is_generator: true
+  align_test2:
+    module: __main__
+    name: align_test2
     parameters: []
     properties:
       is_generator: true
@@ -9346,6 +10216,12 @@ existing_plans:
         name: POSITIONAL_OR_KEYWORD
         value: 1
       name: plan
+    properties:
+      is_generator: true
+  changeSample:
+    module: __main__
+    name: changeSample
+    parameters: []
     properties:
       is_generator: true
   checkpoint:
@@ -9559,6 +10435,36 @@ existing_plans:
     parameters: []
     properties:
       is_generator: true
+  expose:
+    module: __main__
+    name: expose
+    parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: detectors
+    - default: None
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: exposure_time
+    - default: None
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: extra
+    - default: '3'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: verbosity
+    - default: None
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: md
+    properties:
+      is_generator: true
   fake_coordinated_motion:
     module: __main__
     name: fake_coordinated_motion
@@ -9609,32 +10515,14 @@ existing_plans:
       name: step
     properties:
       is_generator: true
-  fake_fly:
+  fake_fly3:
     module: __main__
-    name: fake_fly
+    name: fake_fly3
     parameters:
     - kind:
         name: POSITIONAL_OR_KEYWORD
         value: 1
-      name: mtr
-    - kind:
-        name: POSITIONAL_OR_KEYWORD
-        value: 1
-      name: start
-    - kind:
-        name: POSITIONAL_OR_KEYWORD
-        value: 1
-      name: stop
-    - kind:
-        name: POSITIONAL_OR_KEYWORD
-        value: 1
-      name: exp_time
-    properties:
-      is_generator: true
-  fake_fly2_test:
-    module: __main__
-    name: fake_fly2_test
-    parameters:
+      name: det
     - kind:
         name: POSITIONAL_OR_KEYWORD
         value: 1
@@ -9657,30 +10545,16 @@ existing_plans:
       name: exp_time
     properties:
       is_generator: true
-  fake_fly3_test:
+  fast_align:
+    description: Attempt to align the detector.
     module: __main__
-    name: fake_fly3_test
+    name: fast_align
     parameters:
-    - kind:
+    - default: None
+      kind:
         name: POSITIONAL_OR_KEYWORD
         value: 1
-      name: mtr
-    - kind:
-        name: POSITIONAL_OR_KEYWORD
-        value: 1
-      name: start
-    - kind:
-        name: POSITIONAL_OR_KEYWORD
-        value: 1
-      name: stop
-    - kind:
-        name: POSITIONAL_OR_KEYWORD
-        value: 1
-      name: step
-    - kind:
-        name: POSITIONAL_OR_KEYWORD
-        value: 1
-      name: exp_time
+      name: det
     properties:
       is_generator: true
   fly:
@@ -9971,6 +10845,101 @@ existing_plans:
       name: md
     properties:
       is_generator: true
+  measure:
+    description: Measure data by triggering the area detectors.
+    module: __main__
+    name: measure
+    parameters:
+    - description: The sample object to measure.
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: sample
+    - default: None
+      description: The list of detectors.
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: detectors
+    - default: None
+      description: How long to collect data
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: exposure_time
+    - default: None
+      description: 'Extra information about this particular measurement (which is
+        typically
+
+        included in the savename/filename).'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: extra
+    - default: '''measure'''
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: measure_type
+    - default: '3'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: verbosity
+    - default: None
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: tiling_type
+    - default: None
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: md
+    properties:
+      is_generator: true
+  measure_single:
+    description: Measure data by triggering the area detectors.
+    module: __main__
+    name: measure_single
+    parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: sample
+    - default: None
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: detectors
+    - default: None
+      description: How long to collect data
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: exposure_time
+    - default: '''measure'''
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: measure_type
+    - default: '3'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: verbosity
+    - default: 'True'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: handlefile
+    - default: None
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: md
+    properties:
+      is_generator: true
   monitor:
     description: Asynchronously monitor for new values and emit Event documents.
     module: bluesky.plan_stubs
@@ -10031,6 +11000,17 @@ existing_plans:
         name: POSITIONAL_OR_KEYWORD
         value: 1
       name: pos_cache
+    properties:
+      is_generator: true
+  move_sample_with_laser:
+    description: Moves the sample x and laserx in sync
+    module: __main__
+    name: move_sample_with_laser
+    parameters:
+    - kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: xpos
     properties:
       is_generator: true
   movr:
@@ -10102,6 +11082,12 @@ existing_plans:
         name: VAR_KEYWORD
         value: 4
       name: kwargs
+    properties:
+      is_generator: true
+  newSample:
+    module: __main__
+    name: newSample
+    parameters: []
     properties:
       is_generator: true
   'null':
@@ -11362,6 +12348,16 @@ existing_plans:
       kind:
         name: POSITIONAL_OR_KEYWORD
         value: 1
+      name: sample
+    - default: None
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: detectors
+    - default: None
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
       name: exposure_time
     - default: None
       kind:
@@ -11383,14 +12379,10 @@ existing_plans:
         name: POSITIONAL_OR_KEYWORD
         value: 1
       name: tiling
-    - default: 'False'
+    - default: None
       kind:
         name: POSITIONAL_OR_KEYWORD
         value: 1
-      name: stitchback
-    - kind:
-        name: VAR_KEYWORD
-        value: 4
       name: md
     properties:
       is_generator: true
@@ -11489,6 +12481,17 @@ existing_plans:
   shutter_on:
     module: __main__
     name: shutter_on
+    parameters:
+    - default: '3'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: verbosity
+    properties:
+      is_generator: true
+  shutter_state:
+    module: __main__
+    name: shutter_state
     parameters:
     - default: '3'
       kind:
@@ -11813,6 +12816,42 @@ existing_plans:
       name: detector
     properties:
       is_generator: true
+  tiling:
+    description: 'A helper function that applies tiling to a plan.
+
+      Tiling is used to fill gaps between the detector chips.'
+    module: __main__
+    name: tiling
+    parameters:
+    - description: 'The list of detectors used in the plan.
+
+        Detectors in this list that we know how to tiled, will get tiled.'
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: detectors
+    - description: "expected signature:\n\n   def plan(detectors, md):\n       '''\n\
+        \       Parameters\n       ----------\n       detectors: list\n          \
+        \ The list of detectors to use in the plan.\n       md: dict\n           Plan\
+        \ metadata.\n       '''\n       ..."
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: inner_plan
+    - default: None
+      description: 'has one of the following values: None, ''xgaps'', ''xygaps'''
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: tiling_type
+    - default: None
+      description: Plan metadata.
+      kind:
+        name: POSITIONAL_OR_KEYWORD
+        value: 1
+      name: md
+    properties:
+      is_generator: true
   tri_plan:
     module: __main__
     name: tri_plan
@@ -12097,16 +13136,5 @@ existing_plans:
         name: KEYWORD_ONLY
         value: 3
       name: md
-    properties:
-      is_generator: true
-  xshutter_trigger_RE:
-    module: __main__
-    name: xshutter_trigger_RE
-    parameters:
-    - default: '3'
-      kind:
-        name: POSITIONAL_OR_KEYWORD
-        value: 1
-      name: verbosity
     properties:
       is_generator: true
