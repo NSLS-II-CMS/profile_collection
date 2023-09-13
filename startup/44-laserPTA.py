@@ -17,8 +17,12 @@ class PhotoThermalAnnealer:
         # self.controlTTL_PV = 'XF:11BMB-ES{IO}AO:3-SP'
         # self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
         # self.powerV_PV = 'XF:11BMB-ES{IO}AO:4-SP'
-        self.powerV_PV = "XF:11BM-ES{Ecat:AO1}1"
-        self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
+        # self.powerV_PV = "XF:11BM-ES{Ecat:AO1}1"
+        # self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
+
+
+        self.powerV_PV = "XF:11BM-CT{BIOME-MTO:1}LaserVoltsSet:1-SP"    #changed at 080323 by RL for the new laser control box
+        self.controlTTL_PV = "XF:11BM-CT{BIOME-MTO:1}Output:1-Sel"
 
         self.print_code = print_code
         # if verbosity>=3:
@@ -58,10 +62,10 @@ class PhotoThermalAnnealer:
     ########################################
 
     def laserOn(self):
-        caput(self.controlTTL_PV, 0)
+        caput(self.controlTTL_PV, 1)
 
     def laserOff(self):
-        caput(self.controlTTL_PV, 1)
+        caput(self.controlTTL_PV, 0)
 
     def laserPulse(self, duration, power_W=None):
 
