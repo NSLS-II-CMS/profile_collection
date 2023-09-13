@@ -47,7 +47,7 @@ def expose(detectors, exposure_time=None, extra=None, verbosity=3, md=None):
 
 def measure_single(
     sample,
-    detectors=DETS,
+    detectors=None,
     exposure_time=None,
     measure_type="measure",
     verbosity=3,
@@ -64,6 +64,7 @@ def measure_single(
         Extra information about this particular measurement (which is typically
         included in the savename/filename).
     """
+    detectors = detectors if detectors is not None else DETS
     md = dict(md or {})
     if exposure_time is not None:
         sample.set_attribute("exposure_time", exposure_time)
@@ -245,7 +246,7 @@ def tiling(detectors, inner_plan, tiling_type=None, md=None):
 
 def measure(
     sample,
-    detectors=DETS,
+    detectors=None,
     exposure_time=None,
     extra=None,
     measure_type="measure",
@@ -271,6 +272,7 @@ def measure(
         None : regular measurement (single detector position)
         'ygaps' : try to cover the vertical gaps in the Pilatus detector
     """
+    detectors = detectors if detectors is not None else DETS
     md = dict(md or {})
 
     # The helper function `tiling` applies tiling to a plan. See the doc string.
@@ -293,15 +295,17 @@ def measure(
 
 
 def sam_measure(
-    sample=sample_pta,
-    detectors=DETS,
+    sample=None,
+    detectors=None,
     exposure_time=None,
     extra=None,
     measure_type="measure",
     verbosity=3,
     tiling=None,
     md=None,
-):
+):  
+    sample = sample or sample_pta
+    detectors = detectors if detectors is not None else DETS
     md = dict(md or {})
     if tiling is not None:
         raise ValueError("Parameter 'tiling' must be None. Other values are not supported yet.")

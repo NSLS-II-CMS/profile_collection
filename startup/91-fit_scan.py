@@ -917,7 +917,7 @@ def fit_scan(
 
     fig = None
     for i in plt.get_fignums():
-        # title_cur = plt.figure(i).canvas.manager.window.windowTitle()
+        title_cur = plt.figure(i).canvas.manager.window.windowTitle()
         if title_cur == title:
             fig = plt.figure(i)
             break

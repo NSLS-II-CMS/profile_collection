@@ -1666,7 +1666,8 @@ class Sample_Generic(CoordinateSystem):
         # md.update(md_current)
 
         # uids = RE(count(get_beamline().detector, 1), **md)
-        uids = yield from count(get_beamline().detector + [core_laser, laser, laserx, lasery, smy, smx, sth, schi], md=md)
+        # uids = yield from count(get_beamline().detector + [core_laser, laser, laserx, lasery, smy, smx, sth, schi], md=md)
+        uids = yield from count(get_beamline().detector + [laserx, lasery, smy, smx, sth, schi], md=md)
         # yield from (count(get_beamline().detector), **md)
 
         # get_beamline().beam.off()
@@ -1674,7 +1675,7 @@ class Sample_Generic(CoordinateSystem):
 
         # Wait for detectors to be ready
         max_exposure_time = self.max_exposure_time()
-        yield from self.wait_for_detectors(start_time=start_time, period=poling_period)
+        # yield from self.wait_for_detectors(start_time=start_time, period=poling_period)
 
         # special solution for 2022_1/TKoga2
         if verbosity >= 5:
