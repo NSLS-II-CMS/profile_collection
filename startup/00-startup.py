@@ -1,6 +1,7 @@
 print(f"Loading {__file__!r} ...")
 
 import nslsii
+import os
 from bluesky.magics import BlueskyMagics
 from bluesky.preprocessors import pchain
 from bluesky.utils import PersistentDict
@@ -11,12 +12,18 @@ from pyOlog.ophyd_tools import *
 from bluesky.callbacks.broker import verify_files_saved
 
 
-nslsii.configure_base(get_ipython().user_ns, "cms", publish_documents_with_kafka=True)
+# Added this variable temporarily to bypass some code that doesn't run without the beamline.
+# This can be set when starting bsui like this: `BS_MODE=test bsui`
+
+testing = os.environ.get("BS_MODE", False) == "test"
+
+if testing:
+    nslsii.configure_base(get_ipython().user_ns, "temp", publish_documents_with_kafka=False)
+else:
+    nslsii.configure_base(get_ipython().user_ns, "cms", publish_documents_with_kafka=True)
 
 # RE.subscribe(post_run(verify_files_saved), 'stop')
 
-# Added this variable temporarily to bypass some code that doesn't run without the beamline.
-testing = True
 
 # Uncomment the following lines to turn on verbose messages for
 # debugging.
@@ -32,7 +39,10 @@ testing = True
 # RE.subscribe(print_scan_ids, 'start')
 
 # runengine_metadata_dir = appdirs.user_data_dir(appname="bluesky") / Path("runengine-metadata")
-runengine_metadata_dir = "/nsls2/data/cms/shared/config/runengine-metadata"
+if testing:
+    runengine_metadata_dir = "/tmp/runingine-metadata"
+else:
+    runengine_metadata_dir = "/nsls2/data/cms/shared/config/runengine-metadata"
 
 
 # PersistentDict will create the directory if it does not exist
