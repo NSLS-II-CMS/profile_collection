@@ -380,5 +380,5 @@ def measure_incidents(
         detectors,
         measure_angles,
         tiling_type=tiling_type,
-        md={**md, extra=extra},
+        md=dict(**md, extra=extra),
     )
