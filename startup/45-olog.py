@@ -1,6 +1,3 @@
-
-
-
 # simple_template = """{{- start.plan_name }} ['{{ start.uid[:6] }}'] (scan num: {{ start.scan_id }})"""
 
 
@@ -25,9 +22,7 @@
 # {%- endfor %}
 
 
-
 # """
-
 
 
 # #single_motor_template = """{{- start.plan_name}} :  {{ start.motors[0]}} {{start.plan_args.start}} {{start.plan_args.stop}} {{start.plan_args.num}} ['{{ start.uid[:6] }}'] (scan num: {{ start.scan_id }})
@@ -88,13 +83,13 @@
 # a variable called 'logbook' in the global IPython namespace.
 
 ##RL comment all below out at 06/11/19 to disable the olog. Expecting the newer version to fix it from DAMA.
-#logbook = simple_olog_client
+# logbook = simple_olog_client
 
 
 ##logbook_cb = logbook_cb_factory(configured_logbook_func)
-#logbook_cb = logbook_cb_factory(configured_logbook_func, desc_dispatch=TEMPLATES)
+# logbook_cb = logbook_cb_factory(configured_logbook_func, desc_dispatch=TEMPLATES)
 
 ## uncomment this for debugging and comment the next two lines
 ##RE.subscribe(logbook_cb)
-#import nslsii
-#nslsii.configure_olog(get_ipython().user_ns, callback=logbook_cb)
+# import nslsii
+# nslsii.configure_olog(get_ipython().user_ns, callback=logbook_cb)

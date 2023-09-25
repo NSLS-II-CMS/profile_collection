@@ -1,53 +1,58 @@
 from nslsii.devices import TwoButtonShutter
 
+
 class TwoButtonShutterNC(TwoButtonShutter):
     def stop(self, *args):
         ...
 
+
 class TriState(Device):
-    full = Cpt(TwoButtonShutterNC, 'V:1}')
-    soft = Cpt(TwoButtonShutterNC, 'V:1_Soft}')
+    full = Cpt(TwoButtonShutterNC, "V:1}")
+    soft = Cpt(TwoButtonShutterNC, "V:1_Soft}")
+
     def set(self, value):
-        if value == 'Open':
-            return self.full.set('Open') #& self.soft.set('Open')
-        elif value == 'Soft':
-            return self.soft.set('Open') & self.full.set('Close')
-        elif value == 'Close':
-            return self.full.set('Close') & self.soft.set('Close')
+        if value == "Open":
+            return self.full.set("Open")  # & self.soft.set('Open')
+        elif value == "Soft":
+            return self.soft.set("Open") & self.full.set("Close")
+        elif value == "Close":
+            return self.full.set("Close") & self.soft.set("Close")
         else:
             raise ValueError("value must be in {'Open', 'Close', 'Soft'}")
 
-#class TriState(Device):
-    #full = Cpt(TwoButtonShutterNC, 'V:1}')
-    #soft = Cpt(TwoButtonShutterNC, 'V:1_Soft}')
-    #def set(self, value):
-        #if value == 'Open':
-            #return self.full.set('Open') #& self.soft.set('Open')
-        #elif value == 'Soft':
-            #return self.soft.set('Open') & self.full.set('Not Open')
-        #elif value == 'Not Open':
-            #return self.full.set('Not Open') & self.soft.set('Not Open')
-        #else:
-            #raise ValueError("value must be in {'Open', 'Not Open', 'Soft'}")
+
+# class TriState(Device):
+# full = Cpt(TwoButtonShutterNC, 'V:1}')
+# soft = Cpt(TwoButtonShutterNC, 'V:1_Soft}')
+# def set(self, value):
+# if value == 'Open':
+# return self.full.set('Open') #& self.soft.set('Open')
+# elif value == 'Soft':
+# return self.soft.set('Open') & self.full.set('Not Open')
+# elif value == 'Not Open':
+# return self.full.set('Not Open') & self.soft.set('Not Open')
+# else:
+# raise ValueError("value must be in {'Open', 'Not Open', 'Soft'}")
 
 
 def tri_plan(tri, value):
-    if value == 'Open':
-        yield from bps.mov(tri.full, 'Open')
-    elif value == 'Soft':
-        yield from bps.mov(tri.full, 'Close')
-        yield from bps.mov(tri.soft, 'Open')
-    elif value == 'Close':
-        yield from bps.mov(tri.full, 'Close')
-        yield from bps.mov(tri.soft, 'Close')
+    if value == "Open":
+        yield from bps.mov(tri.full, "Open")
+    elif value == "Soft":
+        yield from bps.mov(tri.full, "Close")
+        yield from bps.mov(tri.soft, "Open")
+    elif value == "Close":
+        yield from bps.mov(tri.full, "Close")
+        yield from bps.mov(tri.soft, "Close")
 
-#RE(tri_plan(dev_tri, 'Open'))
 
-#dev_tri = TriState('XF:11BMB-VA{Chm:Smpl-V', name='dev')
-#dev_tri.read()
-#%mov dev_tri 'Soft'
+# RE(tri_plan(dev_tri, 'Open'))
 
-'''
+# dev_tri = TriState('XF:11BMB-VA{Chm:Smpl-V', name='dev')
+# dev_tri.read()
+# %mov dev_tri 'Soft'
+
+"""
 class Foo:
     @proerty
     def bob(self):
@@ -153,4 +158,4 @@ dev_tri.set('Soft')
 #dev_soft.set('Close')
 #dev.set('Open')
 #dev_soft.set('Close')
-'''
+"""
