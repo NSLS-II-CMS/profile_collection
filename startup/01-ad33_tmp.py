@@ -1,8 +1,6 @@
-from ophyd.areadetector.base import (
-    ADComponent as C,
-    ad_group,
-    EpicsSignalWithRBV as SignalWithRBV,
-)
+print(f"Loading {__file__!r} ...")
+
+from ophyd.areadetector.base import ADComponent as C, ad_group, EpicsSignalWithRBV as SignalWithRBV
 from ophyd.areadetector.plugins import PluginBase
 from ophyd.device import DynamicDeviceComponent as DDC, Staged
 from ophyd.signal import EpicsSignalRO, EpicsSignal
@@ -74,26 +72,17 @@ except ImportError:
         )
         net = C(EpicsSignalRO, "Net_RBV")
         profile_average = DDC(
-            ad_group(
-                EpicsSignalRO,
-                (("x", "ProfileAverageX_RBV"), ("y", "ProfileAverageY_RBV")),
-            ),
+            ad_group(EpicsSignalRO, (("x", "ProfileAverageX_RBV"), ("y", "ProfileAverageY_RBV"))),
             doc="Profile average in XY",
             default_read_attrs=("x", "y"),
         )
         profile_centroid = DDC(
-            ad_group(
-                EpicsSignalRO,
-                (("x", "ProfileCentroidX_RBV"), ("y", "ProfileCentroidY_RBV")),
-            ),
+            ad_group(EpicsSignalRO, (("x", "ProfileCentroidX_RBV"), ("y", "ProfileCentroidY_RBV"))),
             doc="Profile centroid in XY",
             default_read_attrs=("x", "y"),
         )
         profile_cursor = DDC(
-            ad_group(
-                EpicsSignalRO,
-                (("x", "ProfileCursorX_RBV"), ("y", "ProfileCursorY_RBV")),
-            ),
+            ad_group(EpicsSignalRO, (("x", "ProfileCursorX_RBV"), ("y", "ProfileCursorY_RBV"))),
             doc="Profile cursor in XY",
             default_read_attrs=("x", "y"),
         )
@@ -103,10 +92,7 @@ except ImportError:
             default_read_attrs=("x", "y"),
         )
         profile_threshold = DDC(
-            ad_group(
-                EpicsSignalRO,
-                (("x", "ProfileThresholdX_RBV"), ("y", "ProfileThresholdY_RBV")),
-            ),
+            ad_group(EpicsSignalRO, (("x", "ProfileThresholdX_RBV"), ("y", "ProfileThresholdY_RBV"))),
             doc="Profile threshold in XY",
             default_read_attrs=("x", "y"),
         )

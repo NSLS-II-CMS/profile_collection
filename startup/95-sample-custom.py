@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 ################################################################################
 # Code for customer-made holders and sample stages,
 # Samples include :
@@ -63,8 +65,7 @@ class SampleTSAXS_Generic(Sample_Generic):
 
         if os.path.isfile(INT_FILENAME):
             output_data = pds.read_csv(INT_FILENAME, index_col=0)
-            # output_data = output_data.append(temp_data, ignore_index=True)
-            output_data = pds.concat([output_data, temp_data], ignore_index=True)
+            output_data = output_data.append(temp_data, ignore_index=True)
             output_data.to_csv(INT_FILENAME)
         else:
             temp_data.to_csv(INT_FILENAME)
@@ -309,8 +310,7 @@ class SampleGISAXS_Generic(Sample_Generic):
 
         if os.path.isfile(INT_FILENAME):
             output_data = pds.read_csv(INT_FILENAME, index_col=0)
-            # output_data = output_data.append(temp_data, ignore_index=True)
-            output_data = pds.concat([output_data, temp_data], ignore_index=True)
+            output_data = output_data.append(temp_data, ignore_index=True)
             output_data.to_csv(INT_FILENAME)
         else:
             temp_data.to_csv(INT_FILENAME)
@@ -439,12 +439,7 @@ class SampleGISAXS_Generic(Sample_Generic):
 
             # Find the step-edge
             self.ysearch(
-                step_size=0.5,
-                min_step=0.005,
-                intensity=value,
-                target=0.5,
-                verbosity=verbosity,
-                polarity=-1,
+                step_size=0.5, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1
             )
 
             # Find the peak
@@ -956,7 +951,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
         # default_WAXSy = WAXSy.position
 
         # move in absorber and move out the beamstop
-        slot_pos = 5
+        slot_pos = 4
         beam.setAbsorber(slot_pos)
         if beam.absorber()[0] >= 4:
             bsx.move(bsx.position + 6)
@@ -975,7 +970,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
 
         # Energy = 17kev
         if abs(beam.energy(verbosity=1) - 10) < 0.1:
-            direct_beam_slot = 5
+            direct_beam_slot = 3
 
         beam.setAbsorber(direct_beam_slot)
         # TODO:move detector to the 1st position and setROI
@@ -1109,8 +1104,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 self.measure(exposure_time, extra=extra)
                 temp_data = self.XR_data_output(slot_pos, exposure_time)
 
-            # output_data = output_data.append(temp_data, ignore_index=True)
-            output_data = pds.concat([output_data, temp_data], ignore_index=True)
+            output_data = output_data.append(temp_data, ignore_index=True)
             # save to file
             output_data.to_csv(XR_FILENAME)
 
@@ -1165,7 +1159,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
             beam.absorber_transmission_list = beam.absorber_transmission_list_17kev
 
         elif abs(beam.energy(verbosity=1) - 10) < 0.1:
-            beam.absorber_transmission_list = beam.absorber_transmission_list
+            beam.absorber_transmission_list = beam.absorber_transmission_list_10kev
         else:
             print("The absorber has not been calibrated under current Energy!!!")
 
@@ -1253,12 +1247,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
 
             # Find the step-edge
             self.ysearch(
-                step_size=0.5,
-                min_step=0.005,
-                intensity=value,
-                target=0.5,
-                verbosity=verbosity,
-                polarity=-1,
+                step_size=0.5, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1
             )
 
             # Find the peak
@@ -1502,8 +1491,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 self.measure(exposure_time, extra=extra)
                 temp_data = self.XR_data_output(slot_pos, exposure_time)
 
-            # output_data = output_data.append(temp_data, ignore_index=True)
-            output_data = pds.concat([output_data, temp_data], ignore_index=True)
+            output_data = output_data.append(temp_data, ignore_index=True)
             # save to file
             output_data.to_csv(th2th_FILENAME)
 
@@ -1615,11 +1603,7 @@ class GIBar(PositionalHolder):
         holding spot on this holder)."""
 
         super().addSampleSlotPosition(
-            sample=sample,
-            slot=slot,
-            position=position,
-            detector_opt=detector_opt,
-            incident_angles=incident_angles,
+            sample=sample, slot=slot, position=position, detector_opt=detector_opt, incident_angles=incident_angles
         )
 
         # Adjust y-origin to account for substrate thickness
@@ -1649,11 +1633,7 @@ class GIBar(PositionalHolder):
         holding spot on this holder)."""
 
         super().addSampleSlotPosition(
-            sample=sample,
-            slot=slot,
-            position=position,
-            detector_opt=detector_opt,
-            incident_angles=incident_angles,
+            sample=sample, slot=slot, position=position, detector_opt=detector_opt, incident_angles=incident_angles
         )
         # Adjust y-origin to account for substrate thickness
         if thickness != 0:
@@ -2296,13 +2276,7 @@ class CapillaryHolderHeated(CapillaryHolder):
                 sample.naming_scheme.insert(-1, "temperature")
 
     def doHeatCool(
-        self,
-        heat_temps,
-        cool_temps,
-        exposure_time=None,
-        stabilization_time=120,
-        temp_tolerance=0.5,
-        step=1,
+        self, heat_temps, cool_temps, exposure_time=None, stabilization_time=120, temp_tolerance=0.5, step=1
     ):
         if step <= 1:
             for temperature in heat_temps:
@@ -2991,13 +2965,7 @@ class InstecStage60(CapillaryHolder):
         return position_x * self.x_spacing
 
     def tscan(
-        self,
-        temperature_start,
-        temperature_final,
-        num_intervals,
-        wait_time,
-        temp_update_time=5,
-        exposure_time=0,
+        self, temperature_start, temperature_final, num_intervals, wait_time, temp_update_time=5, exposure_time=0
     ):
         if temperature_start == None or temperature_start < 0.0 or temperature_start >= 250:
             print("temperature_start must be set between 0 and 250 degC.\n")
@@ -3040,11 +3008,7 @@ class InstecStage60(CapillaryHolder):
                 print("{:.3f} {:.3f}".format(current_time, current_temperature))
                 # f.write('{:d} {:.3f} {:.3f}\n'.format(RE.md['scan_id'], current_time, current_temperature))
                 self.tscan_data = self.tscan_data.append(
-                    {
-                        "scan_id": RE.md["scan_id"],
-                        "degC": current_temperature,
-                        "seconds": current_time,
-                    },
+                    {"scan_id": RE.md["scan_id"], "degC": current_temperature, "seconds": current_time},
                     ignore_index=True,
                 )
 

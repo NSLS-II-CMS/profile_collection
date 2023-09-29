@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # import time as ttime  # tea time
 # from datetime import datetime
 from ophyd import (
@@ -44,10 +46,14 @@ if beamline_stage == "open_MAXS" or beamline_stage == "BigHuber":
 elif beamline_stage == "default":
     Pilatus800_on = True
     Pilatus800_2_on = False
+elif beamline_stage == "testing":
+    Pilatus800_on = True
+    Pilatus800_2_on = False
 
 # Pilatus800_on = True
 # Pilatus800_2_on = False
 Pilatus800_2_on = True
+
 
 
 class TIFFPluginWithFileStore(TIFFPlugin, FileStoreTIFFIterativeWrite):
@@ -198,12 +204,7 @@ class PilatusV33(SingleTriggerV33, PilatusDetector):
     )
 
     def setExposureTime(self, exposure_time, verbosity=3):
-        yield from mv(
-            self.cam.acquire_time,
-            exposure_time,
-            self.cam.acquire_period,
-            exposure_time + 0.1,
-        )
+        yield from mv(self.cam.acquire_time, exposure_time, self.cam.acquire_period, exposure_time + 0.1)
         # caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime', exposure_time)
         # caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquirePeriod', exposure_time+0.1)
 
@@ -252,12 +253,7 @@ class Pilatus800V33(SingleTriggerV33, PilatusDetector):
     # root='/')
 
     def setExposureTime(self, exposure_time, verbosity=3):
-        yield from mv(
-            self.cam.acquire_time,
-            exposure_time,
-            self.cam.acquire_period,
-            exposure_time + 0.1,
-        )
+        yield from mv(self.cam.acquire_time, exposure_time, self.cam.acquire_period, exposure_time + 0.1)
         # self.cam.acquire_time.put(exposure_time)
         # self.cam.acquire_period.put(exposure_time+.1)
         # caput('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime', exposure_time)
@@ -325,12 +321,7 @@ class Pilatus2M(SingleTrigger, PilatusDetector):
         # self.cam.stage_sigs['acquire_time'] = exposure_time
         # self.cam.stage_sigs['acquire_period'] = exposure_time+.1
 
-        yield from mv(
-            self.cam.acquire_time,
-            exposure_time,
-            self.cam.acquire_period,
-            exposure_time + 0.1,
-        )
+        yield from mv(self.cam.acquire_time, exposure_time, self.cam.acquire_period, exposure_time + 0.1)
         # yield from mv(self.cam.acquire_period, exposure_time+0.1)
 
 
@@ -361,12 +352,7 @@ class Pilatus2MV33(SingleTriggerV33, PilatusDetector):
     # root='/')
 
     def setExposureTime(self, exposure_time, verbosity=3):
-        yield from mv(
-            self.cam.acquire_time,
-            exposure_time,
-            self.cam.acquire_period,
-            exposure_time + 0.1,
-        )
+        yield from mv(self.cam.acquire_time, exposure_time, self.cam.acquire_period, exposure_time + 0.1)
         # self.cam.acquire_time.put(exposure_time)
         # self.cam.acquire_period.put(exposure_time+.1)
         # caput('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime', exposure_time)
@@ -431,7 +417,7 @@ fs3 = StandardProsilicaV33("XF:11BMB-BI{FS:3-Cam:1}", name="fs3")
 time.sleep(1)
 fs4 = StandardProsilicaV33("XF:11BMB-BI{FS:4-Cam:1}", name="fs4")
 time.sleep(1)
-fs5 = StandardProsilicaV33("XF:11BMB-BI{FS:Test-Cam:1}", name="fs5")
+# fs5 = StandardProsilicaV33('XF:11BMB-BI{FS:Test-Cam:1}', name='fs5')
 
 
 # class StandardsimDetectorV33(SingleTriggerV33, ProsilicaDetector):
@@ -460,19 +446,19 @@ fs5 = StandardProsilicaV33("XF:11BMB-BI{FS:Test-Cam:1}", name="fs5")
 all_standard_pros = [fs2, fs3, fs4]
 
 
-# for camera in all_standard_pros:
-#     camera.read_attrs = ['stats1', 'stats2','stats3','stats4','stats5']
-#     # camera.tiff.read_attrs = []  # leaving just the 'image'
-#     for stats_name in ['stats1', 'stats2','stats3','stats4','stats5']:
-#         stats_plugin = getattr(camera, stats_name)
-#         stats_plugin.read_attrs = ['total']
-#         #camera.stage_sigs[stats_plugin.blocking_callbacks] = 1
+for camera in all_standard_pros:
+    camera.read_attrs = ["stats1", "stats2", "stats3", "stats4", "stats5"]
+    # camera.tiff.read_attrs = []  # leaving just the 'image'
+    for stats_name in ["stats1", "stats2", "stats3", "stats4", "stats5"]:
+        stats_plugin = getattr(camera, stats_name)
+        stats_plugin.read_attrs = ["total"]
+        # camera.stage_sigs[stats_plugin.blocking_callbacks] = 1
 
-# camera.stage_sigs[camera.roi1.blocking_callbacks] = 1
-# camera.stage_sigs[camera.trans1.blocking_callbacks] = 1
-# camera.cam.ensure_nonblocking()
+    # camera.stage_sigs[camera.roi1.blocking_callbacks] = 1
+    # camera.stage_sigs[camera.trans1.blocking_callbacks] = 1
+    # camera.cam.ensure_nonblocking()
 
-# camera.stage_sigs[camera.cam.trigger_mode] = 'Fixed Rate'
+    # camera.stage_sigs[camera.cam.trigger_mode] = 'Fixed Rate'
 
 
 # for camera in [xray_eye1_writing, xray_eye2_writing, xray_eye3_writing]:
@@ -601,7 +587,9 @@ if Pilatus2M_on == True:
         stats_plugin = getattr(pilatus2M, stats_name)
         stats_plugin.read_attrs = ["total"]
     pilatus2M.cam.ensure_nonblocking()
-    pilatus2M.tiff.ensure_blocking()
+    pilatus2M.tiff.ensure_nonblocking()
+    # pilatus2M.tiff.ensure_blocking()
+    pilatus2M.stats2.total.kind = "hinted"
     pilatus2M.stats3.total.kind = "hinted"
     pilatus2M.stats4.total.kind = "hinted"
 

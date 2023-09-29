@@ -1,16 +1,28 @@
+print(f"Loading {__file__!r} ...")
+
 from epics import caput, caget
+
+
+class NuPhotoThermalAnnealer(Device):
+    voltage = Cpt(EpicsSignal, "{Ecat:AO1}1")
+    state = Cpt(EpicsSignal, "{Ecat:DO1_2}")
+
+
+core_laser = NuPhotoThermalAnnealer("XF:11BM-ES", name="laser")
 
 
 class PhotoThermalAnnealer:
     def __init__(self, print_code="PTA> "):
         # self.controlTTL_PV = 'XF:11BMB-ES{IO}AO:3-SP'
-        # self.controlTTL_PV = 'XF:11BM-ES{Ecat:DO1_2}'
+        # self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
         # self.powerV_PV = 'XF:11BMB-ES{IO}AO:4-SP'
-        # self.powerV_PV = 'XF:11BM-ES{Ecat:AO1}1'
+        # self.powerV_PV = "XF:11BM-ES{Ecat:AO1}1"
+        # self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
 
-        # setting at Feb 2023
-        self.powerV_PV = "XF:11BM-ES{Ecat:AO2}1"
-        self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
+        self.powerV_PV = (
+            "XF:11BM-CT{BIOME-MTO:1}LaserVoltsSet:1-SP"  # changed at 080323 by RL for the new laser control box
+        )
+        self.controlTTL_PV = "XF:11BM-CT{BIOME-MTO:1}Output:1-Sel"
 
         self.print_code = print_code
         # if verbosity>=3:
@@ -226,11 +238,7 @@ class PhotoThermalAnnealer:
             if verbosity >= 3:
                 print(
                     "{}        T = {:.2f}°C; Adjusting laser power by {:+.2f} W (from {:.2f} W to {:.2f} W)".format(
-                        self.print_code,
-                        T_current,
-                        adjust,
-                        power_W_current,
-                        power_W_current + adjust,
+                        self.print_code, T_current, adjust, power_W_current, power_W_current + adjust
                     )
                 )
 
@@ -432,10 +440,7 @@ class PhotoThermalAnnealer:
         self.single_sweep_laser(-length, velocity, start=None, delay_at_end=delay_at_end)
 
     def anneal_cyclic(self, length, velocity, num_cycles, delay_at_end=0.1):
-        self.msg(
-            "Cycling Anneal (%.1fmm X %.1f, @ %.4f mm/s)" % (length, num_cycles, velocity),
-            1,
-        )
+        self.msg("Cycling Anneal (%.1fmm X %.1f, @ %.4f mm/s)" % (length, num_cycles, velocity), 1)
 
         # Predict how long the anneal will take
         predicted_duration = ((length / velocity) + delay_at_end) * 2 * num_cycles  # Stage motion
@@ -444,10 +449,7 @@ class PhotoThermalAnnealer:
 
         # finish = time.time() + predicted_duration
         # date_str = datetime.datetime.fromtimestamp( finish ).strftime("%Y-%m-%d %H:%M:%S")
-        self.msg(
-            "Will finish at %s" % (self.timing_prediction_txt(predicted_duration)),
-            indent=1,
-        )
+        self.msg("Will finish at %s" % (self.timing_prediction_txt(predicted_duration)), indent=1)
 
         fractional_sweeps = num_cycles - int(num_cycles)
         if fractional_sweeps == 0.5:
@@ -457,10 +459,7 @@ class PhotoThermalAnnealer:
 
         # Anneal cycles
         for cycle in range(num_cycles):
-            self.msg(
-                "Cycle #: %d/%d (%.1f%% done)" % (cycle + 1, num_cycles, (100.0 * cycle / num_cycles)),
-                1,
-            )
+            self.msg("Cycle #: %d/%d (%.1f%% done)" % (cycle + 1, num_cycles, (100.0 * cycle / num_cycles)), 1)
             # self.date_stamp(indent=1)
             if self.is_timing():
                 self.timing_msg(indent=1)
@@ -486,10 +485,7 @@ class PhotoThermalAnnealer:
         measures=None,
         cycles_done=0,
     ):
-        self.msg(
-            "Cycling Anneal (%.1fmm X %.1f, @ %.4f mm/s)" % (length, num_cycles, velocity),
-            1,
-        )
+        self.msg("Cycling Anneal (%.1fmm X %.1f, @ %.4f mm/s)" % (length, num_cycles, velocity), 1)
 
         if measures is None:
             measures = [1, 2, 4, 8, 16]
@@ -509,10 +505,7 @@ class PhotoThermalAnnealer:
 
         # finish = time.time() + predicted_duration
         # date_str = datetime.datetime.fromtimestamp( finish ).strftime("%Y-%m-%d %H:%M:%S")
-        self.msg(
-            "Will finish at %s" % (self.timing_prediction_txt(predicted_duration)),
-            indent=1,
-        )
+        self.msg("Will finish at %s" % (self.timing_prediction_txt(predicted_duration)), indent=1)
 
         fractional_sweeps = num_cycles - int(num_cycles)
         if fractional_sweeps == 0.5:
@@ -522,10 +515,7 @@ class PhotoThermalAnnealer:
 
         # Anneal cycles
         for cycle in range(num_cycles):
-            self.msg(
-                "Cycle #: %d/%d (%.1f%% done)" % (cycle + 1, num_cycles, (100.0 * cycle / num_cycles)),
-                1,
-            )
+            self.msg("Cycle #: %d/%d (%.1f%% done)" % (cycle + 1, num_cycles, (100.0 * cycle / num_cycles)), 1)
             # self.date_stamp(indent=1)
             if self.is_timing():
                 self.timing_msg(indent=1)
@@ -621,12 +611,7 @@ class PhotoThermalAnnealer:
         return 0.0
 
     def thermal_gradient_measure(
-        self,
-        exposure_time=10,
-        power_fractional=1.00,
-        x_offset=0,
-        x_step=-0.05,
-        already_heated=0,
+        self, exposure_time=10, power_fractional=1.00, x_offset=0, x_step=-0.05, already_heated=0
     ):
         testing = False
 

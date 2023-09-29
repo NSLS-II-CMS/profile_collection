@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # adopted from CHX
 
 # imports for accessing data from channel archiver
@@ -14,8 +16,7 @@ class archiver(Device):
         self.arvconf = ArchiverConfig(self.bpl_url)
         self.cf_update = "/cf-update/"
         self.pvfinder = PVFinder(self.cf_update)
-        self.ar_url = "http://epics-services-cms.nsls2.bnl.local:11168"
-        # self.ar_url = 'http://epics-services-cms:11168'
+        self.ar_url = "http://epics-services-cms.nsls2.bnl.local:11165"
         self.ar_tz = "US/Eastern"
         self.config = {"url": self.ar_url, "timezone": self.ar_tz}
         self.arvReader = ArchiverReader(self.config)
@@ -25,7 +26,7 @@ class archiver(Device):
         self.PVs_name_default = []
         self.PV_dict_default = dict()
 
-    def setStage(self, stage="LinkamTensile"):
+    def setStage(self, stage):
         if stage == "LinkamTensile":
             self.PVs_default = [
                 "XF:11BM-ES:{LINKAM}:TEMP",

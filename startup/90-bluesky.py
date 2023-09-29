@@ -1,3 +1,6 @@
+print(f"Loading {__file__!r} ...")
+
+
 def detselect(detector_object, suffix="_stats4_total"):
     """Switch the active detector and set some internal state"""
 
@@ -24,9 +27,6 @@ def detselect(detector_object, suffix="_stats4_total"):
 
 
 ##### I/O devices
-from epics import caget, caput
-
-
 def pneumatic(inout, pv_r, pv_in, pv_out, ss1, quiet):
     if inout == 1:
         caput(pv_in, 1)
@@ -337,6 +337,7 @@ def pump_chm(onoff, q=0):
     pv_w = "XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd"
     if onoff == 1:
         caput(pv_w, 0)
+        yield from bps.mv(EpicsSignal(pv_w))
         time.sleep(0.2)
         caput(pv_w, 1)
         ss = "Chamber pump has been turned ON"
@@ -352,9 +353,7 @@ def pump_chm(onoff, q=0):
         print(ss)
 
 
-# PROFILE_ROOT = os.path.dirname(__file__)
-# PROFILE_ROOT = '/nsls2/data/cms/legacy/xf11bm/ipython_profiles/profile_collection/startup'
-PROFILE_ROOT = "/home/xf11bm/.ipython/profile_collection/startup"
+PROFILE_ROOT = os.path.dirname(__file__)
 CMS_CONFIG_FILENAME = os.path.join(PROFILE_ROOT, ".cms_config")
 
 ## CMS config file
@@ -387,7 +386,7 @@ def config_update():
 
     # load the previous config file
     cms_config = pds.read_csv(CMS_CONFIG_FILENAME, index_col=0)
-    cms_config_update = pds.concat([cms_config, current_config_DF], ignore_index=True)
+    cms_config_update = cms_config.append(current_config_DF, ignore_index=True)
 
     # save to file
     cms_config_update.to_csv(CMS_CONFIG_FILENAME)
@@ -435,10 +434,7 @@ def data_output(experiment_cycle=None, experiment_alias_directory=None):
 
     # headers = db(experiment_cycle='2017_3', experiment_group= 'I. Herman (Columbia U.) group', experiment_alias_directory='/nsls2/xf11bm/data/2017_3/IHerman' )
     if experiment_cycle is not None:
-        headers = db(
-            experiment_cycle=experiment_cycle,
-            experiment_alias_directory=experiment_alias_directory,
-        )
+        headers = db(experiment_cycle=experiment_cycle, experiment_alias_directory=experiment_alias_directory)
     else:
         headers = db(experiment_alias_directory=experiment_alias_directory)
 
@@ -446,8 +442,7 @@ def data_output(experiment_cycle=None, experiment_alias_directory=None):
         dtable = header.table()
         dtable.to_csv(
             "{}/data/{}.csv".format(
-                header.get("start").get("experiment_alias_directory"),
-                header.get("start").get("scan_id"),
+                header.get("start").get("experiment_alias_directory"), header.get("start").get("scan_id")
             )
         )
 
@@ -490,8 +485,7 @@ def data_output_seires(id_range):
         dtable = header.table()
         dtable.to_csv(
             "{}/data/{}.csv".format(
-                header.get("start").get("experiment_alias_directory"),
-                header.get("start").get("scan_id"),
+                header.get("start").get("experiment_alias_directory"), header.get("start").get("scan_id")
             )
         )
 
@@ -531,8 +525,7 @@ def metadata_output(output_file, SAF=None, experiment_alias_directory=None):
             }
             current = pds.DataFrame(data=current_data, index=[1])
 
-        # output_data = output_data.append(current_data, ignore_index=True)
-        output_data = pds.concat([output_data, current_data], ignore_index=True)
+        output_data = output_data.append(current_data, ignore_index=True)
 
         # output_data = output_data.iloc[0:0]
 

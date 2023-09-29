@@ -108,12 +108,7 @@ class Sample(SampleGISAXS):
         # self.incident_angles_default = [0.08, 0.12, 0.15, 0.18, 0.20] #for 10kev
         # self.incident_angles_default = [0.08, 0.12, 0.15, 0.18] #for 10kev LJR
         # self.incident_angles_default = [0.12, 0.16, 0.20, 0.24] #for 10kev, Perovskites
-        self.incident_angles_default = [
-            0.12,
-            0.16,
-            0.20,
-            0.24,
-        ]  # for 10kev, Perovskites
+        self.incident_angles_default = [0.12, 0.16, 0.20, 0.24]  # for 10kev, Perovskites
         # self.incident_angles_default = [0.02, 0.04, 0.05, 0.06, 0.08, 0.09, 0.1, 0.12, 0.15]
         # self.incident_angles_default = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.15]
         # self.incident_angles_default = [0.0]
@@ -481,14 +476,7 @@ class Sample(SampleGISAXS):
 
         get_beamline().modeMeasurement()
 
-    def align_crazy(
-        self,
-        reflection_angle=0.12,
-        ROI_size=[10, 180],
-        th_range=0.3,
-        int_threshold=10,
-        verbosity=3,
-    ):
+    def align_crazy(self, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, int_threshold=10, verbosity=3):
         # def ROI3 in 160pixels with the center located at reflection beam
         get_beamline().setReflectedBeamROI(total_angle=reflection_angle * 2, size=ROI_size)  # set ROI3
 
@@ -594,12 +582,7 @@ class Sample(SampleGISAXS):
 
             # Find the step-edge
             self.ysearch(
-                step_size=0.5,
-                min_step=0.005,
-                intensity=value,
-                target=0.5,
-                verbosity=verbosity,
-                polarity=-1,
+                step_size=0.5, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1
             )
 
             # Find the peak
@@ -704,13 +687,7 @@ class TransOffCenteredCustom(OffCenteredHoder):
     # if sample.detector=='WAXS':
     # sample.do_WAXS()
 
-    def doSamples(
-        self,
-        sequence="Outer",
-        exposure_WAXS_time=10,
-        exposure_SAXS_time=60,
-        verbosity=3,
-    ):
+    def doSamples(self, sequence="Outer", exposure_WAXS_time=10, exposure_SAXS_time=60, verbosity=3):
         if sequence == "Outer":
             step = 0
         elif sequence == "Inner":

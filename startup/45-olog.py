@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # simple_template = """{{- start.plan_name }} ['{{ start.uid[:6] }}'] (scan num: {{ start.scan_id }})"""
 
 

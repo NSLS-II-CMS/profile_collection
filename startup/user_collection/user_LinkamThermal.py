@@ -151,14 +151,7 @@ class Sample(SampleTSAXS):
         # self.naming_scheme = ['name', 'extra', 'th', 'exposure_time']
         # self.naming_scheme = ['name', 'extra', 'th', 'exposure_time']
         # self.naming_scheme = ['name', 'extra', 'y', 'th', 'clock', 'exposure_time']
-        self.naming_scheme = [
-            "name",
-            "extra",
-            "id",
-            "clock",
-            "temperature_Linkam",
-            "exposure_time",
-        ]
+        self.naming_scheme = ["name", "extra", "id", "clock", "temperature_Linkam", "exposure_time"]
         # self.naming_scheme = ['name', 'extra', 'clock', 'temperature', 'exposure_time']
 
         self._axes["x"].origin = -16.9
@@ -177,12 +170,7 @@ class Sample(SampleTSAXS):
         # self.incident_angles_default = [0.08, 0.12, 0.15, 0.18, 0.20] #for 10kev
         # self.incident_angles_default = [0.08, 0.12, 0.15, 0.18] #for 10kev LJR
         # self.incident_angles_default = [0.12, 0.16, 0.20, 0.24] #for 10kev, Perovskites
-        self.incident_angles_default = [
-            0.12,
-            0.16,
-            0.20,
-            0.24,
-        ]  # for 10kev, Perovskites
+        self.incident_angles_default = [0.12, 0.16, 0.20, 0.24]  # for 10kev, Perovskites
         # self.incident_angles_default = [0.02, 0.04, 0.05, 0.06, 0.08, 0.09, 0.1, 0.12, 0.15]
         # self.incident_angles_default = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.15]
         # self.incident_angles_default = [0.0]

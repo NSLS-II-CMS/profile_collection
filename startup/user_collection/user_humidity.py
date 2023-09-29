@@ -94,14 +94,7 @@ class Sample(SampleGISAXS):
         # self.naming_scheme = ['name', 'extra', 'th', 'exposure_time']
         # self.naming_scheme = ['name', 'extra', 'th', 'exposure_time']
         # self.naming_scheme = ['name', 'extra', 'y', 'th', 'clock', 'exposure_time']
-        self.naming_scheme = [
-            "name",
-            "extra",
-            "clock",
-            "humidity",
-            "th",
-            "exposure_time",
-        ]
+        self.naming_scheme = ["name", "extra", "clock", "humidity", "th", "exposure_time"]
         # self.naming_scheme = ['name', 'extra', 'clock', 'temperature', 'exposure_time']
 
         self.md["exposure_time"] = 1
@@ -763,53 +756,19 @@ if True:
     # compacted.addGaragePosition(-1,-1)
     oe = -8
     hol2.addSampleSlotPosition(
-        Sample("QF_FS_prinstine_1-1", **md),
-        1,
-        5 + oe,
-        "BOTH",
-        incident_angles=[0.1, 0.12, 0.15],
+        Sample("QF_FS_prinstine_1-1", **md), 1, 5 + oe, "BOTH", incident_angles=[0.1, 0.12, 0.15]
     )
     hol2.addSampleSlotPosition(
-        Sample("QF_FS_prinstine_2-1", **md),
-        2,
-        15 + oe,
-        "BOTH",
-        incident_angles=[0.1, 0.12, 0.15],
+        Sample("QF_FS_prinstine_2-1", **md), 2, 15 + oe, "BOTH", incident_angles=[0.1, 0.12, 0.15]
     )
     hol2.addSampleSlotPosition(
-        Sample("QF_FS_chloroform-2", **md),
-        3,
-        25 + oe,
-        "BOTH",
-        incident_angles=[0.1, 0.12, 0.15],
+        Sample("QF_FS_chloroform-2", **md), 3, 25 + oe, "BOTH", incident_angles=[0.1, 0.12, 0.15]
     )
+    hol2.addSampleSlotPosition(Sample("QF_FS_BA-1", **md), 4, 37 + oe, "BOTH", incident_angles=[0.1, 0.12, 0.15])
+    hol2.addSampleSlotPosition(Sample("QF_FS_DCM-1", **md), 5, 45 + oe, "BOTH", incident_angles=[0.1, 0.12, 0.15])
+    hol2.addSampleSlotPosition(Sample("QF_FS_DMF-2", **md), 6, 55 + oe, "BOTH", incident_angles=[0.1, 0.12, 0.15])
     hol2.addSampleSlotPosition(
-        Sample("QF_FS_BA-1", **md),
-        4,
-        37 + oe,
-        "BOTH",
-        incident_angles=[0.1, 0.12, 0.15],
-    )
-    hol2.addSampleSlotPosition(
-        Sample("QF_FS_DCM-1", **md),
-        5,
-        45 + oe,
-        "BOTH",
-        incident_angles=[0.1, 0.12, 0.15],
-    )
-    hol2.addSampleSlotPosition(
-        Sample("QF_FS_DMF-2", **md),
-        6,
-        55 + oe,
-        "BOTH",
-        incident_angles=[0.1, 0.12, 0.15],
-    )
-    hol2.addSampleSlotPosition(
-        Sample("QF_FS_water-2", **md),
-        7,
-        65 + oe,
-        "BOTH",
-        incident_angles=[0.1, 0.12, 0.15],
+        Sample("QF_FS_water-2", **md), 7, 65 + oe, "BOTH", incident_angles=[0.1, 0.12, 0.15]
     )
 
     # hol2 = GIBar_Custom(base=stg)

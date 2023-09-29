@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 import time
 from ophyd import Device
 
@@ -11,6 +13,8 @@ from ophyd import Device
 
 # MFC:
 
+# 20210907, change the AI/AO/DIO Moxa boxes to Ecat channels.
+# add TTL signals, see more in 19_shutter.py
 
 # 20210907, change the AI/AO/DIO Moxa boxes to Ecat channels.
 # add TTL signals, see more in 19_shutter.py
@@ -19,6 +23,7 @@ from ophyd import Device
 
 # TTL signals
 
+TTL2 = EpicsSignal("XF:11BM-ES{Ecat:DO1_2}")
 
 TTL2 = EpicsSignal("XF:11BM-ES{Ecat:DO1_2}")
 
@@ -173,13 +178,7 @@ class ioLogik(Device):
             print("The port is not valid")
 
     def readRH(
-        self,
-        AI_chan,
-        temperature=25.0,
-        voltage_supply=5.0,
-        coeff_slope=0.030,
-        coeff_offset=0.787,
-        verbosity=3,
+        self, AI_chan, temperature=25.0, voltage_supply=5.0, coeff_slope=0.030, coeff_offset=0.787, verbosity=3
     ):
         voltage_out = self.read(AI[AI_chan])
         corr_voltage_out = voltage_out * (5.0 / voltage_supply)
@@ -236,7 +235,7 @@ class ioLogik(Device):
 
 class MassFlowControl(Device):
     def __init__(self):
-        self.setDevice()
+        pass
         # self.FlowRate_Sts = 'XF:11BMB-ES{FC:1}F-I'
         # self.FlowRate_SP = 'XF:11BMB-ES{FC:1}F:SP-SP'
         # self.Mode_Sts = 'XF:11BMB-ES{FC:1}Mode:Opr-Sts'
@@ -470,10 +469,7 @@ class SorrensonPowerSupply(Device):
         start_time = time.time()
 
         while time.time() - start_time < period + 0.01:
-            self.put(
-                self.voltage_setpoint,
-                Vstart + (Vend - Vstart) * (time.time() - start_time) / period,
-            )
+            self.put(self.voltage_setpoint, Vstart + (Vend - Vstart) * (time.time() - start_time) / period)
             print(time.time() - start_time)
             time.sleep(wait_time)
 

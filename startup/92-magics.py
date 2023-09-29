@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # BlueskyMagics were imported and registered in 00-startup.py
 
 BlueskyMagics.detectors = [pilatus2M]
