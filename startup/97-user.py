@@ -74,7 +74,6 @@ class Sample(SampleTSAXS):
         verbosity=3,
         **md,
     ):
-
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
         super().measureTimeSeries(
@@ -112,6 +111,3 @@ if False:
     hol.addSampleSlot(Sample("test_sample_03"), 5.0)
 
     sam = hol.getSample(1)
-
-
-

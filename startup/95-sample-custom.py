@@ -30,9 +30,9 @@ print(f"Loading {__file__!r} ...")
 #
 ################################################################################
 
+
 # custmer-made samples.
 class SampleTSAXS_Generic(Sample_Generic):
-
     ################# Direct beam transmission measurement ####################
     def intMeasure(self, output_file, exposure_time):
         """Measure the transmission intensity of the sample by ROI4.
@@ -101,7 +101,6 @@ class SampleTSAXS_Generic(Sample_Generic):
 
 class SampleGISAXS_Generic(Sample_Generic):
     def __init__(self, name, base=None, **md):
-
         super().__init__(name=name, base=base, **md)
         self.naming_scheme = ["name", "extra", "th", "exposure_time"]
         self.incident_angles_default = [0.08, 0.10, 0.12, 0.15, 0.20]
@@ -129,14 +128,12 @@ class SampleGISAXS_Generic(Sample_Generic):
         )
 
     def measureIncidentAngle(self, angle, exposure_time=None, extra=None, tiling=None, **md):
-
         self.thabs(angle)
         while sth.moving == True:
             time.sleep(0.1)
         self.measure(exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
 
     def measureIncidentAngles(self, angles=None, exposure_time=None, extra=None, tiling=None, **md):
-
         # measure the incident angles first and then change the tiling features.
         if angles is None:
             angles = self.incident_angles_default
@@ -146,7 +143,6 @@ class SampleGISAXS_Generic(Sample_Generic):
     def measureIncidentAngles_Stitch(
         self, angles=None, exposure_time=None, extra=None, tiling=None, verbosity=3, **md
     ):
-
         # measure the incident angles first and then change the tiling features.
         if tiling == None:
             if angles is None:
@@ -583,7 +579,6 @@ class SampleGISAXS_Generic(Sample_Generic):
             beam.off()
 
     def alignQuick(self, align_step=8, reflection_angle=0.08, verbosity=3):
-
         get_beamline().modeAlignment()
         # self.yo()
         self.tho()
@@ -591,7 +586,6 @@ class SampleGISAXS_Generic(Sample_Generic):
         self.align(step=align_step, reflection_angle=reflection_angle, verbosity=verbosity)
 
     def level(self, step=0, pos_x_left=-5, pos_x_right=5):
-
         # TODO: Move this code. (This should be a property of the GIBar object.)
 
         # level sample by checking bar height at pos_left and pos_right
@@ -645,7 +639,6 @@ class SampleGISAXS_Generic(Sample_Generic):
         self.setOrigin(["y"])
 
     def do(self, step=0, align_step=0, **md):
-
         if step <= 1:
             get_beamline().modeAlignment()
 
@@ -680,7 +673,6 @@ class SampleGISAXS_Generic(Sample_Generic):
             self.thabs(0.0)
 
     def backup_do_SAXS(self, step=0, align_step=0, measure_setting=None, **md):
-
         if step <= 1:
             saxs_on()
             get_beamline().modeAlignment()
@@ -713,7 +705,6 @@ class SampleGISAXS_Generic(Sample_Generic):
             self.measureIncidentAngles_Stitch(incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md)
 
     def do_SAXS(self, step=0, align_step=0, measure_setting=None, **md):
-
         if step <= 1:
             saxs_on()
             get_beamline().modeAlignment()
@@ -737,7 +728,6 @@ class SampleGISAXS_Generic(Sample_Generic):
             self.alignDone = True
 
         if step <= 10:
-
             if self.measure_setting["incident_angles"] == None:
                 incident_angles = self.incident_angles_default
             else:
@@ -777,7 +767,6 @@ class SampleGISAXS_Generic(Sample_Generic):
             self.thabs(0.0)
 
     def _backup_do_WAXS(self, step=0, align_step=0, **md):
-
         if step <= 1:
             saxs_on()
             get_beamline().modeAlignment()
@@ -817,7 +806,6 @@ class SampleGISAXS_Generic(Sample_Generic):
             self.thabs(0.0)
 
     def do_WAXS(self, step=0, align_step=0, **md):
-
         if step <= 1:
             saxs_on()
             get_beamline().modeAlignment()
@@ -859,7 +847,6 @@ class SampleGISAXS_Generic(Sample_Generic):
 
 class SampleCDSAXS_Generic(Sample_Generic):
     def __init__(self, name, base=None, **md):
-
         super().__init__(name=name, base=base, **md)
         self.naming_scheme = ["name", "extra", "phi", "exposure_time"]
         self.rot_angles_default = np.arange(-45, +45 + 1, +1)
@@ -893,7 +880,6 @@ class SampleCDSAXS_Generic(Sample_Generic):
 
 
 class SampleXR_WAXS(SampleGISAXS_Generic):
-
     ################# Specular reflectivity (XR) measurement ####################
 
     def XR_scan(
@@ -1045,7 +1031,6 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
 
         pos_flag = 0
         for theta in theta_list:
-
             self.thabs(theta)
             # get_beamline().setSpecularReflectivityROI(total_angle=theta*2,size=roi_size,default_SAXSy=-73)
 
@@ -1278,7 +1263,6 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
             # time.sleep(2)
 
         if step <= 8:
-
             # fit_scan(smy, 0.6, 21, fit='sigmoid_r')
 
             fit_edge(smy, 0.6, 21)
@@ -1466,7 +1450,6 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
 
         pos_flag = 0
         for theta in theta_list:
-
             self.thabs(theta)
             # th2th scan starts with POS2 directly
             get_beamline().setXRROI_update(total_angle=theta * 2, size=roi_size)
@@ -1524,7 +1507,6 @@ class SampleGonio_Generic(SampleGISAXS_Generic):
     """Goniometer stage made by SmarAct"""
 
     def __init__(self, name="Goniometer", base=None, **md):
-
         super().__init__(name=name, base=base, **md)
         self._axes["x"].origin = -17.7
         self._axes["y"].origin = 9
@@ -1571,7 +1553,6 @@ class SampleSecondStage(SampleGISAXS_Generic):
     """
 
     def __init__(self, name, base=None, **md):
-
         super().__init__(name=name, base=base, **md)
         self._axes["x"].origin = -1.9
         self._axes["y"].origin = 18.97
@@ -1588,7 +1569,6 @@ class GIBar(PositionalHolder):
     ########################################
 
     def __init__(self, name="GIBar", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         self._positional_axis = "x"
@@ -1786,7 +1766,6 @@ class GIBar(PositionalHolder):
                 sample.measureIncidentAngles(angles=angles, verbosity=verbosity, exposure_time=exposure_time, **md)
 
     def printSaveStates(self, range=None, verbosity=3, **md):
-
         if range is None:
             range_start = 0
         else:
@@ -1795,7 +1774,6 @@ class GIBar(PositionalHolder):
         save_string = "origins = [\n"
 
         for i, sample in enumerate(self.getSamples(range=range)):
-
             sample_id = range_start + i + 1
 
             save_string += "    {} , # Sample {}\n".format(sample.save_state(), sample_id)
@@ -1808,7 +1786,6 @@ class GIBar(PositionalHolder):
         print(save_string)
 
     def _backup_doSamples(self, range=None, verbosity=3):
-
         # saxs_on()
         for sample in self.getSamples(range=range):
             if verbosity >= 3:
@@ -1829,7 +1806,6 @@ class GIBar(PositionalHolder):
                 sample.do_WAXS()
 
     def doSamples(self, range=None, verbosity=3):
-
         # saxs_on()
         for sample in self.getSamples(range=range):
             if verbosity >= 3:
@@ -1852,7 +1828,6 @@ class GIBar(PositionalHolder):
                 sample.do_WAXS()
 
     def doSamples_Stitch(self, angles=None, exposure_time=None, extra=None, tiling=None, verbosity=3, **md):
-
         if exposure_time == None:
             exposure_time = self.exposure_time
 
@@ -2051,7 +2026,6 @@ class CapillaryHolder(PositionalHolder):
     ########################################
 
     def __init__(self, name="CapillaryHolder", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         self._positional_axis = "x"
@@ -2081,7 +2055,6 @@ class CapillaryHolder(PositionalHolder):
         return +1 * self.x_spacing * (slot - 8)
 
     def measure_Stitch(self, exposure_time=None, extra=None, tiling=None, verbosity=3, **md):
-
         # measure the incident angles first and then change the tiling features.
         if tiling == None:
             for sample in self.getSamples():
@@ -2239,7 +2212,6 @@ class CapillaryHolderThreeRows(CapillaryHolder):
     ########################################
 
     def __init__(self, name="CapillaryHolderThreeRows", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         # Set the x and y origin to be the center of slot 8
@@ -2299,7 +2271,6 @@ class CapillaryHolderThreeRows(CapillaryHolder):
 
 class CapillaryHolderHeated(CapillaryHolder):
     def update_sample_names(self):
-
         for sample in self.getSamples():
             if "temperature" not in sample.naming_scheme:
                 sample.naming_scheme.insert(-1, "temperature")
@@ -2325,7 +2296,6 @@ class CapillaryHolderHeated(CapillaryHolder):
                     pass
 
         if step <= 5:
-
             for temperature in heat_temps:
                 try:
                     self.setTemperature(temperature)
@@ -2352,7 +2322,6 @@ class GIBar_long_thermal(GIBar):
     ########################################
 
     def __init__(self, name="GIBar", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         self._positional_axis = "x"
@@ -2368,7 +2337,6 @@ class GIBar_long_thermal(GIBar):
         self.mark("center", x=76.2, y=0)
 
     def alignSamples(self, step=0, align_step=0, verbosity=3, **md):
-
         for sample in self.getSamples():
             if verbosity >= 3:
                 print("Doing sample {}...".format(sample.name))
@@ -2387,7 +2355,6 @@ class GIBar_long_thermal(GIBar):
                 sample.align(step=align_step)
 
     def alignSamples_Custom(self, step=0, align_step=8, verbosity=3, **md):
-
         # first_sample = self.getSamples()
         # hol_xcenter = 4.3*25.4/2
         cali_sample = self.getSample(1)
@@ -2443,7 +2410,6 @@ class GIBar_long_thermal(GIBar):
                 sample.align(step=align_step)
 
     def measureSamples(self, det="SWAXS", tiling=None, verbosity=3, **md):
-
         cms.modeMeasurement()
 
         if det == "SAXS":
@@ -2478,7 +2444,6 @@ class GIBar_long_thermal(GIBar):
                 sample.gotoOrigin()
 
         elif det == "SWAXS":
-
             swaxs_on()
             for sample in self.getSamples():
                 sample.gotoOrigin()
@@ -2493,7 +2458,6 @@ class GIBar_long_thermal(GIBar):
                 )
 
         elif det == "BOTH":
-
             saxs_on()
             for sample in self.getSamples():
                 sample.gotoOrigin()
@@ -2540,7 +2504,6 @@ class GIBar_long_thermal(GIBar):
         poling_period=2.0,
         **md,
     ):
-
         # cms.modeMeasurement()
         if temperature_list == None:
             temperature_list = self.temperature_list
@@ -2589,7 +2552,6 @@ class GIBar_Linkam(GIBar):
     ########################################
 
     def __init__(self, name="GIBar", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         self._positional_axis = "x"
@@ -2613,7 +2575,6 @@ class WellPlateHolder(PositionalHolder):
     ########################################
 
     def __init__(self, name="WellPlateHolder", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         self._positional_axis = ["x", "yy"]
@@ -2922,7 +2883,6 @@ class GIBarSecondStage(GIBar):
     ########################################
 
     def __init__(self, name="GIBar", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         self._axes["x"].origin = 8.65
@@ -2934,7 +2894,6 @@ class HumidityStage(GIBar):
     """This class is for the humidity stage for multiple samples."""
 
     def __init__(self, name="GIBar", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         self._axes["x"].origin = -64.4
@@ -2958,7 +2917,6 @@ class HumidityTransmissionStage(CapillaryHolder):
     """This class is for the humidity transmission stage for multiple samples."""
 
     def __init__(self, name="HumidityTransmissionStage", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         self._positional_axis = "x"
@@ -3009,7 +2967,6 @@ class InstecStage60(CapillaryHolder):
     def tscan(
         self, temperature_start, temperature_final, num_intervals, wait_time, temp_update_time=5, exposure_time=0
     ):
-
         if temperature_start == None or temperature_start < 0.0 or temperature_start >= 250:
             print("temperature_start must be set between 0 and 250 degC.\n")
             return 0
@@ -3082,7 +3039,6 @@ class OffCenteredHoder(GIBar):
     """
 
     def __init__(self, name="OffCenteredHoder", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         self._positional_axis = "x"

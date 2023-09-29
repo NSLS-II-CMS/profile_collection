@@ -4,24 +4,24 @@ from epics import caput, caget
 
 
 class NuPhotoThermalAnnealer(Device):
-    voltage = Cpt(EpicsSignal, '{Ecat:AO1}1')
-    state = Cpt(EpicsSignal, '{Ecat:DO1_2}')
+    voltage = Cpt(EpicsSignal, "{Ecat:AO1}1")
+    state = Cpt(EpicsSignal, "{Ecat:DO1_2}")
 
-core_laser = NuPhotoThermalAnnealer("XF:11BM-ES", name='laser')
 
+core_laser = NuPhotoThermalAnnealer("XF:11BM-ES", name="laser")
 
 
 class PhotoThermalAnnealer:
     def __init__(self, print_code="PTA> "):
-
         # self.controlTTL_PV = 'XF:11BMB-ES{IO}AO:3-SP'
         # self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
         # self.powerV_PV = 'XF:11BMB-ES{IO}AO:4-SP'
         # self.powerV_PV = "XF:11BM-ES{Ecat:AO1}1"
         # self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
 
-
-        self.powerV_PV = "XF:11BM-CT{BIOME-MTO:1}LaserVoltsSet:1-SP"    #changed at 080323 by RL for the new laser control box
+        self.powerV_PV = (
+            "XF:11BM-CT{BIOME-MTO:1}LaserVoltsSet:1-SP"  # changed at 080323 by RL for the new laser control box
+        )
         self.controlTTL_PV = "XF:11BM-CT{BIOME-MTO:1}Output:1-Sel"
 
         self.print_code = print_code
@@ -68,7 +68,6 @@ class PhotoThermalAnnealer:
         caput(self.controlTTL_PV, 0)
 
     def laserPulse(self, duration, power_W=None):
-
         if power_W is not None:
             self.setLaserPower(power_W)
 
@@ -82,7 +81,6 @@ class PhotoThermalAnnealer:
         self.laserOff()
 
     def getVoltage(self, verbosity=3):
-
         Voltage = float(caget(self.powerV_PV))
         power_W = self.laser_calib_m * Voltage + self.laser_calib_b
 
@@ -92,7 +90,6 @@ class PhotoThermalAnnealer:
         return Voltage
 
     def getLaserPower(self, verbosity=3):
-
         Voltage = float(caget(self.powerV_PV))
         power_W = self.laser_calib_m * Voltage + self.laser_calib_b
 
@@ -102,7 +99,6 @@ class PhotoThermalAnnealer:
         return power_W
 
     def setLaserPower(self, power_W, verbosity=3):
-
         if power_W >= self.power_limit_high:
             print(
                 "{}Desired laser power must be less than {:.2f} W (your input was {:.2f} W).".format(
@@ -183,7 +179,6 @@ class PhotoThermalAnnealer:
     #     self.calibration_m, self.calibration_b = m, b
 
     def getTemperature(self, T_base=100, verbosity=3):
-
         power_W = self.getLaserPower(verbosity=0)
         m, b = self.calibration_m, self.calibration_b  # [°C/W] , [°C]
         T = m * power_W + b + T_base
@@ -196,7 +191,6 @@ class PhotoThermalAnnealer:
         return T
 
     def setTemperature(self, T_target, T_base=100, verbosity=3):
-
         T_excess = T_target - T_base
 
         m, b = self.calibration_m, self.calibration_b  # [°C/W] , [°C]
@@ -229,7 +223,6 @@ class PhotoThermalAnnealer:
     ########################################
 
     def controlTemperature(self, T_target, adjust_strength=0.5, delay_time=0.1, adjust_clip=1, verbosity=3):
-
         m, b = self.calibration_m, self.calibration_b  # [°C/W] , [°C]
 
         power_W_nominal = (T_target - b) / m
@@ -264,7 +257,6 @@ class PhotoThermalAnnealer:
         rate_initial=None,
         verbosity=3,
     ):
-
         if rate_initial is None:
             # Calculate the expected rate from prior calibration
 
@@ -347,7 +339,6 @@ class PhotoThermalAnnealer:
         return self.timing_predicted_duration - self.get_run_timing()
 
     def timing_txt(self):
-
         date_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         time_left = self.get_remain_timing()
@@ -367,7 +358,6 @@ class PhotoThermalAnnealer:
         self.msg(txt, priority=priority, indent=indent)
 
     def timing_prediction_txt(self, predicted_duration):
-
         finish = time.time() + predicted_duration
         date_str = datetime.datetime.fromtimestamp(finish).strftime("%Y-%m-%d %H:%M:%S")
 
@@ -442,17 +432,14 @@ class PhotoThermalAnnealer:
         time.sleep(delay_at_end)
 
     def double_sweep(self, length, velocity, delay_at_end=0.1):
-
         self.single_sweep(+length, velocity, delay_at_end=delay_at_end)
         self.single_sweep(-length, velocity, delay_at_end=delay_at_end)
 
     def double_sweep_laser(self, length, velocity, start=None, delay_at_end=0.1):
-
         self.single_sweep_laser(+length, velocity, start=start, delay_at_end=delay_at_end)
         self.single_sweep_laser(-length, velocity, start=None, delay_at_end=delay_at_end)
 
     def anneal_cyclic(self, length, velocity, num_cycles, delay_at_end=0.1):
-
         self.msg("Cycling Anneal (%.1fmm X %.1f, @ %.4f mm/s)" % (length, num_cycles, velocity), 1)
 
         # Predict how long the anneal will take
@@ -472,7 +459,6 @@ class PhotoThermalAnnealer:
 
         # Anneal cycles
         for cycle in range(num_cycles):
-
             self.msg("Cycle #: %d/%d (%.1f%% done)" % (cycle + 1, num_cycles, (100.0 * cycle / num_cycles)), 1)
             # self.date_stamp(indent=1)
             if self.is_timing():
@@ -499,7 +485,6 @@ class PhotoThermalAnnealer:
         measures=None,
         cycles_done=0,
     ):
-
         self.msg("Cycling Anneal (%.1fmm X %.1f, @ %.4f mm/s)" % (length, num_cycles, velocity), 1)
 
         if measures is None:
@@ -530,7 +515,6 @@ class PhotoThermalAnnealer:
 
         # Anneal cycles
         for cycle in range(num_cycles):
-
             self.msg("Cycle #: %d/%d (%.1f%% done)" % (cycle + 1, num_cycles, (100.0 * cycle / num_cycles)), 1)
             # self.date_stamp(indent=1)
             if self.is_timing():
@@ -603,7 +587,6 @@ class PhotoThermalAnnealer:
     ########################################
 
     def thermal_gradient_T_conversion(self, position, power_fractional=1.00, T_ambient=25):
-
         T_est = 492 - abs(position) * 24.7  # P_frac = 0.45
         T_est = 528 - abs(position) * 26.6  # P_frac = 0.50
         T_est = 950 - abs(position) * 53.2  # P_frac = 1.00
@@ -617,7 +600,6 @@ class PhotoThermalAnnealer:
         return T_est
 
     def thermal_gradient_getAlignment(self, position):
-
         # For sam.x() = 0.0; state = {'origin': {'x': -41.0, 'y': 15.14, 'th': 0.3978: , 'phi': 0.0}}
         # For sam.x() = -14.0; state = {'origin': {'x': -41.0, 'y': 15.18, 'th': 0.3664, 'phi': 0.0}}
 
@@ -631,7 +613,6 @@ class PhotoThermalAnnealer:
     def thermal_gradient_measure(
         self, exposure_time=10, power_fractional=1.00, x_offset=0, x_step=-0.05, already_heated=0
     ):
-
         testing = False
 
         positions = [0, -2, -4, -6]

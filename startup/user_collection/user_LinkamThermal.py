@@ -145,7 +145,6 @@ class Sample(SampleTSAXS):
     # class Sample(SampleGISAXS):
 
     def __init__(self, name, base=None, **md):
-
         super().__init__(name=name, base=base, **md)
 
         # self.naming_scheme = ['name', 'extra', 'clock', 'temperature', 'th', 'exposure_time']
@@ -186,7 +185,6 @@ class Sample(SampleTSAXS):
         return super().get_attribute(attribute)
 
     def get_naming_string(self, attribute):
-
         # Handle special cases of formatting the text
         if attribute == "temperature_Linkam":
             return "Linkam{:.1f}C".format(self.get_attribute(attribute))
@@ -206,7 +204,6 @@ class Sample(SampleTSAXS):
         fill_gaps=False,
         **md,
     ):
-
         """
         Continueous shots with internal trigger of detectors. (burst mode)
 
@@ -363,7 +360,6 @@ class Sample(SampleTSAXS):
         interval=20,
         reset_clock=True,
     ):
-
         # swaxs_on()
         LThermal.on()
         # temp_sequence = [25, 200, 25, 200]
@@ -377,10 +373,8 @@ class Sample(SampleTSAXS):
         # if step<1:
         # self.measure(exposure_time)
         if step < 3:
-
             # for index, temperature in enumerate(temp_sequence):
             for temperature, rate, wait_time in zip(temp_sequence, rate_sequence, wait_sequence):
-
                 start_time = np.ceil(self.clock() / interval) * interval
                 trigger_time = np.arange(start_time, maxTime, interval)
                 LThermal.setTemperatureRate(rate)
@@ -422,7 +416,6 @@ class Sample(SampleTSAXS):
         verbosity=3,
         **md,
     ):
-
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
         super().measureTimeSeries(
@@ -531,7 +524,6 @@ class Sample(SampleTSAXS):
         return pds.DataFrame(data=current_data)
 
     def do(self, step=0, align_step=0, **md):
-
         # NOTE: if align_step =8 is not working, try align_step=4
 
         if step <= 1:
@@ -556,7 +548,6 @@ class Sample(SampleTSAXS):
             get_beamline().modeMeasurement()
 
         if step <= 10:
-
             if self.incident_angles == None:
                 incident_angles = self.incident_angles_default
             else:
@@ -593,7 +584,6 @@ class GIBar_Custom(GIBar):
         # copyfile(os.path.join(parent_data_folder, 'user.py'), os.path.join(holder_data_folder,'user.py'))
 
     def doSamples(self, verbosity=3):
-
         # maxs_on()
         for sample in self.getSamples():
             if verbosity >= 3:
@@ -653,7 +643,6 @@ class CapillaryHolderCustom(CapillaryHolder):
         output_file="Transmission_output",
         verbosity=3,
     ):
-
         if step < 5:
             saxs_on()
             for sample in self.getSamples():
@@ -686,7 +675,6 @@ class CapillaryHolderCustom(CapillaryHolder):
         verbosity=3,
         **md,
     ):
-
         if step < 5:
             swaxs_on()
             for sample in self.getSamples():
@@ -710,7 +698,6 @@ class CapillaryHolderCustom(CapillaryHolder):
 
 
 if True:
-
     cali = CapillaryHolder(base=stg)
     # hol = CapillaryHolderCustom(base=stg)
     cali.name = "cali"
@@ -719,7 +706,6 @@ if True:
     cali.addSampleSlot(Sample("Empty"), 11.0)
 
 if True:
-
     # Example of a multi-sample holder
 
     ago6 = CapillaryHolderCustom(base=stg)
@@ -730,7 +716,7 @@ if True:
     # ago6.addSampleSlot( Sample('leftoverbar_slot4'),4)
 
 
-#%run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
+# %run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
 
 # robot.listGarage()
 

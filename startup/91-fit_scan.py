@@ -70,7 +70,7 @@ def remove_last_Pilatus_series():
 
 
 if False:
-    #%run -i /opt/ipython_profiles/profile_collection/startup/91-fit_scan.py
+    # %run -i /opt/ipython_profiles/profile_collection/startup/91-fit_scan.py
 
     # Define a 'fake' detector, for testing purposes
     from bluesky.examples import Reader
@@ -104,7 +104,6 @@ if False:
 
 class MotorWait(CallbackBase):
     def __init__(self, motor, wait_time):
-
         self.motor = motor
         self.wait_time = wait_time
 
@@ -124,7 +123,6 @@ class LiveTable_Custom(LiveTable):
     # class LiveTable(CallbackBase)
 
     def __init__(self, fields, y_name, x_name):
-
         super().__init__(fields)
 
         self.y_name = y_name
@@ -160,7 +158,6 @@ class LiveStat(CallbackBase):
     # where possible, so that it can be used in similar contexts.
 
     def __init__(self, stat, y_name, x_name, update_every=1):
-
         self.stat = stat
         self.y_name = y_name
         self.x_name = x_name
@@ -176,7 +173,6 @@ class LiveStat(CallbackBase):
         self.result.values = {}
 
     def event(self, doc):
-
         if self.y_name not in doc["data"]:
             return
 
@@ -189,7 +185,6 @@ class LiveStat(CallbackBase):
         if self.update_every is not None:
             i = doc["seq_num"]
             if (i - 1) % self.update_every == 0:
-
                 if type(self.stat) is list:
                     for stat in self.stat:
                         self.update_fit(stat)
@@ -199,7 +194,6 @@ class LiveStat(CallbackBase):
         super().event(doc)
 
     def update_fit(self, stat):
-
         xs = np.asarray(self.xdata)
         ys = np.asarray(self.ydata)
 
@@ -300,7 +294,6 @@ class LiveStat(CallbackBase):
 
 class LiveStatPlot(LivePlot):
     def __init__(self, livestat, *, scan_range=None, legend_keys=None, xlim=None, ylim=None, ax=None, **kwargs):
-
         kwargs_update = {
             "color": "b",
             "linewidth": 0,
@@ -348,7 +341,6 @@ class LiveStatPlot(LivePlot):
         self.x0_line.custom_tag_x0 = True
 
     def event(self, doc):
-
         self.livestat.event(doc)
 
         # Slight kludge (to over-ride possible 'greying out' from LivePlot_Custom.start)
@@ -370,7 +362,6 @@ class LiveStatPlot(LivePlot):
         self.update_plot()
 
     def update_plot(self):
-
         super().update_plot()
 
         self.x0_line.set_xdata([self.x_data[0]])
@@ -386,7 +377,6 @@ class LiveStatPlot(LivePlot):
 
 class LivePlot_Custom(LivePlot):
     def __init__(self, y, x=None, *, legend_keys=None, xlim=None, ylim=None, ax=None, fig=None, **kwargs):
-
         kwargs_update = {
             "color": "k",
             "linewidth": 3.5,
@@ -416,7 +406,6 @@ class LivePlot_Custom(LivePlot):
         print(f"*** LivePlot_Custom.start() got {doc}")
         # Make all the 'older' lines greyed-out
         for line in self.ax.lines:
-
             alpha = line.get_alpha()
             if alpha is None:
                 alpha = 1.0
@@ -433,7 +422,6 @@ class LivePlot_Custom(LivePlot):
         self.ax.figure.canvas.mpl_connect("scroll_event", self.scroll_event)
 
     def update_plot(self):
-
         ymin = min(self.y_data)
         ymax = max(self.y_data)
         yspan = ymax - ymin
@@ -478,7 +466,6 @@ class LivePlot_Custom(LivePlot):
         self.ax.figure.canvas.draw()
 
     def add_line(self, x_data, y_data, **kwargs):
-
         (self.current_line,) = self.ax.plot(x_data, y_data, **kwargs)
         self.lines.append(self.current_line)
         self.legend = self.ax.legend(loc=0, title=self.legend_title)  # .draggable()
@@ -509,7 +496,6 @@ class LiveFitPlot_Custom(LiveFitPlot):
     """
 
     def __init__(self, livefit, *, legend_keys=None, xlim=None, ylim=None, ax=None, scan_range=None, **kwargs):
-
         kwargs_update = {
             "color": "b",
             "linewidth": 2.5,
@@ -537,7 +523,6 @@ class LiveFitPlot_Custom(LiveFitPlot):
         return x_start, x_stop, span
 
     def event(self, doc):
-
         # Slight kludge (to over-ride possible 'greying out' from LivePlot_Custom.start)
         self.current_line.set_alpha(1.0)
         self.current_line.set_linewidth(2.5)
@@ -559,7 +544,6 @@ class LiveFitPlot_Custom(LiveFitPlot):
         # Intentionally override LivePlot.event. Do not call super().
 
     def start(self, doc):
-
         super().start(doc)
 
         for line in self.ax.lines:
@@ -574,7 +558,6 @@ class LiveFitPlot_Custom(LiveFitPlot):
         self.x0_line.custom_tag_x0 = True
 
     def update_plot(self):
-
         x0 = self.livefit.result.values["x0"]
         self.x0_line.set_xdata([x0])
         super().update_plot()
@@ -606,7 +589,6 @@ class LiveFit_Custom(LiveFit):
     """
 
     def __init__(self, model_name, y, independent_vars, scan_range, update_every=1, background=None):
-
         self.x_start = min(scan_range)
         self.x_stop = max(scan_range)
         self.x_span = abs(self.x_stop - self.x_start)
@@ -638,7 +620,6 @@ class LiveFit_Custom(LiveFit):
         super().__init__(lm_model, y, independent_vars, init_guess=init_guess, update_every=update_every)
 
     def get_model(self, model_name):
-
         if model_name == "gauss":
 
             def model_function(x, x0, prefactor, sigma):
@@ -898,7 +879,6 @@ def fit_scan(
     # positions, dp = np.linspace(start, stop, num, endpoint=True, retstep=True)
 
     if detectors is None:
-
         # detselect(pilatus_name, suffix='_stats4_total')
         detectors = get_beamline().detector
         plot_y = get_beamline().PLOT_Y
@@ -943,7 +923,6 @@ def fit_scan(
         subs.append(MotorWait(motor, wait_time))
 
     if fit in ["max", "min", "COM", "HM", "HMi"] or type(fit) is list:
-
         livefit = LiveStat(fit, plot_y, motor.name)
 
         livefitplot = LiveStatPlot(livefit, ax=ax, scan_range=[start, stop])
@@ -951,7 +930,6 @@ def fit_scan(
         subs.append(livefitplot)
 
     elif fit is not None:
-
         # Perform a fit
 
         # livefit = LiveFit(lm_model, plot_y, {'x': motor.name}, init_guess)
@@ -1004,7 +982,6 @@ def fit_scan(
         motor.move(initial_position)
 
     else:
-
         print(livefit.result.values)
         x0 = livefit.result.values["x0"]
         # mov(motor, x0)
@@ -1111,7 +1088,6 @@ def fit_edge(
     if True:
         # TODO: Handle case where more than one pair of points cross the HM
         if len(livetable.xdata) > 3:
-
             y_max = np.max(livetable.ydata)
             HM = (y_max - np.min(livetable.ydata)) / 2.0
 
@@ -1129,7 +1105,6 @@ def fit_edge(
 
     # Fit to sigmoid_r
     if True:
-
         y_max = np.max(livetable.ydata)
 
         x_span = abs(np.max(livetable.xdata) - np.min(livetable.xdata))
@@ -1295,7 +1270,6 @@ def _test_fit_scan(
         subs.append(MotorWait(motor, wait_time))
 
     if fit in ["max", "min", "COM", "HM", "HMi"] or type(fit) is list:
-
         livefit = LiveStat(fit, plot_y, motor.name)
 
         livefitplot = LiveStatPlot(livefit, ax=ax, scan_range=[start, stop])
@@ -1303,7 +1277,6 @@ def _test_fit_scan(
         subs.append(livefitplot)
 
     elif fit is not None:
-
         # Perform a fit
 
         # livefit = LiveFit(lm_model, plot_y, {'x': motor.name}, init_guess)
@@ -1344,7 +1317,6 @@ def _test_fit_scan(
         motor.move(initial_position)
 
     else:
-
         print(livefit.result.values)
         x0 = livefit.result.values["x0"]
         # mov(motor, x0)

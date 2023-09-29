@@ -10,7 +10,6 @@ from arvpyf.ar import ArchiverReader
 
 
 class archiver(Device):
-
     # setup for CMS archiver
     def __init__(self):
         self.bpl_url = "http://epics-services-cms.nsls2.bnl.local:11165/mgmt/ui/metrics"
@@ -107,7 +106,6 @@ class archiver(Device):
             #     lab='%s-position [$\mu$m]'%p
 
             if plot:
-
                 x = ep_time - t0
                 y = pv_data
                 xf, yf = butterworth_filter(x, y, order=3, span=0.005)

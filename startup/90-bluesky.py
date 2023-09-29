@@ -1,5 +1,6 @@
 print(f"Loading {__file__!r} ...")
 
+
 def detselect(detector_object, suffix="_stats4_total"):
     """Switch the active detector and set some internal state"""
 
@@ -360,7 +361,6 @@ import pandas as pds
 
 
 def config_update():
-
     cms.bsx_pos = bsx.position
     beam.armr_absorber_out = armr.position
 
@@ -395,7 +395,6 @@ def config_update():
 
 
 def config_load():
-
     # collect the current positions of motors
     cms_config = pds.read_csv(CMS_CONFIG_FILENAME, index_col=0)
     cms.bsx_pos = cms_config.bsx_pos.values[-1]
@@ -428,7 +427,6 @@ def config_load():
 
 ## output the scan data and save them in user_folder/data.
 def data_output(experiment_cycle=None, experiment_alias_directory=None):
-
     """
     To output the scan data with the scan_id as name
     Please first create "data" folder under user_folder.
@@ -441,7 +439,6 @@ def data_output(experiment_cycle=None, experiment_alias_directory=None):
         headers = db(experiment_alias_directory=experiment_alias_directory)
 
     for header in headers:
-
         dtable = header.table()
         dtable.to_csv(
             "{}/data/{}.csv".format(
@@ -477,7 +474,6 @@ def data_output(experiment_cycle=None, experiment_alias_directory=None):
 
 ## output the scan data and save them in user_folder/data.
 def data_output_seires(id_range):
-
     """
     To output the scan data with the scan_id as name
     Please first create "data" folder under user_folder.
@@ -485,7 +481,6 @@ def data_output_seires(id_range):
     """
 
     for ii in id_range:
-
         header = db[scan_id]
         dtable = header.table()
         dtable.to_csv(
@@ -503,7 +498,6 @@ def data_output_seires(id_range):
 
 
 def metadata_output(output_file, SAF=None, experiment_alias_directory=None):
-
     """
     To output the scan data with the scan_id as name
     Please first create "data" folder under user_folder.
@@ -520,9 +514,7 @@ def metadata_output(output_file, SAF=None, experiment_alias_directory=None):
     output_data = pds.DataFrame()
 
     for header in headers:
-
         if "sample_name" in header.start and "sample_x" in header.start and "sample_clock" in header.start:
-
             current_data = {
                 "a_scan_id": header.start["scan_id"],
                 "b_sample_name": header.start["sample_name"],
@@ -570,7 +562,6 @@ def rock_motor_per_step(detector, motor, step, rock_motor=None, rock_motor_limit
         yield from mv(rock_motor, current + -rock_motor_limits)
 
     def inner_rock_and_read():
-
         # yield from trigger(detector)
         # status = yield from trigger(detector[0])
         status = detector[0].trigger()

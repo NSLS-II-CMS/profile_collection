@@ -71,7 +71,6 @@ class Sample(SampleTSAXS):
     # class Sample(SampleGISAXS):
 
     def __init__(self, name, base=None, **md):
-
         super().__init__(name=name, base=base, **md)
 
         # self.WAXSx_pos_default=-16.9
@@ -140,7 +139,6 @@ class Sample(SampleTSAXS):
         verbosity=3,
         **md,
     ):
-
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
         super().measureTimeSeries(
@@ -262,7 +260,6 @@ class Sample(SampleTSAXS):
     def alignVeryQuick(
         self, intensity=INTENSITY_EXPECTED_025, align_step=9, reflection_angle=0.07, mode_control=True, verbosity=3
     ):
-
         if mode_control:
             get_beamline().modeAlignment()
             beam.on()
@@ -286,7 +283,6 @@ class Sample(SampleTSAXS):
             get_beamline().modeMeasurement()
 
     def IC_int(self):
-
         ion_chamber_readout1 = caget("XF:11BMB-BI{IM:3}:IC1_MON")
         ion_chamber_readout2 = caget("XF:11BMB-BI{IM:3}:IC2_MON")
         ion_chamber_readout3 = caget("XF:11BMB-BI{IM:3}:IC3_MON")
@@ -356,7 +352,6 @@ class CapillaryHolderCustom(CapillaryHolder):
         x_step=+0.10,
         **md,
     ):
-
         for sample in self.getSamples():
             # sample.incident_angles_default = [0.08, 0.1, 0.12]
             sample.naming_scheme = ["name", "extra", "temperature", "clock", "exposure_time"]
@@ -445,7 +440,6 @@ class CapillaryHolderCustom(CapillaryHolder):
         x_step=+0.10,
         **md,
     ):
-
         for sample in self.getSamples():
             sample.naming_scheme = ["name", "extra", "temperature", "clock", "exposure_time"]
             # sample.naming_scheme = ['name', 'extra', 'temperature_B', 'clock', 'exposure_time']
@@ -500,7 +494,6 @@ class CapillaryHolderCustom(CapillaryHolder):
         x_step=+0.10,
         **md,
     ):
-
         for sample in self.getSamples():
             sample.naming_scheme = ["name", "extra", "temperature", "clock", "exposure_time"]
             # sample.naming_scheme = ['name', 'extra', 'temperature_B', 'clock', 'exposure_time']
@@ -555,7 +548,6 @@ class CapillaryHolderCustom(CapillaryHolder):
         x_step=+0.10,
         **md,
     ):
-
         for sample in self.getSamples():
             # sample.incident_angles_default = [0.08, 0.1, 0.12]
             sample.naming_scheme = ["name", "extra", "temperature", "clock", "exposure_time"]
@@ -586,7 +578,6 @@ class GIBarCustom(GIBar_long_thermal):
     # class GIBarCustom(GIBar):
 
     def __init__(self, name="GIBar", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         temp_series0 = np.arange(30, 200 + 0.1, 10)
@@ -631,7 +622,6 @@ class GIBarCustom(GIBar_long_thermal):
         x_step=+0.10,
         **md,
     ):
-
         self.incident_angles_default = [0.08, 0.1, 0.12]
         self.naming_scheme = ["name", "extra", "temperature", "th", "x", "exposure_time"]
 
@@ -641,7 +631,6 @@ class GIBarCustom(GIBar_long_thermal):
 
         ##1st heating up to 200C directly
         if step < 5:
-
             if wait_time is not None:
                 time.sleep(wait_time)
 
@@ -665,7 +654,6 @@ class GIBarCustom(GIBar_long_thermal):
                     time.sleep(wait_time)
 
                 if temperature in self.temp_align:
-
                     saxs_on()
 
                     x_offset += x_step
@@ -727,7 +715,6 @@ class GIBarCustom(GIBar_long_thermal):
                     time.sleep(wait_time)
 
                 if temperature in self.temp_align:
-
                     saxs_on()
 
                     x_offset += x_step
@@ -829,7 +816,6 @@ RE.md["experiment_project"] = "Crystallization at L/L interface"
 
 
 if False:
-
     # Example of a multi-sample holder
 
     md = {
@@ -856,7 +842,6 @@ if False:
 
 
 if True:
-
     # hol = CapillaryHolder(base=stg)
     hol = CapillaryHolderCustom(base=stg)
 
@@ -878,7 +863,6 @@ if True:
     # hol.addSampleSlot( Sample('Sarah_A4'), 15.0 )h
 
 if False:
-
     # hol = CapillaryHolder(base=stg)
     hol = CapillaryHolderCustom(base=stg)
 
@@ -893,7 +877,7 @@ if False:
     # hol.addSampleSlot( Sample('Sarah_A4'), 15.0 )h
 
 
-#%run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
+# %run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
 
 # robot.listGarage()
 

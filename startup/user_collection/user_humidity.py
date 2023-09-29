@@ -81,7 +81,6 @@ class SampleGISAXS(SampleGISAXS_Generic):
 # class Sample(SampleTSAXS):
 class Sample(SampleGISAXS):
     def __init__(self, name, base=None, **md):
-
         super().__init__(name=name, base=base, **md)
 
         # SVA_chamber
@@ -157,7 +156,6 @@ class Sample(SampleGISAXS):
         verbosity=3,
         **md,
     ):
-
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
         super().measureTimeSeries(
@@ -188,7 +186,6 @@ class Sample(SampleGISAXS):
                 self.measure(10)
 
     def do_ljr(self, step=0, align_step=0, **md):
-
         # NOTE: if align_step =8 is not working, try align_step=4
 
         if step <= 1:
@@ -216,7 +213,6 @@ class Sample(SampleGISAXS):
             self.thabs(0.0)
 
     def do(self, step=0, align_step=0, **md):
-
         # NOTE: if align_step =8 is not working, try align_step=4
 
         if step <= 1:
@@ -241,7 +237,6 @@ class Sample(SampleGISAXS):
             get_beamline().modeMeasurement()
 
         if step <= 10:
-
             if self.incident_angles == None:
                 incident_angles = self.incident_angles_default
             else:
@@ -259,7 +254,6 @@ class Sample(SampleGISAXS):
             self.thabs(0.0)
 
     def do_SAXS(self, step=0, align_step=0, **md):
-
         # NOTE: if align_step =8 is not working, try align_step=4
 
         if step <= 1:
@@ -284,7 +278,6 @@ class Sample(SampleGISAXS):
             get_beamline().modeMeasurement()
 
         if step <= 10:
-
             if self.incident_angles == None:
                 incident_angles = self.incident_angles_default
             else:
@@ -302,7 +295,6 @@ class Sample(SampleGISAXS):
             self.thabs(0.0)
 
     def IC_int(self):
-
         ion_chamber_readout1 = caget("XF:11BMB-BI{IM:3}:IC1_MON")
         ion_chamber_readout2 = caget("XF:11BMB-BI{IM:3}:IC2_MON")
         ion_chamber_readout3 = caget("XF:11BMB-BI{IM:3}:IC3_MON")
@@ -315,7 +307,6 @@ class Sample(SampleGISAXS):
         return ion_chamber_readout > 1 * 5e-08
 
     def do_TSAXS(self, step=0, align_step=0, **md):
-
         if step <= 1:
             saxs_on()
 
@@ -413,7 +404,6 @@ class Sample(SampleGISAXS):
             self.yo()
 
     def do_WAXS(self, step=0, align_step=0, **md):
-
         if step <= 1:
             saxs_on()
             get_beamline().modeAlignment()
@@ -475,7 +465,6 @@ class HumidityStageCumstom(HumidityStage):
         # copyfile(os.path.join(parent_data_folder, 'user.py'), os.path.join(holder_data_folder,'user.py'))
 
     def doSamples(self, exposure_time=1, verbosity=3):
-
         # maxs_on()
         for sample in self.getSamples():
             if verbosity >= 3:
@@ -496,7 +485,6 @@ class HumidityStageCumstom(HumidityStage):
                 sample.do_WAXS()
 
     def alignSamples(self, step=0, align_step=0, verbosity=3, **md):
-
         for sample in self.getSamples():
             if verbosity >= 3:
                 print("Doing sample {}...".format(sample.name))
@@ -515,7 +503,6 @@ class HumidityStageCumstom(HumidityStage):
                 sample.align(step=align_step)
 
     def alignSamplesQuick(self, step=0, align_step=0, verbosity=3, **md):
-
         for sample in self.getSamples():
             if verbosity >= 3:
                 print("Doing sample {}...".format(sample.name))
@@ -534,7 +521,6 @@ class HumidityStageCumstom(HumidityStage):
                 sample.align_y(step=align_step)
 
     def measureSamples(self, step=0, verbosity=3, **md):
-
         cms.modeMeasurement()
         saxs_on()
         for sample in self.getSamples():
@@ -600,7 +586,6 @@ class HumidityStageCumstom(HumidityStage):
             self.yo()
 
     def _test_doSamples(self, exposure_time=1, verbosity=3):
-
         if caget("XF:11BMA-PPS{PSh}Sts:FailOpn-Sts") == 1:
             print("The SHUTTER is closed. Please open it")
             return
@@ -651,7 +636,6 @@ class CapillaryHolderCustom(CapillaryHolder):
         # self._axes['th'].origin = 0.23
 
     def doSamples(self, exposure_time_WAXS=25, exposure_time_SAXS=25, verbosity=3):
-
         # maxs_on()
         waxs_on()
         for sample in self.getSamples():
@@ -711,7 +695,6 @@ RE.md["experiment_alias_directory"] = "/nsls2/xf11bm/data/2020_2/QFu2/"
 cms.SAXS.setCalibration([756, 1074], 5.05, [-65, -73])
 
 if True:
-
     # Example of a multi-sample holder
 
     md = {
@@ -805,7 +788,6 @@ if True:
 
 
 if 0:
-
     hol = CapillaryHolder(base=stg)
     # hol = CapillaryHolderCustom(base=stg)
 
@@ -829,7 +811,7 @@ if 0:
     # hol.addSampleSlot( Sample('YT_Sep08_2017_sample915'), 15.0 )
 
 
-#%run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
+# %run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
 
 # robot.listGarage()
 

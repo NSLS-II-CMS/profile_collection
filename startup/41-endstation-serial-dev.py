@@ -31,7 +31,6 @@ class Agilent_34970A(Device):
         parent=None,
         **kwargs,
     ):
-
         super().__init__(
             prefix=prefix,
             *args,
@@ -52,7 +51,6 @@ class Agilent_34970A(Device):
     ########################################
 
     def connect_socket(self):
-
         # self.server_address= '10.11.130.51'
         # self.server_address= '10.11.130.53'     # Moxa inside Endstation hutch
         self.server_address = "10.68.82.73"  # NEW IP, 20201112
@@ -70,17 +68,14 @@ class Agilent_34970A(Device):
         self.sock.settimeout(0.5)
 
     def disconnect_socket(self):
-
         self.sock.close()
 
     def send_socket(self, msg):
-
         # self.sock.send(chr(13).encode('ascii', 'ignore')) # Carriage return
         self.sock.send(msg.encode("ascii", "ignore"))
         # self.sock.send(msg.encode('utf-8'))
 
     def send_get_reply(self, msg, verbosity=3):
-
         # self.send_socket('\r')
         self.send_socket(msg)
 
@@ -89,7 +84,6 @@ class Agilent_34970A(Device):
         return self.read_socket(verbosity=verbosity)
 
     def read_socket(self, timeout_s=3, verbosity=3):
-
         start_time = time.time()
         terminator = chr(0x18)
 
@@ -159,7 +153,6 @@ class Agilent_34970A(Device):
 
     # Output specified voltage on specified DAC channel
     def setDAC(self, channel, voltage, verbosity=1):
-
         if channel < 1 or channel > 2:
             print("Invalid DAC channel number; must be 1 or 2.\n")
             return 0
@@ -179,7 +172,6 @@ class Agilent_34970A(Device):
 
     # Query voltage setting on specified DAC channel
     def readDAC(self, channel, verbosity=1):
-
         if channel < 1 or channel > 2:
             print("Invalid DAC channel number; must be 1 or 2.\n")
             return 0
@@ -195,7 +187,6 @@ class Agilent_34970A(Device):
 
     # Write digital byte to specified DIO channel
     def writeByteDIO(self, channel, value, verbosity=1):
-
         if channel < 1 or channel > 2:
             print("Invalid DIO channel number; must be 1 or 2.\n")
             return 0
@@ -212,7 +203,6 @@ class Agilent_34970A(Device):
 
     # Read digital byte on specified DIO channel
     def readByteDIO(self, channel, verbosity=1):
-
         if channel < 1 or channel > 2:
             print("Invalid DIO channel number; must be 1 or 2.\n")
             return 0
@@ -243,7 +233,6 @@ class Keithley_2000(Device):
         parent=None,
         **kwargs,
     ):
-
         super().__init__(
             prefix=prefix,
             *args,
@@ -262,7 +251,6 @@ class Keithley_2000(Device):
     ########################################
 
     def connect_socket(self):
-
         # self.server_address= '10.11.130.51'
         # self.server_address= '10.11.130.53'     # Moxa inside Endstation hutch
         self.server_address = "10.68.82.73"  # NEW IP, 20201112
@@ -280,17 +268,14 @@ class Keithley_2000(Device):
         self.sock.settimeout(0.5)
 
     def disconnect_socket(self):
-
         self.sock.close()
 
     def send_socket(self, msg):
-
         # self.sock.send(chr(13).encode('ascii', 'ignore')) # Carriage return
         self.sock.send(msg.encode("ascii", "ignore"))
         # self.sock.send(msg.encode('utf-8'))
 
     def send_get_reply(self, msg, verbosity=3):
-
         # self.send_socket('\r')
         self.send_socket(msg)
 
@@ -299,7 +284,6 @@ class Keithley_2000(Device):
         return self.read_socket(verbosity=verbosity)
 
     def read_socket(self, timeout_s=3, verbosity=3):
-
         start_time = time.time()
         terminator = chr(0x18)
 
@@ -335,7 +319,6 @@ class Keithley_2000(Device):
 
     # Select the channel for reading
     def selectChannel(self, channel, verbosity=1):
-
         if channel < 1 or channel > 10:
             print("Invalid channel number; must be between 1 and 10.\n")
             return 0
@@ -349,7 +332,6 @@ class Keithley_2000(Device):
 
     # Read resistance on the selected channel
     def readOhm(self, channel, verbosity=1):
-
         self.selectChannel(channel, verbosity=1)
         time.sleep(0.2)
         self.send_socket(":SENS:FUNC 'RES'\r")
@@ -365,7 +347,6 @@ class Keithley_2000(Device):
 
     # Read DC voltage on the selected channel
     def readDCV(self, channel, verbosity=1):
-
         self.selectChannel(channel, verbosity=1)
         time.sleep(0.2)
         self.send_socket(":SENS:FUNC 'VOLT:DC'\r")
@@ -381,7 +362,6 @@ class Keithley_2000(Device):
 
     # Read 30 kOhm thermistor on the selected channel and return T[degC]
     def readThermister30kohm(self, channel, verbosity=1):
-
         ohm = self.readOhm(channel, verbosity=1)
 
         coeff_a = 0.000932681
@@ -404,7 +384,6 @@ class Keithley_2000(Device):
 
     # Read 100 kOhm thermistor on the selected channel and return T[degC]
     def readThermister100kohm(self, channel, verbosity=1):
-
         ohm = self.readOhm(channel, verbosity=1)
 
         coeff_a = 0.000827094
@@ -427,7 +406,6 @@ class Keithley_2000(Device):
 
     # Read Pt100 RTD on the selected channel and return T[degC]
     def readPt100(self, channel, verbosity=1):
-
         ohm = self.readOhm(channel, verbosity=1)
 
         # Conversion formula from:
@@ -461,12 +439,10 @@ class TTL_control(object):
     """
 
     def __init__(self, name="TTL_control", description="", pv=None, **args):
-
         self.name = name
         self.description = description
 
     def readPort(self, unit, port, verbosity=2):
-
         if unit < 1 or unit > 2:
             print("Invalid TTL unit number; must be 1 or 2.\n")
             return 0
@@ -485,7 +461,6 @@ class TTL_control(object):
         return onoff
 
     def readPorts(self, unit, verbosity=2):
-
         if unit < 1 or unit > 2:
             print("Invalid TTL unit number; must be 1 or 2.\n")
             return 0
@@ -503,7 +478,6 @@ class TTL_control(object):
         return value
 
     def setPort(self, unit, port, onoff, verbosity=2):
-
         if unit < 1 or unit > 2:
             print("Invalid TTL unit number; must be 1 or 2.\n")
             return 0
@@ -539,11 +513,9 @@ class TTL_control(object):
             return 1
 
     def setPortOn(self, unit, port, verbosity=2):
-
         return self.setPort(unit, port, 1, verbosity=verbosity)
 
     def setPortOff(self, unit, port, verbosity=2):
-
         return self.setPort(unit, port, 0, verbosity=verbosity)
 
 
@@ -562,7 +534,6 @@ class Minichiller(Device):
         parent=None,
         **kwargs,
     ):
-
         super().__init__(
             prefix=prefix,
             *args,
@@ -581,7 +552,6 @@ class Minichiller(Device):
     ########################################
 
     def connect_socket(self):
-
         # self.server_address= '10.11.130.51'
         # self.server_address= '10.11.130.53'     # Moxa inside Endstation hutch
         self.server_address = "10.68.82.73"  # NEW IP, 20201112
@@ -599,17 +569,14 @@ class Minichiller(Device):
         self.sock.settimeout(0.5)
 
     def disconnect_socket(self):
-
         self.sock.close()
 
     def send_socket(self, msg):
-
         # self.sock.send(chr(13).encode('ascii', 'ignore')) # Carriage return
         self.sock.send(msg.encode("ascii", "ignore"))
         # self.sock.send(msg.encode('utf-8'))
 
     def send_get_reply(self, msg, verbosity=3):
-
         # self.send_socket('\r')
         self.send_socket(msg)
 
@@ -618,7 +585,6 @@ class Minichiller(Device):
         return self.read_socket(verbosity=verbosity)
 
     def read_socket(self, timeout_s=3, verbosity=3):
-
         start_time = time.time()
         terminator = chr(0x18)
 
@@ -654,7 +620,6 @@ class Minichiller(Device):
 
     # Output specified voltage on specified DAC channel
     def setTemp(self, degC, verbosity=1):
-
         if degC < 0:
             sign = "-"
         else:
@@ -680,7 +645,6 @@ class Minichiller(Device):
 
     # Query temperature in degC
     def readTemp(self, verbosity=1):
-
         self.send_socket("SP?\r\n")
         degC_raw = self.read_socket(verbosity=1)
         degC = int(degC_raw[2:]) / 100.0
@@ -706,7 +670,6 @@ class SyringePump(Device):
         parent=None,
         **kwargs,
     ):
-
         super().__init__(
             prefix=prefix,
             *args,
@@ -725,7 +688,6 @@ class SyringePump(Device):
     ########################################
 
     def connect_socket(self):
-
         # self.server_address= '10.11.130.51'
         # self.server_address= '10.11.130.53'     # Moxa inside Endstation hutch
         self.server_address = "10.68.82.73"  # NEW IP, 20201112
@@ -743,17 +705,14 @@ class SyringePump(Device):
         self.sock.settimeout(0.5)
 
     def disconnect_socket(self):
-
         self.sock.close()
 
     def send_socket(self, msg):
-
         # self.sock.send(chr(13).encode('ascii', 'ignore')) # Carriage return
         self.sock.send(msg.encode("ascii", "ignore"))
         # self.sock.send(msg.encode('utf-8'))
 
     def send_get_reply(self, msg, verbosity=3):
-
         # self.send_socket('\r')
         self.send_socket(msg)
 
@@ -762,7 +721,6 @@ class SyringePump(Device):
         return self.read_socket(verbosity=verbosity)
 
     def read_socket(self, timeout_s=3, verbosity=3):
-
         start_time = time.time()
         terminator = chr(0x18)
 
@@ -799,7 +757,6 @@ class SyringePump(Device):
     # TODO:command input, including setting of speed and direction, inject , purge....
     # Output specified voltage on specified DAC channel
     def setTemp(self, degC, verbosity=1):
-
         if degC < 0:
             sign = "-"
         else:
@@ -825,7 +782,6 @@ class SyringePump(Device):
 
     # Query temperature in degC
     def readTemp(self, verbosity=1):
-
         self.send_socket("SP?\r\n")
         degC_raw = self.read_socket(verbosity=1)
         degC = int(degC_raw[2:]) / 100.0

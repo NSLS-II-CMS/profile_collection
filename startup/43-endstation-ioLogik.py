@@ -50,6 +50,7 @@ AO = [None]
 for ii in range(1, 5):
     AO.append(AOpv(ii))
 
+
 # PV list of Moxa ioLogik:: AI, Analog Input
 class AIpv(object):
     def __init__(self, ii):
@@ -65,6 +66,7 @@ AI = [None]
 for ii in range(1, 9):
     AI.append(AIpv(ii))
 
+
 # PV list of Moxa ioLogik:: DO(Relay), Digital Output
 class Relaypv(object):
     def __init__(self, ii):
@@ -77,6 +79,7 @@ Relay = [None]
 for ii in range(1, 7):
     Relay.append(Relaypv(ii))
 
+
 # PV list of Moxa ioLogik:: DI, Digital Input
 class DIpv(object):
     def __init__(self, ii):
@@ -88,6 +91,7 @@ DI = [None]
 for ii in range(1, 7):
     DI.append(DIpv(ii))
 
+
 # PV list of Moxa ioLogik:: RTD
 class RTDpv(object):
     def __init__(self, ii):
@@ -98,6 +102,7 @@ class RTDpv(object):
 RTD = [None]
 for ii in range(1, 7):
     RTD.append(RTDpv(ii))
+
 
 # PV list of Moxa ioLogik:: TC, Thermal Couple
 class TCpv(object):
@@ -118,7 +123,6 @@ class ioLogik(Device):
     def __init__(
         self, prefix="", *args, read_attrs=None, configuration_attrs=None, name="ioLogik", parent=None, **kwargs
     ):
-
         super().__init__(
             prefix=prefix,
             *args,
@@ -239,7 +243,6 @@ class MassFlowControl(Device):
         # self.NominalRange_Sts = 'XF:11BMB-ES{FC:1}F:FullRng-RB'
 
     def setDevice(self, device="A1"):
-
         if device == "A1":
             device_no = 1
         elif device == "A2":
@@ -453,7 +456,6 @@ class SorrensonPowerSupply(Device):
         return self.state(verbosity=0), self.voltage.get(), self.current.get()
 
     def setVoltageLinear(self, Vstart, Vend, period, wait_time=0.1, verbosity=3):
-
         start_time = time.time()
 
         while time.time() - start_time < period + 0.01:
@@ -465,7 +467,6 @@ class SorrensonPowerSupply(Device):
         return self.read(self.voltage)
 
     def setVoltage(self, voltage, verbosity=3):
-
         self.put(self.voltage_setpoint, voltage)
         start_time = time.time()
         while abs(self.voltage.get() - voltage) > 0.01 and time.time() - start_time < 1:
@@ -481,7 +482,6 @@ class SorrensonPowerSupply(Device):
 
 
 class Chiller(Device):
-
     # On/Off:   XF:11BMB-ES{Chiller}TempCtrl
     # Setpoint: XF:11BMB-ES{Chiller}T-SP
     # T       : XF:11BMB-ES{Chiller}BathT_RBV

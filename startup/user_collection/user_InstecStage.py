@@ -151,11 +151,9 @@ class Sample(SampleTSAXS):
     def measure_mesh_scan(
         self, num_spots=50 + 1, translation_amount_y=0.1, translation_amount_x=0.1, exposure_time=3
     ):
-
         self.naming_scheme = ["name", "extra", "x", "y", "exposure_time"]
 
         for y_pos in self.mesh_y_range:
-
             self.yabs(y_pos)
             self.xabs(-2.5)
             time.sleep(2)
@@ -290,7 +288,6 @@ class Sample(SampleTSAXS):
         md["measure_series_num_frames"] = num_frames
 
         for i in range(num_frames):
-
             if verbosity >= 3:
                 print(
                     "Measuring frame {:d}/{:d} ({:.1f}% complete).".format(
@@ -316,9 +313,7 @@ class Sample(SampleTSAXS):
         wait_time_cool=200,
         temp_tolerance=0.5,
     ):
-
         if temp_cool_seq is None:
-
             temp_cool_seq1 = np.arange(190, 155 - 0.1, -5)
             temp_cool_seq2 = np.arange(153, 151 - 0.1, -2)
             temp_cool_seq3 = np.arange(150, 140 - 0.1, -1)
@@ -352,7 +347,6 @@ class Sample(SampleTSAXS):
     def tscan(
         self, temperature_start, temperature_final, num_intervals, wait_time, temp_update_time=5, exposure_time=0
     ):
-
         if temperature_start == None or temperature_start < 0.0 or temperature_start >= 250:
             print("temperature_start must be set between 0 and 250 degC.\n")
             return 0
@@ -421,7 +415,6 @@ class Sample(SampleTSAXS):
         self.tscan_data.to_csv(self.tscan_filename)
 
     def IC_int(self):
-
         ion_chamber_readout1 = caget("XF:11BMB-BI{IM:3}:IC1_MON")
         ion_chamber_readout2 = caget("XF:11BMB-BI{IM:3}:IC2_MON")
         ion_chamber_readout3 = caget("XF:11BMB-BI{IM:3}:IC3_MON")
@@ -453,7 +446,6 @@ class CapillaryHoldeCustom(CapillaryHolder):
     def tscan(
         self, temperature_start, temperature_final, num_intervals, wait_time, temp_update_time=5, exposure_time=0
     ):
-
         if temperature_start == None or temperature_start < 0.0 or temperature_start >= 250:
             print("temperature_start must be set between 0 and 250 degC.\n")
             return 0
@@ -536,7 +528,6 @@ class CapillaryHoldeCustom(CapillaryHolder):
     # sample.setOrigin( ['yy'], [self.get_slot_position(slot)[1]] )
 
     def temperature_seires(self):
-
         temperatures_increase = np.arange(27, 200.1, 0.5)
         for temperature in temperatures_increase:
             self.setTemperature(temperature)
@@ -562,9 +553,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
                 time.sleep(120)
 
     def do_series(self, y_pos=2.6, exposure_time=10, num_frames=5000, wait_time=0, verbosity=3):
-
         for ii in range(num_frames):
-
             for sample in self.getSamples():
                 if verbosity >= 3:
                     print("Doing sample {}...".format(sample.name))
@@ -590,9 +579,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
         wait_time=0,
         verbosity=3,
     ):
-
         for ii in range(num_frames):
-
             for sample in self.getSamples():
                 if verbosity >= 3:
                     print("Doing sample {}...".format(sample.name))
@@ -612,14 +599,11 @@ class CapillaryHoldeCustom(CapillaryHolder):
                 time.sleep(wait_time)
 
     def reset_clock(self):
-
         for sample in self.getSamples():
             sample.reset_clock()
 
     def do_series_smarter(self, num_frames=5000, wait_time=0):
-
         for ii in range(num_frames):
-
             if self.temperature(temperature_probe="B") > 25 and self.temperature(temperature_probe="B") < 70:
                 detselect([pilatus2M, psccd])
                 self.doSamples()
@@ -636,7 +620,6 @@ class CapillaryHoldeCustom(CapillaryHolder):
                 sleep(120)
 
     def do_series_temperature(self, temperature=120, num_frames=5000, wait_time=0):
-
         self.setTemperature(temperature)
         flow_on(voltage=5)
         for ii in range(num_frames):
@@ -653,9 +636,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
                 flow_off()
 
     def do_series_multix(self, num_frames=5000, wait_time=0):
-
         for ii in range(num_frames):
-
             if ii % 3 != 0:
                 self.xo()
                 self.xr(0.2)
@@ -676,7 +657,6 @@ class CapillaryHoldeCustom(CapillaryHolder):
                 sleep(120)
 
     def IC_int(self):
-
         ion_chamber_readout1 = caget("XF:11BMB-BI{IM:3}:IC1_MON")
         ion_chamber_readout2 = caget("XF:11BMB-BI{IM:3}:IC2_MON")
         ion_chamber_readout3 = caget("XF:11BMB-BI{IM:3}:IC3_MON")
@@ -728,7 +708,6 @@ RE.md["experiment_alias_directory"] = "/nsls2/xf11bm/data/2019_2/SSprunt2"
 
 
 if False:
-
     hol = CapillaryHolder(base=stg)
     # hol = CapillaryHolderCurrent(base=stg)
     # hol = CapillaryHolderCustom(base=stg)

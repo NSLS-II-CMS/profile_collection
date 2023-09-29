@@ -76,7 +76,6 @@ class EpicsSignalROWait(ophyd.EpicsSignalRO):
     a value is read."""
 
     def __init__(self, *args, wait_time=None, **kwargs):
-
         if wait_time is not None:
             self._wait_time = wait_time
         else:
@@ -85,7 +84,6 @@ class EpicsSignalROWait(ophyd.EpicsSignalRO):
         super().__init__(*args, **kwargs)
 
     def read(self, *args, **kwargs):
-
         # print('waiting {} s'.format(self._wait_time))
         sleep(self._wait_time)
         return super().read(*args, **kwargs)
@@ -99,7 +97,6 @@ class EpicsSignalROIntegrate(ophyd.EpicsSignalRO):
     a few values). This can be used for signals that are otherwise too erratic."""
 
     def __init__(self, *args, wait_time=None, integrate_num=1, integrate_delay=0.01, **kwargs):
-
         if wait_time is not None:
             self._wait_time = wait_time
         else:
@@ -111,7 +108,6 @@ class EpicsSignalROIntegrate(ophyd.EpicsSignalRO):
         super().__init__(*args, **kwargs)
 
     def read(self, *args, **kwargs):
-
         # print('waiting {} s'.format(self._wait_time))
         sleep(self._wait_time)
 

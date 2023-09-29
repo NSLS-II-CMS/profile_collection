@@ -3,7 +3,6 @@
 # vi: ts=4 sw=4
 
 
-
 #######
 # v3 -->  v4:  coord based on KY_coord_form.py
 
@@ -33,20 +32,24 @@ MAXSbsx = smz
 MAXSbsy = smy2
 # def saxs_on():
 #     detselect(pilatus2M)
-#     WAXSx.move(-225)        
-#     WAXSy.move(28)   
+#     WAXSx.move(-225)
+#     WAXSy.move(28)
+
 
 def bsin():
     MAXSbsx.move(-7)
     MAXSbsy.move(11)
 
+
 def bsout():
     MAXSbsx.move(-7)
     MAXSbsy.move(0)
 
+
 def smaxs_on():
     MAXSx.move(-85)
     MAXSy.move(-15)
+
 
 def saxs_on():
     MAXSx.move(-85)
@@ -109,8 +112,9 @@ class PairSP(Device):
 
     set forwards to the set point.
     """
-    sp = Cpt(EpicsSignal, '-SP', kind='normal')
-    rb = Cpt(EpicsSignalRO, '-RB', kind='hinted')
+
+    sp = Cpt(EpicsSignal, "-SP", kind="normal")
+    rb = Cpt(EpicsSignalRO, "-RB", kind="hinted")
 
     def set(self, value, **kwargs):
         return self.sp.set(value, **kwargs)
@@ -122,8 +126,9 @@ class PairSEL(Device):
 
     set forwards to the Select
     """
-    sel = Cpt(EpicsSignal, '-Sel', kind='normal')
-    rb = Cpt(EpicsSignalRO, '-RB', kind='hinted', string=True, auto_monitor=True)
+
+    sel = Cpt(EpicsSignal, "-Sel", kind="normal")
+    rb = Cpt(EpicsSignalRO, "-RB", kind="hinted", string=True, auto_monitor=True)
 
     def set(self, value, **kwargs):
         return self.sel.set(value, **kwargs)
@@ -135,8 +140,9 @@ class PairCMD(Device):
 
     set forwards to the CMD
     """
-    cmd = Cpt(EpicsSignal, '-CMD', kind='omitted')
-    rb = Cpt(EpicsSignalRO, '-RB', kind='hinted')
+
+    cmd = Cpt(EpicsSignal, "-CMD", kind="omitted")
+    rb = Cpt(EpicsSignalRO, "-RB", kind="hinted")
 
     def set(self, value, **kwargs):
         return self.cmd.set(value, **kwargs)
@@ -146,35 +152,36 @@ class Laser(Device):
     """
     Class to represent the PTA laser as controlled by the beckoff I/O
     """
+
     # Set pulse width for output
     # Milliseconds units
-    width = Cpt(PairSP, 'OutWidthSet:1')
+    width = Cpt(PairSP, "OutWidthSet:1")
     # Set delay between input trigger and output trigger
     # Milliseconds units
-    delay = Cpt(PairSP, 'OutDelaySet:1')
+    delay = Cpt(PairSP, "OutDelaySet:1")
     # Set number of discrete pulses per trigger event
-    pulses = Cpt(PairSP, 'OutPulsesSet:1')
+    pulses = Cpt(PairSP, "OutPulsesSet:1")
 
     # Read inputs
     # 1 = PV trigger, 2 = physical trigger
-    input1 = Cpt(EpicsSignalRO, 'Input:1-RB')
-    input2 = Cpt(EpicsSignalRO, 'Input:2-RB')
+    input1 = Cpt(EpicsSignalRO, "Input:1-RB")
+    input2 = Cpt(EpicsSignalRO, "Input:2-RB")
 
     # Enable/disable trigger inputs
     # 1 = PV trigger, 2 = physical trigger
-    pv_bitmask = Cpt(PairSEL, 'InMaskBit:1')
-    physical_bitmank = Cpt(PairSEL, 'InMaskBit:2')
+    pv_bitmask = Cpt(PairSEL, "InMaskBit:1")
+    physical_bitmank = Cpt(PairSEL, "InMaskBit:2")
 
     # PV Trigger
-    pv_trigger = Cpt(PairCMD, 'Trigger:PV')
+    pv_trigger = Cpt(PairCMD, "Trigger:PV")
 
     # Enable/disable output trigger mode
-    trigger_mode = Cpt(PairSEL, 'OutMaskBit:1')
+    trigger_mode = Cpt(PairSEL, "OutMaskBit:1")
 
     # Output override and output readback
     # Override only works when trigger disabled
     # manual_button = Cpt(PairSEL, 'Output:1')
-    manual_button = Cpt(PairSEL, 'Output:1-Sel')
+    manual_button = Cpt(PairSEL, "Output:1-Sel")
 
     def manual_mode(self):
         yield from bps.mv(self.trigger, 0)
@@ -188,10 +195,10 @@ class Laser(Device):
         yield from bps.mv(self.manual_button, 0)
 
 
-laser = Laser('XF:11BM-CT{BIOME-MTO:1}', name='laser')
+laser = Laser("XF:11BM-CT{BIOME-MTO:1}", name="laser")
 
-        # self.powerV_PV = "XF:11BM-CT{BIOME-MTO:1}LaserVoltsSet:1-SP"    #changed at 080323 by RL for the new laser control box
-        # self.controlTTL_PV = "XF:11BM-CT{BIOME-MTO:1}Output:1-Sel"
+# self.powerV_PV = "XF:11BM-CT{BIOME-MTO:1}LaserVoltsSet:1-SP"    #changed at 080323 by RL for the new laser control box
+# self.controlTTL_PV = "XF:11BM-CT{BIOME-MTO:1}Output:1-Sel"
 
 
 class SampleTSAXS(SampleTSAXS_Generic):
@@ -244,9 +251,9 @@ class Sample(SampleGISAXS):
         self._axes["y"].origin = 39.26  # smy stage should be set with the limit [-5.5, -5]
         self._axes["th"].origin = 0.93
 
-        #default position for laser position on the edge of the sample (5mm offset)
-        #smx = -1.5, laserx = 0
-        #smx and laserx should move simultaneously.
+        # default position for laser position on the edge of the sample (5mm offset)
+        # smx = -1.5, laserx = 0
+        # smx and laserx should move simultaneously.
 
     # def get_attribute(self, attribute):
     #     '''Return the value of the requested md.'''
@@ -546,7 +553,6 @@ class Sample(SampleGISAXS):
     def align_crazy_v2(
         self, step=0, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, int_threshold=10, verbosity=3
     ):
-
         # setting parameters
         rel_th = 1
         ct = 0
@@ -634,7 +640,6 @@ class Sample(SampleGISAXS):
             abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20
             and detector.stats2.max_value.get() > intenisty_threshold
         ):
-
             # continue the fast alignment
             print("The reflective beam is found! Continue the fast alignment")
 
@@ -660,7 +665,6 @@ class Sample(SampleGISAXS):
                 RE(count([detector]))
 
             if detector.stats3.total.get() > 50:
-
                 print("The fast alignment works!")
                 self.thr(-reflection_angle)
                 self.setOrigin(["y", "th"])
@@ -697,7 +701,6 @@ class Sample(SampleGISAXS):
     def align_crazy_v3(
         self, step=0, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, int_threshold=10, verbosity=3
     ):
-
         # setting parameters
         rel_th = 1
         ct = 0
@@ -738,7 +741,6 @@ class Sample(SampleGISAXS):
             beam.on()
 
         if step <= 2:
-
             ######################### fast alignment in the case2 and 3 -- NO refl beam
             self.thabs(0.12)
             self.snap(0.5)
@@ -749,7 +751,6 @@ class Sample(SampleGISAXS):
             target_ratio = 0.5
             beam.on()
             if roi2_int < threshold:
-
                 print("CASE 2 or 3")
 
                 roi4_int = pilatus2M.stats4.total.get()
@@ -857,7 +858,6 @@ class Sample(SampleGISAXS):
                 roi2_4 = get_roi2_4()
 
         if step > 5:
-
             if verbosity >= 4:
                 print("    align: searching")
 
@@ -899,7 +899,6 @@ class Sample(SampleGISAXS):
             )
 
         if step > 5:
-
             # check reflection beam
             self.thr(reflection_angle)
             RE(count([detector]))
@@ -908,7 +907,6 @@ class Sample(SampleGISAXS):
                 abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20
                 and detector.stats2.max_value.get() > intenisty_threshold
             ):
-
                 # continue the fast alignment
                 print("The reflective beam is found! Continue the fast alignment")
 
@@ -980,7 +978,6 @@ class Sample(SampleGISAXS):
         detector=None,
         detector_suffix=None,
     ):
-
         if detector is None:
             # detector = gs.DETS[0]
             detector = get_beamline().detector[0]
@@ -1057,7 +1054,6 @@ class Sample(SampleGISAXS):
                         self.yr(0.5)
                         break
 
-
             if "beam_intensity_expected" in RE.md:
                 if value < RE.md["beam_intensity_expected"] * 0.75:
                     print(
@@ -1082,7 +1078,6 @@ class Sample(SampleGISAXS):
                 print(f"roi2_int={roi2_int} threshold={threshold}")
 
                 if roi2_int < threshold:
-
                     print("CASE 2 or 3")
 
                     roi4_int = pilatus2M.stats4.total.get()
@@ -1160,7 +1155,7 @@ class Sample(SampleGISAXS):
                     roi2_int = pilatus2M.stats2.total.get()
 
                 else:
-                    #very close to aligned position
+                    # very close to aligned position
                     reflection_angle = 0
                 # #use the beam heigh to find the correct refl beam
                 # print('Search the refl beam')
@@ -1315,8 +1310,7 @@ class Sample(SampleGISAXS):
                 stat2_max_value = detector.stats2.max_value.get()
                 print(f"stat2_max_xy_centr={stat2_max_xy_centr} stat2_max_value={stat2_max_value}")
 
-                if (stat2_max_xy_centr < 20 and stat2_max_value > intenisty_threshold):
-
+                if stat2_max_xy_centr < 20 and stat2_max_value > intenisty_threshold:
                     # continue the fast alignment
                     print("The reflective beam is found! Continue the fast alignment")
 
@@ -1379,25 +1373,24 @@ class Sample(SampleGISAXS):
 
         group_name = "setup_aligment"
 
-        #alignment mode
+        # alignment mode
         yield from bps.abs_set(bsx, cms.bsx_pos + 3, group=group_name)
         beam.setTransmission(1e-6)
 
-        #align as abovve
+        # align as abovve
         yield from inner_align(group=group_name)
 
-        #move bs back
+        # move bs back
         yield from bps.abs_set(bsx, cms.bsx_pos, group=group_name)
         yield from bps.wait(group_name)
 
-        #set the position for sample
+        # set the position for sample
         # self.thr(reflection_angle)
         # self.setOrigin(['y', 'th'])
 
     def swing_v2(
         self, step=0, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, int_threshold=10, verbosity=3
     ):
-
         # setting parameters
         rel_th = 1
         ct = 0
@@ -1514,7 +1507,6 @@ class Sample(SampleGISAXS):
             abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20
             and detector.stats2.max_value.get() > intenisty_threshold
         ):
-
             # continue the fast alignment
             print("The reflective beam is found! Continue the fast alignment")
 
@@ -1540,7 +1532,6 @@ class Sample(SampleGISAXS):
                 RE(count([detector]))
 
             if detector.stats3.total.get() > 50:
-
                 print("The fast alignment works!")
                 self.thr(-reflection_angle)
 
@@ -1589,9 +1580,15 @@ class Sample(SampleGISAXS):
             return False, ii
 
     def swing_March(
-        self, step=0, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, intensity=20000, int_threshold=10, verbosity=3
+        self,
+        step=0,
+        reflection_angle=0.12,
+        ROI_size=[10, 180],
+        th_range=0.3,
+        intensity=20000,
+        int_threshold=10,
+        verbosity=3,
     ):
-
         # setting parameters
         rel_th = 1
         ct = 0
@@ -1652,7 +1649,7 @@ class Sample(SampleGISAXS):
             #         print('WARNING: Direct beam intensity ({}) lower than it should be ({})'.format(value, RE.md['beam_intensity_expected']))
 
             # check the last value:
-            value=20000
+            value = 20000
             ii = 0
             while abs(pilatus2M.stats4.total.get() - value) / value < 0.1 and ii < 3:
                 ii += 1
@@ -1708,11 +1705,10 @@ class Sample(SampleGISAXS):
             abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20
             and detector.stats2.max_value.get() > intenisty_threshold
         ):
-
             # continue the fast alignment
             print("The reflective beam is found! Continue the fast alignment")
 
-            #for sth
+            # for sth
             while abs(rel_th) > 0.005 and ct < 5:
                 # while detector.roi3.max_value.get() > 50 and ct < 5:
 
@@ -1734,7 +1730,7 @@ class Sample(SampleGISAXS):
                 ct += 1
                 RE(count([detector]))
 
-            #for smy
+            # for smy
             # Find the step-edge
             fastsearch = RE(
                 self.search_plan(
@@ -1748,7 +1744,6 @@ class Sample(SampleGISAXS):
                     detector_suffix="_stats3_total",
                 )
             )
-
 
             # if detector.stats3.total.get() > 50:
 
@@ -1802,7 +1797,6 @@ class Sample(SampleGISAXS):
     def swing(
         self, step=0, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, int_threshold=10, verbosity=3
     ):
-
         # setting parameters
         rel_th = 1
         ct = 0
@@ -1910,7 +1904,6 @@ class Sample(SampleGISAXS):
             abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20
             and detector.stats2.max_value.get() > intenisty_threshold
         ):
-
             # continue the fast alignment
             print("The reflective beam is found! Continue the fast alignment")
 
@@ -1936,7 +1929,6 @@ class Sample(SampleGISAXS):
                 RE(count([detector]))
 
             if detector.stats3.total.get() > 50:
-
                 print("The fast alignment works!")
                 self.thr(-reflection_angle)
 
@@ -1974,7 +1966,6 @@ class Sample(SampleGISAXS):
     def crazy_th(
         self, step=0, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, int_threshold=10, verbosity=3
     ):
-
         # setting parameters
         rel_th = 1
         ct = 0
@@ -2022,7 +2013,6 @@ class Sample(SampleGISAXS):
             abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20
             and detector.stats2.max_value.get() > intenisty_threshold
         ):
-
             # continue the fast alignment
             print("The reflective beam is found! Continue the fast alignment")
 
@@ -2048,7 +2038,6 @@ class Sample(SampleGISAXS):
                 RE(count([detector]))
 
             if detector.stats3.total.get() > 50:
-
                 print("The fast alignment works!")
                 self.thr(-reflection_angle)
                 self.setOrigin(["y", "th"])
@@ -2083,7 +2072,6 @@ class Sample(SampleGISAXS):
             return False, ii
 
     def measureInitial(self, exposure_time=10, bounds=[0, 50]):
-
         pos_list = np.meshgrid(bounds[0], bounds[1], 2)
         # pos_list.append([np.average(bounds),np.average(bounds)])
         command["out_of_bound"] = False
@@ -2190,7 +2178,6 @@ class Sample(SampleGISAXS):
             # value = detector.read()[value_name]['value']
 
             if target == "max":
-
                 if verbosity >= 5:
                     print("Performing search on axis '{}' target is 'max'".format(self.name))
 
@@ -2228,7 +2215,6 @@ class Sample(SampleGISAXS):
                         step_size *= 0.5
 
             elif target == "min":
-
                 if verbosity >= 5:
                     print("Performing search on axis '{}' target is 'min'".format(self.name))
 
@@ -2262,7 +2248,6 @@ class Sample(SampleGISAXS):
                         step_size *= 0.5
 
             else:
-
                 target_rel = target
                 target = target_rel * intensity
 
@@ -2282,7 +2267,6 @@ class Sample(SampleGISAXS):
                     direction = +1 * polarity
 
                 while step_size >= min_step:
-
                     if verbosity >= 4:
                         print("        move {} by {} × {}".format(self.name, direction, step_size))
 
@@ -2327,7 +2311,6 @@ class Sample(SampleGISAXS):
         polarity=1,
         verbosity=3,
     ):
-
         if detector is None:
             # detector = gs.DETS[0]
             detector = get_beamline().detector[0]
@@ -2347,7 +2330,6 @@ class Sample(SampleGISAXS):
         value = vv[value_name]["value"]
 
         if target == "max":
-
             if verbosity >= 5:
                 print("Performing search on axis '{}' target is 'max'".format(self.name))
 
@@ -2382,7 +2364,6 @@ class Sample(SampleGISAXS):
                     step_size *= 0.5
 
         elif target == "min":
-
             if verbosity >= 5:
                 print("Performing search on axis '{}' target is 'min'".format(self.name))
 
@@ -2415,7 +2396,6 @@ class Sample(SampleGISAXS):
                     step_size *= 0.5
 
         else:
-
             target_rel = target
             target = target_rel * intensity
 
@@ -2435,7 +2415,6 @@ class Sample(SampleGISAXS):
                 direction = +1 * polarity
 
             while step_size >= min_step:
-
                 if verbosity >= 4:
                     print("        move {} by {} × {}".format(self.name, direction, step_size))
 
@@ -2479,19 +2458,17 @@ class Sample(SampleGISAXS):
 
     #     return target_x, target_y, target_th
 
-    def run_initial_alignment(self,start_x=127.2, end_x=127.2+30, direct_beam_int=None):
-        #make a look up table for
+    def run_initial_alignment(self, start_x=127.2, end_x=127.2 + 30, direct_beam_int=None):
+        # make a look up table for
 
         yield from bps.mv(smx, 122.4)
         yield from bps.mv(laserx, 0)
-
 
         # yield from bps.mv(smx, end_x)
         yield from move_sample_with_laser(start_x)
         yield from bps.mv(smy, 24.5)
         yield from self.align_crazy_v3_plan(direct_beam_int=direct_beam_int)
         # yield from self.align()
-
 
         start_x = smx.position
         start_y = smy.position
@@ -2502,7 +2479,6 @@ class Sample(SampleGISAXS):
         # start_x = self.start_x
         # start_y = self.start_y
         # start_th = self.start_th
-
 
         yield from move_sample_with_laser(end_x)
         yield from bps.mv(smy, 24.6)
@@ -2518,15 +2494,12 @@ class Sample(SampleGISAXS):
         self.end_y = end_y
         self.end_th = end_th
 
-
-
         # end_x = self.end_x
         # end_y = self.end_y
         # end_th = self.end_th
         # return self.calc_lookuptable()
 
     def calc_lookuptable(self, target_x):
-
         start_x = self.start_x
         start_y = self.start_y
         start_th = self.start_th
@@ -2535,23 +2508,18 @@ class Sample(SampleGISAXS):
         end_y = self.end_y
         end_th = self.end_th
 
-        target_y = (target_x-end_x)/(start_x-end_x)*(start_y-end_y)+end_y
-        target_th = (target_x-end_x)/(start_x-end_x)*(start_th-end_th)+end_th
+        target_y = (target_x - end_x) / (start_x - end_x) * (start_y - end_y) + end_y
+        target_th = (target_x - end_x) / (start_x - end_x) * (start_th - end_th) + end_th
 
         return target_x, target_y, target_th
 
-
     def align_lookup(self, target_x, direct_beam_int=None):
-
         xpos, ypos, thpos = self.calc_lookuptable(target_x)
 
-        #move to the position in lookup table
+        # move to the position in lookup table
         yield from bps.mv(smx, xpos, smy, ypos, sth, thpos)
 
         yield from self.align_crazy_v3_plan(direct_beam_int=direct_beam_int)
-
-
-
 
     def search_plan2(
         self,
@@ -2642,7 +2610,6 @@ class Sample(SampleGISAXS):
         or trigger the right beamline motors/components."""
 
         for i in range(runno, max_measurements):
-
             if verbosity >= 3:
                 print("{}Waiting for AE command on queue...".format(prefix))
 
@@ -2782,7 +2749,6 @@ class Sample(SampleGISAXS):
         samplePosNo = samplePosNo
 
         for i in range(runNo, max_measurements):
-
             if verbosity >= 3:
                 print("{}Waiting for AE command on queue...".format(prefix))
 
@@ -2819,7 +2785,6 @@ class Sample(SampleGISAXS):
 
                     # align the sample
                     if samplePosNo == 0:
-
                         ss = input("Change the sample: (it has to be y or yes)")
                         while ss != "yes" and ss != "y":
                             ss = input("Change the sample: (it has to be y or yes)")
@@ -2964,61 +2929,58 @@ class Sample(SampleGISAXS):
         yield from bps.null()
 
 
-#sam=Sample(name)
+# sam=Sample(name)
+
 
 def change_long_sample():
-
     smx.move(0)
 
-#mov smx 122.4
-#mov laserx 0
 
-#RE(move_sample_with_laser(127.2-0.6))
-#sam.setOrigin(['x'])
-#xo=127.2-0.6
-#RE(sam.run_initial_alignment(xo, xo+30))
-#noAgent_scan
+# mov smx 122.4
+# mov laserx 0
+
+# RE(move_sample_with_laser(127.2-0.6))
+# sam.setOrigin(['x'])
+# xo=127.2-0.6
+# RE(sam.run_initial_alignment(xo, xo+30))
+# noAgent_scan
 
 
-#noAgent_scan(xpos=np.linspace(xo, xo+25, 61), align=False, laserOn=False)
+# noAgent_scan(xpos=np.linspace(xo, xo+25, 61), align=False, laserOn=False)
+
 
 def align_long_sample(xo=127.1):
-
-
     # RE(move_sample_with_laser(127.1+15))
-    smx.move(xo+15)
+    smx.move(xo + 15)
     RE(cms.modeAlignment())
     sam.align()
 
+
 def measure_long_sample(step=0, xo=127.1):
-
-
     cms.modeMeasurement()
 
-    if step < 5: 
-
+    if step < 5:
         detselect([pilatus2M, pilatus8002])
-        sam.thabs(.25)
+        sam.thabs(0.25)
 
-        for xpos in np.linspace(0, 25, 61): 
-            smx.move(xo+xpos)
-            while smx.moving==True:
+        for xpos in np.linspace(0, 25, 61):
+            smx.move(xo + xpos)
+            while smx.moving == True:
                 time.sleep(1)
             # RE(move_sample_with_laser(127.1+xpos))
 
             RE(sam.measure(5))
 
-    # if step < 15: 
+    # if step < 15:
     #     detselect([pilatus8002])
     #     sam.thabs(.5)
 
-    #     for xpos in np.linspace(0, 25, 61): 
+    #     for xpos in np.linspace(0, 25, 61):
     #         smx.move(xo+xpos)
     #         while smx.moving==True:
     #             time.sleep(1)
     #         # RE(move_sample_with_laser(127.1+xpos))
     #         RE(sam.measure(5))
-
 
 
 # cms.SAXS.setCalibration([758, 1680-607], 5.0, [-65, -73]) # 13.5 keV
@@ -3033,7 +2995,7 @@ cms.SAXS.setCalibration([738, 1100], 3.83, [-65, -73])
 # RE.md['experiment_group'] = 'MNoack'
 RE.md["experiment_group"] = "K. Chen-Wiegart"
 # RE.md['experiment_alias_directory'] = '/nsls2/xf11bm/data/2020_3/MNoack/Exp1/'
-RE.md['experiment_alias_directory'] = '/nsls2/data/cms/legacy/xf11bm/data/2023_2/KChen-Wiegart2'
+RE.md["experiment_alias_directory"] = "/nsls2/data/cms/legacy/xf11bm/data/2023_2/KChen-Wiegart2"
 RE.md["experiment_user"] = "TBD"
 RE.md["experiment_type"] = "GIAXS"
 RE.md["experiment_project"] = "TBD"
@@ -3047,46 +3009,46 @@ def fake_coordinated_motion(mtr1, target1, mtr2, target2, N=1000):
     for j in range(int(N)):
         yield from bps.mv(mtr1, start1 + j * step1, mtr2, start2 + j * step2)
 
+
 def parallel_fake_coordinated_motion(mtr1, target1, mtr2, target2):
     ...
 
+
 def fake_coordinated_motionr(mtr1, mtr2, delta, step=0.1):
+    real_step = step * abs(delta) / delta
 
-    real_step= step*abs(delta)/delta
-
-    for j in range(int(abs(delta)/ step)):
-
+    for j in range(int(abs(delta) / step)):
         yield from bps.mvr(mtr1, real_step, mtr2, real_step)
 
 
 def changeSample():
-    #smx.move(-20)
+    # smx.move(-20)
     yield from move_sample_with_laser(124.2)
     yield from bps.mv(smx, 0)
 
+
 def newSample():
-    #smx.move(-20)
+    # smx.move(-20)
     yield from bps.mv(smx, 124.2)
     yield from bps.mv(laserx, -1.4)
 
-def alignNewSample():
 
+def alignNewSample():
     yield from cms.modeAlignment()
-    #pos1
+    # pos1
     # yield from bps.mv(smx, 28.67)
-    yield from move_sample_with_laser(124.2+5)
+    yield from move_sample_with_laser(124.2 + 5)
     yield from sam.align()
     sam.start_x = smx.position
     sam.start_y = smy.position
     sam.start_th = sth.position
-    #pos2
+    # pos2
     # yield from bps.mv(smx, 28.67+33)
-    yield from move_sample_with_laser(124.2+30)
+    yield from move_sample_with_laser(124.2 + 30)
     yield from sam.align()
     sam.end_x = smx.position
     sam.end_y = smy.position
     sam.end_th = sth.position
-
 
 
 # the strips in the same materials system should have the same file name
@@ -3348,9 +3310,8 @@ pta.setLaserPower(power)
 
 
 def test_plan(detector=None):
-
     if detector is None:
-        detector=pilatus2M
+        detector = pilatus2M
         # detector = get_beamline().detector[0]
 
     motors_for_table = [smx, smy, sth]
@@ -3359,7 +3320,6 @@ def test_plan(detector=None):
     @bpp.run_decorator(md={})
     @bpp.finalize_decorator(final_plan=shutter_off)
     def inner_plan(group=None):
-
         if group:
             yield from bps.wait(group)
 
@@ -3379,9 +3339,10 @@ def test_plan(detector=None):
     yield from bps.abs_set(bsx, cms.bsx_pos, group=group_name)
     yield from bps.wait(group_name)
 
-sample_pta = Sample('test')
 
-'''
+sample_pta = Sample("test")
+
+"""
 Notes at Mar 22, 2023, the 4th day at CMS
 
 #quick alignment for Si wafer
@@ -3414,10 +3375,10 @@ test.th = 0.157 deg (origin = 0.930)
 test.x = 22.000 mm (origin = 0.000)
 test.y = 0.813 mm (origin = 39.260)
 
-'''
+"""
 
 
-'''
+"""
 Notes March 22, 2023
 17:18 KY loaded "real scientific sample
 name='GD4-113-4-2nd_Tb50C'
@@ -3468,7 +3429,7 @@ RE(sam.run_initial_alignment(start_x=0, end_x=22))  #align samples at smx=0 and 
 #pre-load 'agent_alignemnt_set' and 'agent_laser_on'
 ==>>ws2, agent.start(True)
 ==>>ws1, start the queue
-'''
+"""
 
 # def fake_fly(mtr, start, stop, exp_time):
 #     det = pilatus2M
@@ -3604,7 +3565,6 @@ RE(sam.run_initial_alignment(start_x=0, end_x=22))  #align samples at smx=0 and 
 
 
 def fake_fly3(det, mtr, start, stop, step, exp_time):
-
     # motors: smy (+/- 2), sth (+/- 1)
     # det = pilatus2M
 
@@ -3614,9 +3574,9 @@ def fake_fly3(det, mtr, start, stop, step, exp_time):
     total_time = num * exp_time
     velocity = np.abs(stop - start) / total_time
 
-    det.tiff.kind = 'omitted'
+    det.tiff.kind = "omitted"
     det.tiff.disable_on_stage()
-    det.stats4.total.kind='hinted'
+    det.stats4.total.kind = "hinted"
 
     frame_numbers = []
     frame_timestamps = []
@@ -3631,7 +3591,6 @@ def fake_fly3(det, mtr, start, stop, step, exp_time):
     frame_roi2_total = []
     frame_roi3_total = []
     frame_roi4_total = []
-
 
     def accumulate(value, old_value, timestamp, **kwargs):
         frame_numbers.append(value)
@@ -3668,9 +3627,9 @@ def fake_fly3(det, mtr, start, stop, step, exp_time):
         cid3a = pilatus2M.stats3.total.subscribe(accumulate_roi3_total)
         cid4a = pilatus2M.stats4.total.subscribe(accumulate_roi4_total)
         try:
-            yield from bps.trigger(det, group='fake_fly')
-            yield from bps.abs_set(mtr, stop, group='fake_fly')
-            yield from bps.wait(group='fake_fly')
+            yield from bps.trigger(det, group="fake_fly")
+            yield from bps.abs_set(mtr, stop, group="fake_fly")
+            yield from bps.wait(group="fake_fly")
         finally:
             pilatus2M.cam.array_counter.unsubscribe(cid)
             pilatus2M.stats2.array_counter.unsubscribe(cid2)
@@ -3680,8 +3639,9 @@ def fake_fly3(det, mtr, start, stop, step, exp_time):
             pilatus2M.stats3.total.unsubscribe(cid3a)
             pilatus2M.stats4.total.unsubscribe(cid4a)
 
-    @bpp.reset_positions_decorator([det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period,
-                                    mtr.velocity])
+    @bpp.reset_positions_decorator(
+        [det.cam.num_images, det.cam.acquire_time, det.cam.acquire_period, mtr.velocity]
+    )
     def inner2():
         print(f"setting motor start position")
         yield from bps.abs_set(mtr, start, wait=True)
@@ -3764,7 +3724,6 @@ def fake_fly3(det, mtr, start, stop, step, exp_time):
     return frame_mtr_pos, total_roi2, total_roi3, total_roi4
 
 
-
 # from matplotlib import pyplot as plt
 # fig_fast_scan, fig_fast_scan_ax1, fig_fast_scan_ax2 = None, None, None
 
@@ -3779,9 +3738,7 @@ def fake_fly3(det, mtr, start, stop, step, exp_time):
 #         fig_fast_scan_ax2.clear()
 
 
-
-def align_motor_y(det, mtr, start_rel, stop_rel, step, exp_time, mtr_max_velocity = 0.08):
-
+def align_motor_y(det, mtr, start_rel, stop_rel, step, exp_time, mtr_max_velocity=0.08):
     mtr_current = mtr.position
     start, stop = mtr_current + start_rel, mtr_current + stop_rel
 
@@ -3819,14 +3776,14 @@ def align_motor_y(det, mtr, start_rel, stop_rel, step, exp_time, mtr_max_velocit
         yield from bps.abs_set(mtr, cen, wait=True)
 
         yield from bps.mv(det.cam.num_images, 1)
-        yield from bps.trigger(det, group='fake_fly')
-        yield from bps.wait(group='fake_fly')
+        yield from bps.trigger(det, group="fake_fly")
+        yield from bps.wait(group="fake_fly")
         return cen_return
 
     return (yield from inner())
 
-def align_motor_y2(det, mtr, start_rel, stop_rel, step, exp_time, mtr_max_velocity = 0.08):
 
+def align_motor_y2(det, mtr, start_rel, stop_rel, step, exp_time, mtr_max_velocity=0.08):
     mtr_current = mtr.position
     start, stop = mtr_current + start_rel, mtr_current + stop_rel
 
@@ -3864,13 +3821,16 @@ def align_motor_y2(det, mtr, start_rel, stop_rel, step, exp_time, mtr_max_veloci
         yield from bps.abs_set(mtr, cen, wait=True)
 
         yield from bps.mv(det.cam.num_images, 1)
-        yield from bps.trigger(det, group='fake_fly')
-        yield from bps.wait(group='fake_fly')
+        yield from bps.trigger(det, group="fake_fly")
+        yield from bps.wait(group="fake_fly")
         return cen_return
 
     return (yield from inner())
-def align_motor_th(det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True, mtr_backlash=0.1, mtr_max_velocity = 0.1):
 
+
+def align_motor_th(
+    det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True, mtr_backlash=0.1, mtr_max_velocity=0.1
+):
     mtr_current = mtr.position
     start, stop = mtr_current + start_rel, mtr_current + stop_rel
 
@@ -3902,21 +3862,21 @@ def align_motor_th(det, mtr, start_rel, stop_rel, step, exp_time, fine_scan=True
         yield from bps.abs_set(mtr, cen - backlash, wait=True)
         yield from bps.abs_set(mtr, cen, wait=True)
 
-
         yield from bps.mv(det.cam.num_images, 1)
-        yield from bps.trigger(det, group='fake_fly')
-        yield from bps.wait(group='fake_fly')
-        return cen-0.12 
-    
+        yield from bps.trigger(det, group="fake_fly")
+        yield from bps.wait(group="fake_fly")
+        return cen - 0.12
+
     return (yield from inner())
+
 
 import time
 
-def align_stub(det, exp_time=0.3):
 
+def align_stub(det, exp_time=0.3):
     # mtr_backlash=0
-    mtr_backlash=0.1  # Use for PTA stages
-    
+    mtr_backlash = 0.1  # Use for PTA stages
+
     ceny, centh = 0, 0
 
     # create_fig_fast_scan()
@@ -3987,9 +3947,8 @@ def fast_align(det=None):
         det = pilatus2M
     exp_time = 0.3
     yield from cms.modeAlignment()
-    
-    # beam.setTransmission(1e-6)
 
+    # beam.setTransmission(1e-6)
 
     @bpp.stage_decorator([det])
     def inner():
@@ -4017,10 +3976,10 @@ def agent_feedback_plan(sample_x, md=None):
 
 
 # def agent_bootstrap_alignment(end_x=60, start_x=35):
-def agent_bootstrap_alignment(end_x=127.2+30, start_x=127.2+0):
+def agent_bootstrap_alignment(end_x=127.2 + 30, start_x=127.2 + 0):
     # yield from sam.run_initial_alignment()
 
-    #origin smx = 124.2
+    # origin smx = 124.2
 
     smx.move(122.4)
     laserx.move(0)
@@ -4044,13 +4003,13 @@ def agent_bootstrap_alignment(end_x=127.2+30, start_x=127.2+0):
     sam.align()
     # yield from self.align()
 
-
     sam.start_x = smx.position
     sam.start_y = smy.position
     sam.start_th = sth.position
 
     RE(cms.modeMeasurement_plan())
-    
+
+
 # from collections.abc import List
 
 
@@ -4085,16 +4044,16 @@ def agent_start_sample(init_x_pos: list[float], *, md=None):
 
     yield from move_sample_with_laser(xpos)
     # yield from bps.mv(smy, ypos, sth, thpos+0.12)
-    yield from bps.mv(smy, ypos, sth, thpos+0.25)
+    yield from bps.mv(smy, ypos, sth, thpos + 0.25)
 
     # yield from move_sample_with_laser(calib_x)
     # yield from cms.modeAlignment()
 
     sam.reset_clock()
-    RE.md['sample_clock_zero'] = sam.clock_zero
+    RE.md["sample_clock_zero"] = sam.clock_zero
     yield from bps.mv(laser.manual_button, 1)
 
-    if abs(calib_x - sam.start_x) >1:
+    if abs(calib_x - sam.start_x) > 1:
         sam.start_x = calib_x
         sam.start_y, sam.start_th = yield from fast_align()
     else:
@@ -4127,11 +4086,7 @@ def move_sample_with_laser(xpos):
 
 
 def agent_feedback_time_plan(
-        sample_x: float,
-        target_time: float,
-        align: bool = False,
-        exposure: float = 5,
-        md=None
+    sample_x: float, target_time: float, align: bool = False, exposure: float = 5, md=None
 ):
     """
     The main data acqusition plan for the adaptive experiments
@@ -4159,29 +4114,28 @@ def agent_feedback_time_plan(
     import time as ttime
 
     md = md or {}
-    md.setdefault('PTA', True)
+    md.setdefault("PTA", True)
 
     # this lookup table is primed by agent_start_sample
     # it is just linear interpolation
     xpos, ypos, thpos = sam.calc_lookuptable(sample_x)
 
     yield from move_sample_with_laser(xpos)
-    yield from bps.mv(smy, ypos, sth, thpos+0.12)
+    yield from bps.mv(smy, ypos, sth, thpos + 0.12)
     # yield from bps.mv(smy, ypos, sth, thpos+0.25)
     # yield from bps.mv(smy, ypos, sth, thpos)
 
     if align:
         ypos_align, thpos_align = yield from fast_align()
-        #sam.start_x = xpos
-        #sam.start_y = ypos_align
-        #sam.start_th = thpos_align
-        yield from bps.mv(sth, thpos_align+.25-0.12)
+        # sam.start_x = xpos
+        # sam.start_y = ypos_align
+        # sam.start_th = thpos_align
+        yield from bps.mv(sth, thpos_align + 0.25 - 0.12)
     else:
         # yield from bps.mv(sth, thpos+.12)
-        yield from bps.mv(sth, thpos+.25)
+        yield from bps.mv(sth, thpos + 0.25)
 
     yield from cms.modeMeasurement_plan()
-
 
     now = ttime.time()
     lag = target_time - now
@@ -4198,25 +4152,23 @@ def changeSample():
     yield from bps.mv(smx, -100)
 
 
-
 def calcTemperature(xpos):
-
-    slope = (245-70)/(21.8-6.3)
-    xpos = 62.67-xpos
-    T = (xpos-6.3)*slope+70
+    slope = (245 - 70) / (21.8 - 6.3)
+    xpos = 62.67 - xpos
+    T = (xpos - 6.3) * slope + 70
 
     return T
 
+
 def calcXpos(T):
+    slope = (245 - 70) / (21.8 - 6.3)
 
-    slope = (245-70)/(21.8-6.3)
+    xpos = (T - 70) / slope + 6.3
 
-    xpos = (T-70)/slope+6.3
-
-    return 62.67-xpos
+    return 62.67 - xpos
 
 
-'''
+"""
 In [84]: wsam()
 smx = 0.0
 smy = 17.543750000000003
@@ -4708,7 +4660,7 @@ when the experiment is done--
 
 PYTHONPATH=/nsls2/data/cms/shared/config/bluesky_overlay/2023-2.0-py310-tiled/lib/python3.10/site-packages qserver queue autostart disable
 
-'''
+"""
 
 
 # smx = 38.9045
@@ -4716,7 +4668,7 @@ PYTHONPATH=/nsls2/data/cms/shared/config/bluesky_overlay/2023-2.0-py310-tiled/li
 # sth = 1.3117187500000007
 
 
-'''
+"""
 smx = 160.1 @ x-ray beam on the heat edge
 
 smx = 125.4 @ x-ray beam on the sapphire wafer
@@ -4724,22 +4676,21 @@ smx = 125.4 @ x-ray beam on the sapphire wafer
 smx = 127.1 @ x-ray beam on the edge betwee sapphire and Si wafer
 
 
-'''
+"""
 
 
-#exhausive scan 
+# exhausive scan
+
 
 def noAgent_scan(xpos_list, cycles=10, align=True, laserOn=True, reset_clock=True):
-
     RE(move_sample_with_laser(127.2))
 
-    if laserOn==True:
+    if laserOn == True:
         pta.laserOn()
-    if reset_clock==True:
+    if reset_clock == True:
         sam.reset_clock()
     for cycle in range(cycles):
         for xpos in xpos_list:
             RE(agent_feedback_time_plan(xpos, 0, align=align))
-    
-    pta.laserOff()
 
+    pta.laserOff()

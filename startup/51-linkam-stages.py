@@ -5,7 +5,6 @@ print(f"Loading {__file__!r} ...")
 
 
 class LinkamThermal(Device):
-
     # Set-and-read signals
     cmd = Cpt(EpicsSignal, "STARTHEAT")
     temperature_setpoint = Cpt(EpicsSignal, "SETPOINT:SET")
@@ -159,7 +158,6 @@ class LinkamThermal(Device):
 
 
 class LinkamTensile(LinkamThermal):
-
     # cmd = Cpt(EpicsSignal, 'STARTHEAT')
     # temperature_setpoint = Cpt(EpicsSignal, 'SETPOINT:SET')
     # temperature_rate_setpoint = Cpt(EpicsSignal, 'RAMPRATE:SET')

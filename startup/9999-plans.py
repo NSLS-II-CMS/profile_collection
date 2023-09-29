@@ -74,11 +74,7 @@ def measure_single(
     savename = sample.get_savename(savename_extra=extra)
 
     if verbosity >= 2 and (get_beamline().current_mode != "measurement"):
-        print(
-            "WARNING: Beamline is not in measurement mode (mode is '{}')".format(
-                get_beamline().current_mode
-            )
-        )
+        print("WARNING: Beamline is not in measurement mode (mode is '{}')".format(get_beamline().current_mode))
 
     if verbosity >= 1 and len(get_beamline().detector) < 1:
         raise ValueError("ERROR: No detectors defined in detectors")
@@ -235,9 +231,7 @@ def tiling(detectors, inner_plan, tiling_type=None, md=None):
             if pilatus8002 in detectors:
                 yield from bps.mv(MAXSy, MAXSy_original + offsets[tile]["maxs_y"])
 
-            val = yield from inner_plan(
-                detectors + motors, md={**md, "extra": extra, "detector_position": tile}
-            )
+            val = yield from inner_plan(detectors + motors, md={**md, "extra": extra, "detector_position": tile})
             ret.append(val)
         return ret
 
@@ -290,7 +284,7 @@ def measure(
             verbosity=verbosity,
         ),
         tiling_type=tiling_type,
-        md={**md, 'extra': extra},
+        md={**md, "extra": extra},
     )
 
 
@@ -303,7 +297,7 @@ def sam_measure(
     verbosity=3,
     tiling=None,
     md=None,
-):  
+):
     sample = sample or sample_pta
     detectors = detectors if detectors is not None else DETS
     md = dict(md or {})

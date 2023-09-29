@@ -159,7 +159,6 @@ class Sample(SampleGISAXS_Generic):
 # class Sample(SampleGISAXS):
 class Sample(SampleTSAXS):
     def __init__(self, name, base=None, **md):
-
         super().__init__(name=name, base=base, **md)
 
         # self.naming_scheme = ['name', 'extra', 'clock', 'temperature', 'th', 'exposure_time']
@@ -215,7 +214,6 @@ class Sample(SampleTSAXS):
         return super().get_attribute(attribute)
 
     def get_naming_string(self, attribute):
-
         # Handle special cases of formatting the text
         super().get_naming_string(attribute)
 
@@ -335,7 +333,6 @@ class Sample(SampleTSAXS):
         interval=20,
         reset_clock=True,
     ):
-
         # swaxs_on()
         LThermal.on()
         # temp_sequence = [25, 200, 25, 200]
@@ -349,10 +346,8 @@ class Sample(SampleTSAXS):
         # if step<1:
         # self.measure(exposure_time)
         if step < 3:
-
             # for index, temperature in enumerate(temp_sequence):
             for temperature, rate, wait_time in zip(temp_sequence, rate_sequence, wait_sequence):
-
                 start_time = np.ceil(self.clock() / interval) * interval
                 trigger_time = np.arange(start_time, maxTime, interval)
                 LThermal.setTemperatureRate(rate)
@@ -395,7 +390,6 @@ class Sample(SampleTSAXS):
         interval=20,
         reset_clock=True,
     ):
-
         # swaxs_on()
         LThermal.on()
 
@@ -428,7 +422,6 @@ class Sample(SampleTSAXS):
         stages_df = pd.DataFrame()
 
         for step in range(int(stages)):
-
             # Below line read inputs from user using map() function
             print("step NO {}".format(step))
             para = list(
@@ -468,7 +461,6 @@ class Sample(SampleTSAXS):
     def LinkamTensileMeasure_step(
         self, step=0, maxTime=60 * 60 * 10, exposure_time=1, interval=3, reset_clock=True
     ):
-
         self.LinkamTensile_stages_default
         #
 
@@ -486,13 +478,11 @@ class Sample(SampleTSAXS):
         # if step<1:
         # self.measure(exposure_time)
         if step < 3:
-
             # for index, temperature in enumerate(temp_sequence):
             stages, paras = self.LinkamTensile_stages_default.shape
 
             # for temperature, rate, wait_time in zip(temp_sequence, rate_sequence, wait_sequence):
             for stage in range(stages):
-
                 stepNo, temperature, rate, wait_time, position, velocity = self.LinkamTensile_stages_default.loc[
                     stage
                 ]
@@ -606,12 +596,10 @@ class Sample(SampleTSAXS):
         # Perform the scan
         @bpp.stage_decorator(detectors)
         def inner(paras, **md):
-
             # for detector in detectors:
             #     status = yield from bps.trigger(detector, group='det')
 
             for stage in range(stages):
-
                 stepNo, temperature, rate, wait_time, position, velocity = self.LinkamTensile_stages_default.loc[
                     stage
                 ]
@@ -662,7 +650,6 @@ class Sample(SampleTSAXS):
         verbosity=3,
         **md,
     ):
-
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
         super().measureTimeSeries(
@@ -792,7 +779,7 @@ class Sample(SampleTSAXS):
 #     # ago6.addSampleSlot( Sample('leftoverbar_slot4'),4)
 
 
-#%run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
+# %run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
 
 # robot.listGarage()
 

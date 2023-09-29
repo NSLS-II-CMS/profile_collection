@@ -140,7 +140,7 @@ elif beamline_stage == "BigHuber":
     laserx = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:X}Mtr", name="laserx")
     lasery = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:Y}Mtr", name="lasery")
 
-elif beamline_stage == 'testing':
+elif beamline_stage == "testing":
     # Huber
     smy = SynAxis(name="smy")
     sth = SynAxis(name="sth")
@@ -223,6 +223,7 @@ bsphi = EpicsMotor("XF:11BMB-ES{Spare:L-Ax:M}Mtr", name="bsphi")
 
 ##stage for vacuum gate
 gatex = EpicsMotor("XF:11BMB-ES{Chm:Gate-Ax:X}Mtr", name="gatex")
+
 
 ## easy access for stages
 def wbs():

@@ -1,4 +1,4 @@
-import numpy as np    
+import numpy as np
 from scipy.special import erf
 from lmfit import Model
 
@@ -16,7 +16,7 @@ def do_fitting(x, y, *, model_type=None, shift=0.5):
     y: iterable
         An array or a list of measurements
     model_type: str or None
-        None - determine model type based on the number of 'roots', 
+        None - determine model type based on the number of 'roots',
         'step' - step function, 'peak' - peak.
     shift: float
         Shift applied to the normalized values before finding roots, typically 0.5.
@@ -39,13 +39,15 @@ def do_fitting(x, y, *, model_type=None, shift=0.5):
         raise ValueError(f"Unrecognized model type: {model_type!r}")
 
     x, y = np.array(x), np.array(y)
-    
+
     if x.ndim != 1:
         raise ValueError(f"Array 'x' must have one dimension: x.ndim={x.ndim}")
     if y.ndim != 1:
         raise ValueError(f"Array 'y' must have one dimension: y.ndim={y.ndim}")
     if x.shape != y.shape:
-        raise ValueError(f"Arrays 'x' and 'y' have unequal number of elements (x.shape={x.shape}, y.shape={y.shape})")
+        raise ValueError(
+            f"Arrays 'x' and 'y' have unequal number of elements (x.shape={x.shape}, y.shape={y.shape})"
+        )
 
     # Normalize values first:
     ym = (y - np.min(y)) / (np.max(y) - np.min(y)) - shift  # roots are at Y=0
@@ -60,7 +62,7 @@ def do_fitting(x, y, *, model_type=None, shift=0.5):
     for i in range(len(y)):
         current_positive = is_positive(ym[i])
         if current_positive != positive:
-            rt = x[i - 1] + (x[i] - x[i - 1]) / (abs(ym[i]) + abs(ym[i - 1])) * abs(ym[i - 1])  
+            rt = x[i - 1] + (x[i] - x[i - 1]) / (abs(ym[i]) + abs(ym[i - 1])) * abs(ym[i - 1])
             list_of_roots.append(rt)
             positive = not positive
 
@@ -107,4 +109,3 @@ def do_fitting(x, y, *, model_type=None, shift=0.5):
         FWHM = result.best_values["k"]
 
     return CEN, FWHM, (XMIN, XMAX)
-

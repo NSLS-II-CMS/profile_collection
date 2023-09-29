@@ -83,7 +83,6 @@ class SampleGISAXS(SampleGISAXS_Generic):
 # class Sample(SampleTSAXS):
 class Sample(SampleGISAXS):
     def __init__(self, name, base=None, **md):
-
         super().__init__(name=name, base=base, **md)
 
         # self.naming_scheme = ['name', 'extra', 'clock', 'temperature', 'th', 'exposure_time']
@@ -130,7 +129,6 @@ class Sample(SampleGISAXS):
         verbosity=3,
         **md,
     ):
-
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
         super().measureTimeSeries(
@@ -256,7 +254,6 @@ class Sample(SampleGISAXS):
             time.sleep(wait_time2)
 
     def do(self, step=0, align_step=0, **md):
-
         # NOTE: if align_step =8 is not working, try align_step=4
 
         if step <= 1:
@@ -281,7 +278,6 @@ class Sample(SampleGISAXS):
             get_beamline().modeMeasurement()
 
         if step <= 10:
-
             if self.incident_angles == None:
                 incident_angles = self.incident_angles_default
             else:
@@ -295,7 +291,6 @@ class Sample(SampleGISAXS):
             self.thabs(0.0)
 
     def IC_int(self):
-
         ion_chamber_readout1 = caget("XF:11BMB-BI{IM:3}:IC1_MON")
         ion_chamber_readout2 = caget("XF:11BMB-BI{IM:3}:IC2_MON")
         ion_chamber_readout3 = caget("XF:11BMB-BI{IM:3}:IC3_MON")
@@ -308,7 +303,6 @@ class Sample(SampleGISAXS):
         return ion_chamber_readout > 1 * 5e-08
 
     def do_SAXS(self, step=0, align_step=0, **md):
-
         if step <= 1:
             saxs_on()
             get_beamline().modeAlignment()
@@ -416,7 +410,6 @@ class Sample(SampleGISAXS):
             self.thabs(0.0)
 
     def do_WAXS(self, step=0, align_step=0, reflection_angle=0.12, tiling="ygaps", **md):
-
         if step <= 1:
             saxs_on()
             get_beamline().modeAlignment()
@@ -456,7 +449,6 @@ class Sample(SampleGISAXS):
             self.thabs(0.0)
 
     def alignQuick(self, align_step=8, reflection_angle=0.12, verbosity=3):
-
         saxs_on()
         get_beamline().modeAlignment()
         # self.yo()
@@ -485,7 +477,6 @@ class Sample(SampleGISAXS):
         get_beamline().modeMeasurement()
 
     def align_crazy(self, reflection_angle=0.12, ROI_size=[10, 180], th_range=0.3, int_threshold=10, verbosity=3):
-
         # def ROI3 in 160pixels with the center located at reflection beam
         get_beamline().setReflectedBeamROI(total_angle=reflection_angle * 2, size=ROI_size)  # set ROI3
 
@@ -494,7 +485,6 @@ class Sample(SampleGISAXS):
         cycle = 0
         self.thabs(reflection_angle)
         while abs(rel_th) > 0.005 and ct < 5:
-
             self.snap(0.5)
             refl_ypos = caget("XF:11BMB-ES{Det:PIL2M}:Stats3:MaxY_RBV")
             refl_ypos_center = caget("XF:11BMB-ES{Det:PIL2M}:Stats3:CentroidY_RBV")
@@ -510,7 +500,6 @@ class Sample(SampleGISAXS):
             int_max = caget("XF:11BMB-ES{Det:PIL2M}:Stats3:MaxValue_RBV")
 
             while int_max < int_threshold and cycle <= np.round(th_range / 0.1):
-
                 self.thabs(reflection_angle + th_range - cycle * 0.1)
                 cycle += 1
                 self.snap(0.5)
@@ -631,7 +620,6 @@ class Sample(SampleGISAXS):
                 print("    align: reflected beam")
 
             if self.align_crazy() == False:
-
                 get_beamline().setReflectedBeamROI(total_angle=reflection_angle * 2.0)
                 # get_beamline().setReflectedBeamROI(total_angle=reflection_angle*2.0, size=[12,2])
 
@@ -700,7 +688,6 @@ class TransOffCenteredCustom(OffCenteredHoder):
     # sample.do_WAXS()
 
     def doSamples(self, sequence="Outer", exposure_WAXS_time=10, exposure_SAXS_time=60, verbosity=3):
-
         if sequence == "Outer":
             step = 0
         elif sequence == "Inner":
@@ -708,7 +695,6 @@ class TransOffCenteredCustom(OffCenteredHoder):
         else:
             return print("Please define the first measurement: Outer or Inner")
         if step < 1:
-
             waxs_on_outer()
             for sample in self.getSamples():
                 sample.gotoOrigin()
@@ -737,7 +723,6 @@ class TransOffCenteredCustom(OffCenteredHoder):
                 sample.measure(exposure_SAXS_time, tiling="ygaps")
 
     def doSamples_test(self, exposure_WAXS_time=10, exposure_SAXS_time=60, verbosity=3):
-
         for sample in self.getSamples():
             sample.gotoOrigin()
             sample.measure(1)
@@ -782,7 +767,6 @@ cms.SAXS.setCalibration([761, 1680 - 606], 5.0, [-65, -73])
 RE.md["experiment_alias_directory"] = "/nsls2/data/cms/legacy/xf11bm/data/2022_1/LZhu/"
 
 if True:
-
     cali = CapillaryHolder(base=stg)
     # hol = CapillaryHolderCustom(base=stg)
 
@@ -791,7 +775,6 @@ if True:
     cali.addSampleSlot(Sample("Empty"), 11.0)
 
 if True:
-
     # Example of a multi-sample holder
 
     md = {
@@ -872,7 +855,7 @@ if True:
     que.checkStatus(verbosity=5)
 
 
-#%run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
+# %run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
 
 # robot.listGarage()
 

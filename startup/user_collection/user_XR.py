@@ -78,7 +78,6 @@ class SampleGISAXS(SampleGISAXS_Generic):
 # class Sample(SampleTSAXS):
 class Sample(SampleXR_WAXS):
     def __init__(self, name, base=None, **md):
-
         super().__init__(name=name, base=base, **md)
         # self.naming_scheme = ['name', 'extra', 'clock', 'temperature', 'exposure_time']
         self.naming_scheme = ["name", "extra", "th", "exposure_time"]
@@ -102,7 +101,6 @@ class Sample(SampleXR_WAXS):
         verbosity=3,
         **md,
     ):
-
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
         super().measureTimeSeries(
@@ -142,7 +140,6 @@ class Sample(SampleXR_WAXS):
         step in the sequence."""
 
         if verbosity >= 4:
-
             print("  Aligning {}".format(self.name))
 
         if step <= 0:
@@ -243,7 +240,6 @@ class Sample(SampleXR_WAXS):
     def alignVeryQuick(
         self, intensity=INTENSITY_EXPECTED_025, align_step=9, reflection_angle=0.07, mode_control=True, verbosity=3
     ):
-
         if mode_control:
             get_beamline().modeAlignment()
             beam.on()
@@ -267,7 +263,6 @@ class Sample(SampleXR_WAXS):
             get_beamline().modeMeasurement()
 
     def do(self, step=0, align_step=0, **md):
-
         if step <= 1:
             get_beamline().modeAlignment()
             saxs_on()
@@ -291,7 +286,6 @@ class Sample(SampleXR_WAXS):
         # get_beamline().modeMeasurement()
 
         if step <= 10:
-
             self.XR_check_alignment(th_angle=1, roi_size=[10, 10])
             # self.XR_scan(theta_range=[0, .15], theta_delta=0.01, roi_size=[10,10], exposure_time=1)
             # self.XR_scan(theta_range=[0, .5], theta_delta=0.015, roi_size=[10,10], exposure_time=1)
@@ -309,7 +303,6 @@ class Sample(SampleXR_WAXS):
             # self.thabs(0.0)
 
     def do_thscan(self, step=0, align_step=0, **md):
-
         if step <= 1:
             get_beamline().modeAlignment()
             saxs_on()
@@ -332,7 +325,6 @@ class Sample(SampleXR_WAXS):
             get_beamline().modeMeasurement()
 
         if step <= 10:
-
             self.XR_check_alignment(th_angle=1, roi_size=[10, 3])
             self.th2thscan(theta_range=[0.25, 6], theta_delta=0.05, roi_size=[10, 3])
             self.tho()
@@ -344,7 +336,6 @@ class GIBarCustom(GIBar_long_thermal):
     # class GIBarCustom(GIBar):
 
     def __init__(self, name="GIBar", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         temp_series0 = np.arange(30, 200 + 0.1, 10)
@@ -393,7 +384,6 @@ class GIBarCustom(GIBar_long_thermal):
         x_step=0.20,
         **md,
     ):
-
         # will do heat only
         # TODO change beamstop
         #     check waxs_on and saxs_on
@@ -421,7 +411,6 @@ class GIBarCustom(GIBar_long_thermal):
 
         # cooling and heating process
         if step < 10:
-
             for ct, temperature in np.ndenumerate(self.temp_series):
                 self.setTemperature(temperature)
                 while abs(self.temperature(verbosity=0) - temperature) > temperature_tolerance:
@@ -513,7 +502,6 @@ def cooling(wait_time=5):
 # This series have longer sample-detector distance.
 # WAXSy = 0
 if True:
-
     # Example of a multi-sample holder
 
     md = {
@@ -542,7 +530,6 @@ if True:
     hol.addSampleSlotPosition(Sample("YX-C8_C12-1C-OnSi", **md), 5, 82)
 
 if False:
-
     # Example of a multi-sample holder
 
     md = {
@@ -568,7 +555,6 @@ if False:
     hol.addSampleSlotPosition(Sample("M150D50_1wtSi", **md), 12, 129 + cb)
 
 if False:
-
     md = {
         "owner": "N. Jiang",
         "series": "various",
@@ -583,7 +569,6 @@ if False:
 
 
 if False:
-
     hol = CapillaryHolder(base=stg)
 
     # hol.addSampleSlot( Sample('2nd_80pW12-500mMLiCl_a'), 1.0 )
@@ -604,7 +589,7 @@ if False:
     # sam = hol.getSample(1)
 
 
-#%run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
+# %run -i /GPFS/xf11bm/data/2018_1/beamline/user.py
 
 # robot.listGarage()
 

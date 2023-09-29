@@ -158,10 +158,6 @@ class PilatusDetectorCamV33(PilatusDetectorCam):
                 cpt.ensure_nonblocking()
 
 
-
-
-
-
 # class Pilatus(SingleTrigger, PilatusDetector):
 #     image = Cpt(ImagePlugin, 'image1:')
 #     stats1 = Cpt(StatsPluginV33, 'Stats1:')
@@ -296,7 +292,6 @@ class Pilatus300V33(PilatusV33):
 
 
 class Pilatus2M(SingleTrigger, PilatusDetector):
-
     image = Cpt(ImagePlugin, "image1:")
     stats1 = Cpt(StatsPluginV33, "Stats1:")
     stats2 = Cpt(StatsPluginV33, "Stats2:")
@@ -637,6 +632,7 @@ pilatus_Epicsname = "{Det:PIL2M}"
 
 # pilatus_name = pilatus800
 # pilatus_Epicsname = '{Det:PIL800K}'
+
 
 #######################################################
 # These are test functions added by Julien

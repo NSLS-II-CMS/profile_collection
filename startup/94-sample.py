@@ -95,7 +95,6 @@ class CoordinateSystem(object):
         self._axes = {}
 
         for axis in axes:
-
             axis_object = Axis(
                 axis["name"],
                 axis["motor"],
@@ -135,7 +134,6 @@ class CoordinateSystem(object):
         text += "\n\n[comment for CoordinateSystem: {} ({})].".format(self.name, self.__class__.__name__)
 
         if append_md:
-
             md_current = {k: v for k, v in RE.md.items()}  # Global md
             md_current.update(get_beamline().get_md())  # Beamline md
 
@@ -152,7 +150,6 @@ class CoordinateSystem(object):
         logbook.log(text, logbooks=logbooks, tags=tags)
 
     def set_base_stage(self, base):
-
         self.base_stage = base
         self._init_axes(self._axes_definitions)
 
@@ -269,7 +266,6 @@ class CoordinateSystem(object):
         used to define the origins for the axes."""
 
         if positions is None:
-
             for axis in axes:
                 getattr(self, axis + "setOrigin")()
 
@@ -325,7 +321,6 @@ class CoordinateSystem(object):
         positions = {}
 
         if len(axes) == 0 and len(axes_positions) == 0:
-
             for axis_name in self._axes:
                 positions[axis_name] = self._axes[axis_name].get_position(verbosity=0)
 
@@ -372,7 +367,6 @@ class CoordinateSystem(object):
             return
 
         for axis_name, position in sorted(self._marks[label].items()):
-
             if axis_name + "abs" in additional:
                 # Override the marked value for this position
                 position = additional[axis_name + "abs"]
@@ -427,7 +421,6 @@ class Axis(object):
     """
 
     def __init__(self, name, motor, enabled, scaling, units, hint, base, stage=None, origin=0.0):
-
         self.name = name
         self.motor = motor
         self.enabled = enabled
@@ -542,7 +535,6 @@ class Axis(object):
         base_position = self.cur_to_base(position)
 
         if self.is_enabled():
-
             if self.motor:
                 # mov( self.motor, base_position )
                 self.motor.user_setpoint.value = base_position
@@ -557,7 +549,6 @@ class Axis(object):
                 stg = "?"
 
             if verbosity >= 2:
-
                 # Show a realtime output of position
                 start_time = time.time()
                 current_position = self.get_position(verbosity=0)
@@ -635,7 +626,6 @@ class Axis(object):
         base_position = self.cur_to_base(position)
 
         if self.is_enabled():
-
             if self.motor:
                 # mov( self.motor, base_position )
                 self.motor.user_setpoint.value = base_position
@@ -650,7 +640,6 @@ class Axis(object):
                 stg = "?"
 
             if verbosity >= 2:
-
                 # Show a realtime output of position
                 start_time = time.time()
                 current_position = self._get_position(verbosity=0)
@@ -764,7 +753,6 @@ class Axis(object):
         value = detector.read()[value_name]["value"]
 
         if target == "max":
-
             if verbosity >= 5:
                 print("Performing search on axis '{}' target is 'max'".format(self.name))
 
@@ -802,7 +790,6 @@ class Axis(object):
                     step_size *= 0.5
 
         elif target == "min":
-
             if verbosity >= 5:
                 print("Performing search on axis '{}' target is 'min'".format(self.name))
 
@@ -832,7 +819,6 @@ class Axis(object):
                     step_size *= 0.5
 
         else:
-
             target_rel = target
             target = target_rel * intensity
 
@@ -852,7 +838,6 @@ class Axis(object):
                 direction = +1 * polarity
 
             while step_size >= min_step:
-
                 if verbosity >= 4:
                     print("        move {} by {} × {}".format(self.name, direction, step_size))
                 self.move_relative(move_amount=direction * step_size, verbosity=verbosity - 2)
@@ -936,7 +921,6 @@ class Axis(object):
         value = detector.read()[value_name]["value"]
 
         if target == "max":
-
             if verbosity >= 5:
                 print("Performing search on axis '{}' target is 'max'".format(self.name))
 
@@ -980,7 +964,6 @@ class Axis(object):
                     step_size *= 0.5
 
         elif target == "min":
-
             if verbosity >= 5:
                 print("Performing search on axis '{}' target is 'min'".format(self.name))
 
@@ -1010,7 +993,6 @@ class Axis(object):
                     step_size *= 0.5
 
         else:
-
             target_rel = target
             target = target_rel * intensity
 
@@ -1030,7 +1012,6 @@ class Axis(object):
                 direction = +1 * polarity
 
             while step_size >= min_step:
-
                 if verbosity >= 4:
                     print("        move {} by {} × {}".format(self.name, direction, step_size))
                 self.move_relative(move_amount=direction * step_size, verbosity=verbosity - 2)
@@ -1087,15 +1068,12 @@ class Axis(object):
         self.enabled = False
 
     def is_enabled(self):
-
         return self.enabled and self.stage.is_enabled()
 
     def get_origin(self):
-
         return self.origin
 
     def get_units(self):
-
         if self.units is not None:
             return self.units
 
@@ -1359,7 +1337,6 @@ class Sample_Generic(CoordinateSystem):
         self.md[attribute] = value
 
     def set_md(self, **md):
-
         self.md.update(md)
 
     def get_md(self, prefix="sample_", include_marks=True, **md):
@@ -1427,7 +1404,6 @@ class Sample_Generic(CoordinateSystem):
         self.naming_delimeter = delimeter
 
     def get_naming_string(self, attribute):
-
         # Handle special cases of formatting the text
 
         if attribute in self._axes:
@@ -1486,7 +1462,6 @@ class Sample_Generic(CoordinateSystem):
             return attribute
 
         else:
-
             # TODO: save the attributes into metadata --061921 RL
             """
             for attribute in self.get_attribute(attribute):
@@ -1529,7 +1504,6 @@ class Sample_Generic(CoordinateSystem):
         text += "\n\n[comment for sample: {} ({})].".format(self.name, self.__class__.__name__)
 
         if append_md:
-
             md_current = {k: v for k, v in RE.md.items()}  # Global md
             md_current.update(get_beamline().get_md())  # Beamline md
 
@@ -1546,9 +1520,7 @@ class Sample_Generic(CoordinateSystem):
         logbook.log(text, logbooks=logbooks, tags=tags)
 
     def log(self, text, logbooks=None, tags=None, append_md=True, **md):
-
         if append_md:
-
             text += "\n\n\nMetadata\n----------------------------------------"
             for key, value in sorted(md.items()):
                 text += "\n{}: {}".format(key, value)
@@ -1577,7 +1549,6 @@ class Sample_Generic(CoordinateSystem):
     ########################################
 
     def get_measurement_md(self, prefix=None, **md):
-
         md_current = {k: v for k, v in RE.md.items()}  # Global md
 
         if get_beamline().detector[0].name == "pilatus300":
@@ -1802,7 +1773,6 @@ class Sample_Generic(CoordinateSystem):
         ##self.handle_file(detector, extra=extra, verbosity=verbosity)
 
     def handle_file(self, detector, extra=None, verbosity=3, subdirs=True, linksave=True, **md):
-
         subdir = ""
         if subdirs:
             if detector.name == "pilatus300" or detector.name == "pilatus8002":
@@ -1830,7 +1800,6 @@ class Sample_Generic(CoordinateSystem):
 
         # if md['measure_type'] is not 'snap':
         if True:
-
             self.set_attribute("exposure_time", detector.cam.acquire_time.get())  # RL, 20210831
 
             # Create symlink
@@ -1851,7 +1820,6 @@ class Sample_Generic(CoordinateSystem):
 
             if verbosity >= 3:
                 print("  Data linked as: {}".format(link_name))
-
 
     def snap(self, exposure_time=None, extra=None, measure_type="snap", verbosity=3, **md):
         """Take a quick exposure (without saving data)."""
@@ -1893,7 +1861,6 @@ class Sample_Generic(CoordinateSystem):
 
         if tiling == "xygaps":
             if cms.detector == [pilatus2M]:
-
                 SAXSy_o = SAXSy.user_readback.value
                 SAXSx_o = SAXSx.user_readback.value
 
@@ -1954,7 +1921,6 @@ class Sample_Generic(CoordinateSystem):
                 if SAXSy.user_readback.value != SAXSy_o:
                     SAXSy.move(SAXSy_o)
             if cms.detector == [pilatus800]:
-
                 WAXSy_o = WAXSy.user_readback.value
                 WAXSx_o = WAXSx.user_readback.value
 
@@ -2016,7 +1982,6 @@ class Sample_Generic(CoordinateSystem):
 
         elif tiling == "ygaps":
             if cms.detector == [pilatus2M]:
-
                 SAXSy_o = SAXSy.user_readback.value
                 SAXSx_o = SAXSx.user_readback.value
 
@@ -2054,7 +2019,6 @@ class Sample_Generic(CoordinateSystem):
                     SAXSy.move(SAXSy_o)
 
             if cms.detector == [pilatus300]:
-
                 # MAXSy_o = MAXSy.user_readback.value
 
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
@@ -2086,7 +2050,6 @@ class Sample_Generic(CoordinateSystem):
                 # MAXSy.move(MAXSy_o)
 
             if cms.detector == [pilatus800]:
-
                 WAXSy_o = WAXSy.user_readback.value
 
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
@@ -2552,7 +2515,6 @@ class Sample_Generic(CoordinateSystem):
         start_time = time.time()
 
         for spot_num in range(num_spots):
-
             self._test_measure_single(
                 exposure_time=exposure_time,
                 extra=extra,
@@ -2586,7 +2548,6 @@ class Sample_Generic(CoordinateSystem):
             self.md["spot_number"] = 1
 
         for spot_num in range(num_spots):
-
             self.measure(exposure_time=exposure_time, extra=extra, measure_type=measure_type, tiling=tiling, **md)
 
             getattr(self, axis + "r")(translation_amount)
@@ -2605,7 +2566,6 @@ class Sample_Generic(CoordinateSystem):
         fix_name=True,
         **md,
     ):
-
         if fix_name and ("clock" not in self.naming_scheme):
             self.naming_scheme_hold = self.naming_scheme
             self.naming_scheme = self.naming_scheme_hold.copy()
@@ -2614,7 +2574,6 @@ class Sample_Generic(CoordinateSystem):
         md["measure_series_num_frames"] = num_frames
 
         for i in range(num_frames):
-
             if verbosity >= 3:
                 print(
                     "Measuring frame {:d}/{:d} ({:.1f}% complete).".format(
@@ -2671,7 +2630,6 @@ class Sample_Generic(CoordinateSystem):
         fix_name=True,
         **md,
     ):
-
         if fix_name and ("clock" not in self.naming_scheme):
             self.naming_scheme_hold = self.naming_scheme
             self.naming_scheme = self.naming_scheme_hold.copy()
@@ -2680,7 +2638,6 @@ class Sample_Generic(CoordinateSystem):
         md["measure_series_num_frames"] = num_frames
 
         for i in range(num_frames):
-
             if verbosity >= 3:
                 print(
                     "Measuring frame {:d}/{:d} ({:.1f}% complete).".format(
@@ -2709,7 +2666,6 @@ class Sample_Generic(CoordinateSystem):
         fix_name=True,
         **md,
     ):
-
         # Set new temperature
         self.setTemperature(temperature, temperature_probe=temperature_probe, verbosity=verbosity)
 
@@ -2764,7 +2720,6 @@ class Sample_Generic(CoordinateSystem):
         fix_name=True,
         **md,
     ):
-
         for temperature in temperatures:
             self.measureTemperature(
                 temperature,
@@ -2913,7 +2868,6 @@ class Sample_Generic(CoordinateSystem):
         fill_gaps=False,
         **md,
     ):
-
         """
         Continueous shots with internal trigger of detectors. (burst mode)
 
@@ -2998,11 +2952,9 @@ class Sample_Generic(CoordinateSystem):
             detector.cam.num_images.put(1)
 
     def _old_handle_fileseries(self, detector, num_frames=None, extra=None, verbosity=3, subdirs=True, **md):
-
         subdir = ""
 
         if detector.name == "pilatus300" or detector.name == "pilatus8002":
-
             filename = detector.tiff.full_file_name.get()  # RL, 20210831
 
             print("pilatus300k data handling")
@@ -3041,7 +2993,6 @@ class Sample_Generic(CoordinateSystem):
                             print("  Data {} linked as: {}".format(filename_new, link_name_new))
 
         elif detector.name == "pilatus2M":
-
             filename = detector.tiff.full_file_name.get()  # RL, 20210831
             filename_part1 = detector.tiff.file_path.get() + detector.tiff.file_name.get()
 
@@ -3059,7 +3010,6 @@ class Sample_Generic(CoordinateSystem):
 
             # if md['measure_type'] is not 'snap':
             if True:
-
                 acquire_time = yield from bps.rd(detector.cam.acquire_time)
                 self.set_attribute("exposure_time", acquire_time)  # RL, 20210831
 
@@ -3108,7 +3058,6 @@ class Sample_Generic(CoordinateSystem):
 
             # if md['measure_type'] is not 'snap':
             if True:
-
                 acquire_time = yield from bps.rd(pilatus800.cam.acquire_time)
                 self.set_attribute("exposure_time", acquire_time)  # RL, 20210831
 
@@ -3144,7 +3093,6 @@ class Sample_Generic(CoordinateSystem):
                 return
 
     def handle_fileseries(self, detector, num_frames=None, extra=None, verbosity=3, subdirs=True, **md):
-
         subdir = ""
         if subdirs:
             if detector.name == "pilatus300" or detector.name == "pilatus8002":
@@ -3175,7 +3123,6 @@ class Sample_Generic(CoordinateSystem):
 
         # if md['measure_type'] is not 'snap':
         if True:
-
             acquire_time = yield from bps.rd(detector.cam.acquire_time)
             self.set_attribute("exposure_time", acquire_time)  # RL, 20210831
             # Create symlink
@@ -3352,13 +3299,11 @@ class Sample_Generic(CoordinateSystem):
 
 
 class Stage(CoordinateSystem):
-
     pass
 
 
 class SampleStage(Stage):
     def __init__(self, name="SampleStage", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
     def _set_axes_definitions(self):
@@ -3404,7 +3349,6 @@ class Holder(Stage):
     ########################################
 
     def __init__(self, name="Holder", base=None, **kwargs):
-
         if base is None:
             base = get_default_stage()
 
@@ -3496,7 +3440,6 @@ class Holder(Stage):
         del self._samples[sample_number]
 
     def removeSamplesAll(self):
-
         self._samples = {}
 
     def replaceSample(self, sample, sample_number):
@@ -3526,7 +3469,6 @@ class Holder(Stage):
             return sample_match
 
         elif type(sample_number) == str:
-
             # First search for an exact name match
             matches = 0
             sample_match = None
@@ -3601,7 +3543,6 @@ class Holder(Stage):
             return None
 
         else:
-
             print('Error: Sample designation "{}" not understood.'.format(sample_number))
             return None
 
@@ -3662,7 +3603,6 @@ class Holder(Stage):
             print("{}: {:s}".format(sample_number, sample.name))
 
     def gotoSample(self, sample_number):
-
         sample = self.getSample(sample_number, verbosity=0)
         sample.gotoAlignedPosition()
 
@@ -3715,7 +3655,6 @@ class Holder(Stage):
         poling_period=2.0,
         **md,
     ):
-
         # Set new temperature
         self.setTemperature(temperature, output_channel=output_channel, verbosity=verbosity)
 
@@ -3751,9 +3690,7 @@ class Holder(Stage):
         verbosity=3,
         **md,
     ):
-
         for temperature in temperatures:
-
             self.doTemperature(
                 temperature,
                 wait_time=wait_time,
@@ -3776,7 +3713,6 @@ class PositionalHolder(Holder):
     ########################################
 
     def __init__(self, name="PositionalHolder", base=None, **kwargs):
-
         super().__init__(name=name, base=base, **kwargs)
 
         self._positional_axis = "x"
@@ -3866,7 +3802,6 @@ class PositionalHolder(Holder):
         self.GaragePosition = [shelf_num, spot_num]
 
     def intMeasure(self, output_file, exposure_time):
-
         for sample in self.getSamples():
             sample.gotoOrigin()
             sample.intMeasure(output_file, exposure_time)
@@ -3888,7 +3823,6 @@ class PositionalHolder(Holder):
         return states
 
     def restoreSampleStates(self, input_file=None):
-
         if input_file is not None:
             with open(input_file, "rb") as handle:
                 cms.samples_states = pickle.load(handle)

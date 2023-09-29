@@ -26,11 +26,9 @@ class TernaryDevice(Device):
 
     set_cmd = FormattedComponent(EpicsSignal, "{self._set_name}")
     reset_cmd = FormattedComponent(EpicsSignal, "{self._reset_name}")
-    state_rbv = FormattedComponent(EpicsSignalRO, "{self._state_name}", kind='hinted')
+    state_rbv = FormattedComponent(EpicsSignalRO, "{self._state_name}", kind="hinted")
 
-    def __init__(
-        self, *args, set_name, reset_name, state_name, state_enum, **kwargs
-    ) -> None:
+    def __init__(self, *args, set_name, reset_name, state_name, state_enum, **kwargs) -> None:
         self._state_enum = state_enum
         self._set_name = set_name
         self._reset_name = reset_name
@@ -102,6 +100,7 @@ def ArrayDevice(components, *args, **kwargs):
         devices: iterable
             The array of ophyd devices.
         """
+
         def set(self, values):
             if len(values) != len(self.component_names):
                 raise ValueError(
@@ -122,21 +121,19 @@ def ArrayDevice(components, *args, **kwargs):
         def get(self):
             return [getattr(self, device).get() for device in self.devices]
 
-    #types = {component.cls for component in components}
-    #if len(types) != 1:
+    # types = {component.cls for component in components}
+    # if len(types) != 1:
     #    raise TypeError("All components must have the same type")
 
     clsdict = OrderedDict(
         {
-            **{'__doc__': "ArrayDevice",
-               '_default_read_attrs': None,
-               '_default_configuration_attrs': None},
+            **{"__doc__": "ArrayDevice", "_default_read_attrs": None, "_default_configuration_attrs": None},
             **components,
-            'devices': list(components.keys())
+            "devices": list(components.keys()),
         }
     )
 
-    _ArrayDevice = type('ArrayDevice', (_ArrayDeviceBase,), clsdict)
+    _ArrayDevice = type("ArrayDevice", (_ArrayDeviceBase,), clsdict)
     return _ArrayDevice(*args, **kwargs)
 
 
@@ -162,6 +159,7 @@ class CmsFilter(TernaryDevice):
             **kwargs,
         )
 
+
 # TODO: Uncomment these lines when ready to test.
-#filters = {f'filter{i}': FormattedComponent(CmsFilter, f"{i}") for i in range(8)}
-#attenuator = ArrayDevice(filters, name="attenuator")
+# filters = {f'filter{i}': FormattedComponent(CmsFilter, f"{i}") for i in range(8)}
+# attenuator = ArrayDevice(filters, name="attenuator")

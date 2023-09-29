@@ -52,7 +52,7 @@ def tri_plan(tri, value):
 
 # dev_tri = TriState('XF:11BMB-VA{Chm:Smpl-V', name='dev')
 # dev_tri.read()
-#%mov dev_tri 'Soft'
+# %mov dev_tri 'Soft'
 
 """
 class Foo:

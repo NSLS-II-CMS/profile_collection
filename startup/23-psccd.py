@@ -21,7 +21,6 @@ from ophyd import Device
 
 
 class PhotonicSciences_CMS(Device):
-
     # image = Cpt(ImagePluginCustom, 'image1:')
     # tiff = Cpt(TIFFPluginWithFileStore,
     # suffix='TIFF1:',
@@ -37,7 +36,6 @@ class PhotonicSciences_CMS(Device):
         parent=None,
         **kwargs,
     ):
-
         super().__init__(
             prefix=prefix,
             *args,
@@ -66,7 +64,6 @@ class PhotonicSciences_CMS(Device):
     # Ophyd methods
     ########################################
     def stage(self, *args, poling_period=0.1, **kwargs):
-
         # Give detector a chance to get ready
         start_time = time.time()
         while (not self.detector_is_ready(verbosity=0)) and (time.time() - start_time) < (self.max_wait_time):
@@ -78,7 +75,6 @@ class PhotonicSciences_CMS(Device):
         return super().stage(*args, **kwargs)
 
     def trigger(self):
-
         self.detector_measure()
 
         return super().trigger()
@@ -90,7 +86,6 @@ class PhotonicSciences_CMS(Device):
     ########################################
 
     def connect_socket(self):
-
         self.server_address = "10.11.129.11 "
         # self.server_address= '10.11.129.12 ' #The backup computer
 
@@ -107,17 +102,14 @@ class PhotonicSciences_CMS(Device):
         self.sock.settimeout(0.5)
 
     def disconnect_socket(self):
-
         self.sock.close()
 
     def send_socket(self, msg):
-
         # self.sock.send(chr(13).encode('ascii', 'ignore')) # Carriage return
         self.sock.send(msg.encode("ascii", "ignore"))
         # self.sock.send(msg.encode('utf-8'))
 
     def send_get_reply(self, msg, verbosity=3):
-
         # self.send_socket('\r')
         self.send_socket(msg)
 
@@ -126,7 +118,6 @@ class PhotonicSciences_CMS(Device):
         return self.read_socket(verbosity=verbosity)
 
     def read_socket(self, timeout_s=3, verbosity=3):
-
         start_time = time.time()
         terminator = chr(0x18)
 
@@ -164,7 +155,6 @@ class PhotonicSciences_CMS(Device):
     ########################################
 
     def detector_status(self, verbosity=3):
-
         reply = self.send_get_reply("ST", verbosity=verbosity)
         m = self.status_re.match(reply)
         if m:
@@ -177,11 +167,9 @@ class PhotonicSciences_CMS(Device):
         return self.detector_status(verbosity=verbosity) == 1
 
     def detector_abort(self, verbosity=3):
-
         return self.send_get_reply("AB", verbosity=verbosity)
 
     def detector_binning(self, binx=2, biny=2, verbosity=3):
-
         if binx == None or biny == None:
             binx = 2
             biny = 2
@@ -189,11 +177,9 @@ class PhotonicSciences_CMS(Device):
         return self.send_get_reply("BN {:d} {:d}".format(binx, biny), verbosity=verbosity)
 
     def detector_trigger(self, verbosity=3):
-
         return self.send_get_reply("TR", verbosity=verbosity)
 
     def detector_temperature(self, verbosity=3):
-
         reply = self.send_get_reply("T?", verbosity=verbosity)
         m = self.temperature_re.match(reply)
         if m:
@@ -204,7 +190,6 @@ class PhotonicSciences_CMS(Device):
             return reply
 
     def detector_set_exposure_time(self, exposure_time, verbosity=3):
-
         self.exposure_time = exposure_time
         reply = self.send_get_reply("EX {:10.2f}".format(exposure_time), verbosity=verbosity)
 
@@ -222,17 +207,14 @@ class PhotonicSciences_CMS(Device):
     # return reply
 
     def detector_expose(self, verbosity=3):
-
         return self.send_get_reply("GO", verbosity=verbosity)
 
     def detector_save(self, filename, verbosity=3):
-
         reply = self.send_get_reply("SV {:s}".format(filename), verbosity=verbosity)
 
         return reply
 
     def detector_measure(self, exposure_time=None, savename="_current", verbosity=3, poling_period=0.1):
-
         if exposure_time is not None:
             self.detector_set_exposure_time(exposure_time)
             self.exposure_time = exposure_time
