@@ -149,11 +149,7 @@ class Sample(SampleTSAXS):
         # self.incident_angles_default = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.15]
 
     def measure_mesh_scan(
-        self,
-        num_spots=50 + 1,
-        translation_amount_y=0.1,
-        translation_amount_x=0.1,
-        exposure_time=3,
+        self, num_spots=50 + 1, translation_amount_y=0.1, translation_amount_x=0.1, exposure_time=3
     ):
         self.naming_scheme = ["name", "extra", "x", "y", "exposure_time"]
 
@@ -162,9 +158,7 @@ class Sample(SampleTSAXS):
             self.xabs(-2.5)
             time.sleep(2)
             sam.measureSpots(
-                num_spots=num_spots,
-                translation_amount=translation_amount_x,
-                exposure_time=exposure_time,
+                num_spots=num_spots, translation_amount=translation_amount_x, exposure_time=exposure_time
             )
 
     def align(self, step=0, reflection_angle=0.08, verbosity=3):
@@ -222,12 +216,7 @@ class Sample(SampleTSAXS):
 
             # Find the step-edge
             self.ysearch(
-                step_size=0.5,
-                min_step=0.005,
-                intensity=value,
-                target=0.5,
-                verbosity=verbosity,
-                polarity=-1,
+                step_size=0.5, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1
             )
 
             # Find the peak
@@ -356,13 +345,7 @@ class Sample(SampleTSAXS):
 
     ## for Instec 402 stage
     def tscan(
-        self,
-        temperature_start,
-        temperature_final,
-        num_intervals,
-        wait_time,
-        temp_update_time=5,
-        exposure_time=0,
+        self, temperature_start, temperature_final, num_intervals, wait_time, temp_update_time=5, exposure_time=0
     ):
         if temperature_start == None or temperature_start < 0.0 or temperature_start >= 250:
             print("temperature_start must be set between 0 and 250 degC.\n")
@@ -405,11 +388,7 @@ class Sample(SampleTSAXS):
                 print("{:.3f} {:.3f}".format(current_time, current_temperature))
                 # f.write('{:d} {:.3f} {:.3f}\n'.format(RE.md['scan_id'], current_time, current_temperature))
                 self.tscan_data = self.tscan_data.append(
-                    {
-                        "scan_id": RE.md["scan_id"],
-                        "degC": current_temperature,
-                        "seconds": current_time,
-                    },
+                    {"scan_id": RE.md["scan_id"], "degC": current_temperature, "seconds": current_time},
                     ignore_index=True,
                 )
 
@@ -465,13 +444,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
         self.x_spacing = 0.2 * 25.4  # 0.2" seperation in x
 
     def tscan(
-        self,
-        temperature_start,
-        temperature_final,
-        num_intervals,
-        wait_time,
-        temp_update_time=5,
-        exposure_time=0,
+        self, temperature_start, temperature_final, num_intervals, wait_time, temp_update_time=5, exposure_time=0
     ):
         if temperature_start == None or temperature_start < 0.0 or temperature_start >= 250:
             print("temperature_start must be set between 0 and 250 degC.\n")
@@ -514,11 +487,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
                 print("{:.3f} {:.3f}".format(current_time, current_temperature))
                 # f.write('{:d} {:.3f} {:.3f}\n'.format(RE.md['scan_id'], current_time, current_temperature))
                 self.tscan_data = self.tscan_data.append(
-                    {
-                        "scan_id": RE.md["scan_id"],
-                        "degC": current_temperature,
-                        "seconds": current_time,
-                    },
+                    {"scan_id": RE.md["scan_id"], "degC": current_temperature, "seconds": current_time},
                     ignore_index=True,
                 )
 

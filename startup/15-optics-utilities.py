@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 from math import sin, cos, tan, asin, acos, atan, pi
 
 ##### mono utilities #####
@@ -7,7 +9,9 @@ dmm_dsp = 20.1  ## DMM bilayer pitch in [Ang], according to Rigaku metrology rep
 
 def getE(q=0):
     """Returns E(keV) based on the current mono_bragg position (q=1 for quiet)"""
-    bragg = (pi / 180.0) * caget("XF:11BMA-OP{Mono:DMM-Ax:Bragg}Mtr.RBV")  ## in [rad]
+    # bragg = (pi/180.)*caget('XF:11BMA-OP{Mono:DMM-Ax:Bragg}Mtr.RBV')	## in [rad]
+    bragg = np.deg2rad(mono_bragg.position)  ## in [rad]
+
     wavelen = 2.0 * dmm_dsp * sin(bragg)  ## in [Ang]
     E = hc_over_e / wavelen
     if q == 0:
@@ -104,9 +108,14 @@ def movr_mir_x(del_mm):
 
 def ave_mir_y():
     """Returns the average height of the toroidal mirror in [mm]"""
-    usy = caget("XF:11BMA-OP{Mir:Tor-Ax:YU}Mtr.RBV")
-    dsyi = caget("XF:11BMA-OP{Mir:Tor-Ax:YDI}Mtr.RBV")
-    dsyo = caget("XF:11BMA-OP{Mir:Tor-Ax:YDO}Mtr.RBV")
+    # usy = caget('XF:11BMA-OP{Mir:Tor-Ax:YU}Mtr.RBV')
+    # dsyi = caget('XF:11BMA-OP{Mir:Tor-Ax:YDI}Mtr.RBV')
+    # dsyo = caget('XF:11BMA-OP{Mir:Tor-Ax:YDO}Mtr.RBV')
+
+    usy = mir_usy.position
+    dsyi = mir_dsyi.position
+    dsyo = mir_dsyi.position
+
     ave_y = 0.5 * (usy + 0.5 * (dsyi + dsyo))
     print("Average mirror support height = %.4f mm relative to nominal zero height (1400 mm)" % ave_y)
     return ave_y

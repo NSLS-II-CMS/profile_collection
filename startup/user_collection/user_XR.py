@@ -186,12 +186,7 @@ class Sample(SampleXR_WAXS):
 
             # Find the step-edge
             self.ysearch(
-                step_size=0.5,
-                min_step=0.005,
-                intensity=value,
-                target=0.5,
-                verbosity=verbosity,
-                polarity=-1,
+                step_size=0.5, min_step=0.005, intensity=value, target=0.5, verbosity=verbosity, polarity=-1
             )
 
             # Find the peak
@@ -243,12 +238,7 @@ class Sample(SampleXR_WAXS):
             beam.off()
 
     def alignVeryQuick(
-        self,
-        intensity=INTENSITY_EXPECTED_025,
-        align_step=9,
-        reflection_angle=0.07,
-        mode_control=True,
-        verbosity=3,
+        self, intensity=INTENSITY_EXPECTED_025, align_step=9, reflection_angle=0.07, mode_control=True, verbosity=3
     ):
         if mode_control:
             get_beamline().modeAlignment()
@@ -400,14 +390,7 @@ class GIBarCustom(GIBar_long_thermal):
 
         for sample in self.getSamples():
             sample.incident_angles_default = [0.1]
-            sample.naming_scheme = [
-                "name",
-                "extra",
-                "temperature",
-                "th",
-                "x",
-                "exposure_time",
-            ]
+            sample.naming_scheme = ["name", "extra", "temperature", "th", "x", "exposure_time"]
 
         # run the Bar at RT
         if step < 1:
@@ -434,8 +417,7 @@ class GIBarCustom(GIBar_long_thermal):
                     if verbosity >= 3:
                         print(
                             "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
-                                self.temperature_setpoint() - 273.15,
-                                self.temperature(verbosity=0),
+                                self.temperature_setpoint() - 273.15, self.temperature(verbosity=0)
                             ),
                             end="",
                         )

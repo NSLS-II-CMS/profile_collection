@@ -1,4 +1,7 @@
+print(f"Loading {__file__!r} ...")
+
 from ophyd import EpicsMotor, Device, Component as Cpt
+from ophyd.sim import SynAxis
 
 # slity = EpicsMotor('XF:11BMA-OP{Slt:0-Ax:T}Mtr', name='slity')
 
@@ -7,10 +10,10 @@ from ophyd import EpicsMotor, Device, Component as Cpt
 #    top = Cpt(EpicsMotor, '-Ax:T}Mtr')
 #    bottom = Cpt(EpicsMotor, '-Ax:B}Mtr')
 
-beamline_stage = "default"
+# beamline_stage = 'default'
 # beamline_stage = 'open_MAXS'
-# beamline_stage = 'BigHuber'
-
+beamline_stage = "BigHuber"
+# beamline_stage = 'testing'
 
 # slits = Slits('XF:11BMA-OP{Slt:0', name='slits')
 
@@ -113,12 +116,8 @@ bim5y = EpicsMotor("XF:11BMB-BI{IM:5-Ax:Y}Mtr", name="bim5y")
 if beamline_stage == "default":
     smx = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:X}Mtr", name="smx")
     smy = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:Z}Mtr", name="smy")
-    # 2023-Sep-12, change sth and schi back to original setting
     sth = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:theta}Mtr", name="sth")
     schi = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:chi}Mtr", name="schi")
-    # 2023-Jul-29 theta not stable, switch to chi for incident angle
-    # sth = EpicsMotor('XF:11BMB-ES{Chm:Smpl-Ax:chi}Mtr', name='sth')
-    # schi = EpicsMotor('XF:11BMB-ES{Chm:Smpl-Ax:theta}Mtr', name='schi')
 
 elif beamline_stage == "open_MAXS":
     smx = EpicsMotor("XF:11BMB-ES{Chm:Smpl2-Ax:X}Mtr", name="smx")
@@ -136,25 +135,31 @@ elif beamline_stage == "BigHuber":
     sth = EpicsMotor("XF:11BMB-ES{Chm:Smpl3-Ax:theta}Mtr", name="sth")
     schi = EpicsMotor("XF:11BMB-ES{Chm:Smpl3-Ax:chi}Mtr", name="schi")
 
-    # # Newports for PTA
-    # smx = EpicsMotor('XF:11BMB-ES{PTA:Sample-Ax:X}Mtr', name='smx')
-    # laserx = EpicsMotor('XF:11BMB-ES{PTA:Laser-Ax:X}Mtr', name='laserx')
-    # lasery = EpicsMotor('XF:11BMB-ES{PTA:Laser-Ax:Y}Mtr', name='lasery')
+    # Newports
+    smx = EpicsMotor("XF:11BMB-ES{PTA:Sample-Ax:X}Mtr", name="smx")
+    laserx = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:X}Mtr", name="laserx")
+    lasery = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:Y}Mtr", name="lasery")
 
-    # # GDoerk's spray coater
-    smx = EpicsMotor("XF:11BMB-ES{Chm:Smpl2-Ax:X}Mtr", name="smx")
+elif beamline_stage == "testing":
+    # Huber
+    smy = SynAxis(name="smy")
+    sth = SynAxis(name="sth")
+    schi = SynAxis(name="schi")
+
+    # Newports
+    smx = SynAxis(name="smx")
+    laserx = SynAxis(name="laserx")
+    lasery = SynAxis(name="lasery")
 
 
 # goniometer
 smy2 = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:Y}Mtr", name="smy2")
 sphi = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:phi}Mtr", name="sphi")
-
-
-srot = EpicsMotor("XF:11BMB-ES{SM:1-Ax:Srot}Mtr", name="srot")
-strans = EpicsMotor("XF:11BMB-ES{SM:1-Ax:Strans}Mtr", name="strans")
-strans2 = EpicsMotor("XF:11BMB-ES{SM:1-Ax:Strans2}Mtr", name="strans2")
-stilt = EpicsMotor("XF:11BMB-ES{SM:1-Ax:Stilt}Mtr", name="stilt")
-stilt2 = EpicsMotor("XF:11BMB-ES{SM:1-Ax:Stilt2}Mtr", name="stilt2")
+# srot = EpicsMotor('XF:11BMB-ES{SM:1-Ax:Srot}Mtr', name='srot')
+# strans = EpicsMotor('XF:11BMB-ES{SM:1-Ax:Strans}Mtr', name='strans')
+# strans2 = EpicsMotor('XF:11BMB-ES{SM:1-Ax:Strans2}Mtr', name='strans2')
+# stilt = EpicsMotor('XF:11BMB-ES{SM:1-Ax:Stilt}Mtr', name='stilt')
+# stilt2 = EpicsMotor('XF:11BMB-ES{SM:1-Ax:Stilt2}Mtr', name='stilt2')
 
 # the srot is fixed after repair but two module controllers are broken,
 # strans, strans2, stilt, stilt2 and strot are moved to backup controllers
@@ -218,11 +223,6 @@ bsphi = EpicsMotor("XF:11BMB-ES{Spare:L-Ax:M}Mtr", name="bsphi")
 
 ##stage for vacuum gate
 gatex = EpicsMotor("XF:11BMB-ES{Chm:Gate-Ax:X}Mtr", name="gatex")
-
-
-# For MDrive (X, Y, edited by YZ, 20230920)
-mdx = EpicsMotor("XF:11BM-ES{Mdrive-Ax:X}Mtr", name="mdx")
-mdy = EpicsMotor("XF:11BM-ES{Mdrive-Ax:Y}Mtr", name="mdy")
 
 
 ## easy access for stages

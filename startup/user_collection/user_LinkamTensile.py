@@ -192,12 +192,7 @@ class Sample(SampleTSAXS):
         # self.incident_angles_default = [0.08, 0.12, 0.15, 0.18, 0.20] #for 10kev
         # self.incident_angles_default = [0.08, 0.12, 0.15, 0.18] #for 10kev LJR
         # self.incident_angles_default = [0.12, 0.16, 0.20, 0.24] #for 10kev, Perovskites
-        self.incident_angles_default = [
-            0.12,
-            0.16,
-            0.20,
-            0.24,
-        ]  # for 10kev, Perovskites
+        self.incident_angles_default = [0.12, 0.16, 0.20, 0.24]  # for 10kev, Perovskites
         # self.incident_angles_default = [0.02, 0.04, 0.05, 0.06, 0.08, 0.09, 0.1, 0.12, 0.15]
         # self.incident_angles_default = [0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.15]
         # self.incident_angles_default = [0.0]
@@ -464,12 +459,7 @@ class Sample(SampleTSAXS):
         return self.LinkamTensile_stages_default
 
     def LinkamTensileMeasure_step(
-        self,
-        step=0,
-        maxTime=60 * 60 * 10,
-        exposure_time=1,
-        interval=3,
-        reset_clock=True,
+        self, step=0, maxTime=60 * 60 * 10, exposure_time=1, interval=3, reset_clock=True
     ):
         self.LinkamTensile_stages_default
         #
@@ -493,14 +483,9 @@ class Sample(SampleTSAXS):
 
             # for temperature, rate, wait_time in zip(temp_sequence, rate_sequence, wait_sequence):
             for stage in range(stages):
-                (
-                    stepNo,
-                    temperature,
-                    rate,
-                    wait_time,
-                    position,
-                    velocity,
-                ) = self.LinkamTensile_stages_default.loc[stage]
+                stepNo, temperature, rate, wait_time, position, velocity = self.LinkamTensile_stages_default.loc[
+                    stage
+                ]
 
                 print("Stage {} : {}".format(stage, self.LinkamTensile_stages_default.loc[stage]))
 
@@ -615,14 +600,9 @@ class Sample(SampleTSAXS):
             #     status = yield from bps.trigger(detector, group='det')
 
             for stage in range(stages):
-                (
-                    stepNo,
-                    temperature,
-                    rate,
-                    wait_time,
-                    position,
-                    velocity,
-                ) = self.LinkamTensile_stages_default.loc[stage]
+                stepNo, temperature, rate, wait_time, position, velocity = self.LinkamTensile_stages_default.loc[
+                    stage
+                ]
 
                 print("Stage {} : {}".format(stage, self.LinkamTensile_stages_default.loc[stage]))
 

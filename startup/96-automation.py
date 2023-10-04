@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # vi: ts=4 sw=4
 
+print(f"Loading {__file__!r} ...")
 
 ################################################################################
 #  Classes for controlling the robotics and automation on the beamline.
@@ -79,10 +80,7 @@ class SampleExchangeRobot(Stage):
 
         # default position for stage without SmarAct motor
         # self._position_stg_exchange = [+50.0, -2.37] # smx, smy
-        self._position_stg_exchange = [
-            +51.5,
-            -1.87,
-        ]  # smx, smy # Manual tweak KY (2017-11-28)
+        self._position_stg_exchange = [+51.5, -1.87]  # smx, smy # Manual tweak KY (2017-11-28)
         self._position_stg_safe = [-30.0, -2.37]  # smx, smy
         self._position_stg_measure = []  # smx, smy
 
@@ -174,12 +172,7 @@ class SampleExchangeRobot(Stage):
 
         if time.time() - start_time > max_wait:
             # Retry
-            self.home_y(
-                verbosity=verbosity,
-                delays=delays,
-                retries=retries - 1,
-                max_wait=max_wait,
-            )
+            self.home_y(verbosity=verbosity, delays=delays, retries=retries - 1, max_wait=max_wait)
 
         # Wait for motion to be complete
         time.sleep(delays)
@@ -281,7 +274,7 @@ class SampleExchangeRobot(Stage):
             return self.moving == False
 
     def checkSafe(self, check_stage=True):
-        if self._region is not "safe":
+        if self._region != "safe":
             print(
                 "ERROR: Robot arm must start in the 'safe' region of the chamber (current region is '{}'). Move the robot to the safe region (and/or set _region to 'safe').".format(
                     self._region
@@ -1325,25 +1318,6 @@ class Queue(CoordinateSystem):
             for sample_number, sample in sorted(holder._samples.items()):
                 print("{}: {:s}".format(sample_number, sample.name))
 
-    def checkSamples(self, verbosity=3):
-        if verbosity > 0:
-            self.listSamples()
-        # check positions to make sure the samples are in the range of smx
-        if verbosity > 3:
-            error_signal = False
-            for holder_number, holder in sorted(self._holders.items()):
-                for sample_number, sample in sorted(holder._samples.items()):
-                    sample_xpos = holder.position["x"] + sample.position
-                    if sample_xpos < smx.limits[0] or sample_xpos > smx.limits[-1]:
-                        print(
-                            "ERROR: out of limit of smx motor: holder--{}: sample--{}".format(
-                                holder_number, sample_number
-                            )
-                        )
-                        error_signal = True
-            if error_signal == True:
-                input(" Please ctrl+c and correct the errors.")
-
     def returnHolder(self, holder="current", gotoSafe=True, force=False):
         """return the holder from stage back to garage.
         holder = None:  retrun to default position
@@ -1392,8 +1366,7 @@ class Queue(CoordinateSystem):
             self._current = holder
             self.status = "onStage"
             post_to_slack(
-                text="holder <<<{}>>> is onStage for measurements".format(self._current.name),
-                slack=slack,
+                text="holder <<<{}>>> is onStage for measurements".format(self._current.name), slack=slack
             )
             return self._current
         elif self.status == "onStage":
@@ -1403,8 +1376,7 @@ class Queue(CoordinateSystem):
                 self._current = holder
                 self.status = "onStage"
                 post_to_slack(
-                    text="holder <<<{}>>> is onStage for measurements".format(self._current.name),
-                    slack=slack,
+                    text="holder <<<{}>>> is onStage for measurements".format(self._current.name), slack=slack
                 )
                 return self._current
             if force == True:
@@ -1414,8 +1386,7 @@ class Queue(CoordinateSystem):
                 self._current = holder
                 self.status = "onStage"
                 post_to_slack(
-                    text="holder <<<{}>>> is onStage for measurements".format(self._current.name),
-                    slack=slack,
+                    text="holder <<<{}>>> is onStage for measurements".format(self._current.name), slack=slack
                 )
                 return self._current
             else:
@@ -1588,12 +1559,7 @@ class Queue(CoordinateSystem):
 
     # This setting is for individual holder. Each sample could set its own setting when adding into holder
     def exposure_setting(
-        self,
-        exposure_time=None,
-        incident_angles=None,
-        detectors=None,
-        detector_positions=None,
-        tiling=None,
+        self, exposure_time=None, incident_angles=None, detectors=None, detector_positions=None, tiling=None
     ):
         """define the setting for exposures, including incident angles, exposure time, detector selection, detector positions.
         incident_angles: [0.05, 0.08, 0,1]
@@ -1669,9 +1635,7 @@ def post_to_slack(text, slack=True):
             # data=json_data.encode('ascii'),
             # headers={'Content-Type': 'application/json'})
             r = requests.post(
-                channel,
-                json=post,
-                headers={"Content-Type": "application/json", "Accept": "text/plain"},
+                channel, json=post, headers={"Content-Type": "application/json", "Accept": "text/plain"}
             )
 
         except Exception as em:

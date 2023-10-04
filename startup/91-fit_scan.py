@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # Classes and functions to make it easy to do a dscan with realtime fitting to
 # a custom function.
 
@@ -195,7 +197,7 @@ class LiveStat(CallbackBase):
         xs = np.asarray(self.xdata)
         ys = np.asarray(self.ydata)
 
-        if stat is "max":
+        if stat == "max":
             idx = np.argmax(ys)
             x0 = xs[idx]
             y0 = ys[idx]
@@ -203,7 +205,7 @@ class LiveStat(CallbackBase):
             self.result.values["x_max"] = x0
             self.result.values["y_max"] = y0
 
-        elif stat is "min":
+        elif stat == "min":
             idx = np.argmin(ys)
             x0 = xs[idx]
             y0 = ys[idx]
@@ -211,14 +213,14 @@ class LiveStat(CallbackBase):
             self.result.values["x_min"] = x0
             self.result.values["y_min"] = y0
 
-        elif stat is "COM":
+        elif stat == "COM":
             x0 = np.sum(xs * ys) / np.sum(ys)
             y0 = np.interp(x0, xs, ys)
 
             self.result.values["x_COM"] = x0
             self.result.values["y_COM"] = y0
 
-        elif stat is "HM":
+        elif stat == "HM":
             """Half-maximum, using the point(s) closest to HM."""
             idx_max = np.argmax(ys)
             half_max = 0.5 * ys[idx_max]
@@ -250,7 +252,7 @@ class LiveStat(CallbackBase):
             self.result.values["x_HM"] = x0
             self.result.values["y_HM"] = y0
 
-        elif stat is "HMi":
+        elif stat == "HMi":
             """Half-maximum, with averaging of values near HW."""
             idx_max = np.argmax(ys)
             half_max = 0.5 * ys[idx_max]
@@ -291,17 +293,7 @@ class LiveStat(CallbackBase):
 
 
 class LiveStatPlot(LivePlot):
-    def __init__(
-        self,
-        livestat,
-        *,
-        scan_range=None,
-        legend_keys=None,
-        xlim=None,
-        ylim=None,
-        ax=None,
-        **kwargs,
-    ):
+    def __init__(self, livestat, *, scan_range=None, legend_keys=None, xlim=None, ylim=None, ax=None, **kwargs):
         kwargs_update = {
             "color": "b",
             "linewidth": 0,
@@ -311,13 +303,7 @@ class LiveStatPlot(LivePlot):
         kwargs_update.update(kwargs)
 
         super().__init__(
-            livestat.y_name,
-            livestat.x_name,
-            legend_keys=legend_keys,
-            xlim=xlim,
-            ylim=xlim,
-            ax=ax,
-            **kwargs_update,
+            livestat.y_name, livestat.x_name, legend_keys=legend_keys, xlim=xlim, ylim=xlim, ax=ax, **kwargs_update
         )
 
         self.livestat = livestat
@@ -390,18 +376,7 @@ class LiveStatPlot(LivePlot):
 
 
 class LivePlot_Custom(LivePlot):
-    def __init__(
-        self,
-        y,
-        x=None,
-        *,
-        legend_keys=None,
-        xlim=None,
-        ylim=None,
-        ax=None,
-        fig=None,
-        **kwargs,
-    ):
+    def __init__(self, y, x=None, *, legend_keys=None, xlim=None, ylim=None, ax=None, fig=None, **kwargs):
         kwargs_update = {
             "color": "k",
             "linewidth": 3.5,
@@ -422,16 +397,7 @@ class LivePlot_Custom(LivePlot):
         # For more rcParam options: http://matplotlib.org/users/customizing.html
         plt.matplotlib.rcParams.update(rcParams_update)
 
-        super().__init__(
-            y,
-            x,
-            legend_keys=legend_keys,
-            xlim=xlim,
-            ylim=ylim,
-            ax=ax,
-            fig=fig,
-            **kwargs_update,
-        )
+        super().__init__(y, x, legend_keys=legend_keys, xlim=xlim, ylim=ylim, ax=ax, fig=fig, **kwargs_update)
         # super().setup()
 
         # self.ax.figure.canvas.manager.toolbar.pan()
@@ -529,31 +495,14 @@ class LiveFitPlot_Custom(LiveFitPlot):
     All additional keyword arguments are passed through to ``Axes.plot``.
     """
 
-    def __init__(
-        self,
-        livefit,
-        *,
-        legend_keys=None,
-        xlim=None,
-        ylim=None,
-        ax=None,
-        scan_range=None,
-        **kwargs,
-    ):
+    def __init__(self, livefit, *, legend_keys=None, xlim=None, ylim=None, ax=None, scan_range=None, **kwargs):
         kwargs_update = {
             "color": "b",
             "linewidth": 2.5,
         }
         kwargs_update.update(kwargs)
 
-        super().__init__(
-            livefit,
-            legend_keys=legend_keys,
-            xlim=xlim,
-            ylim=ylim,
-            ax=ax,
-            **kwargs_update,
-        )
+        super().__init__(livefit, legend_keys=legend_keys, xlim=xlim, ylim=ylim, ax=ax, **kwargs_update)
 
         self.y_guess = 0
         self.scan_range = scan_range
@@ -639,15 +588,7 @@ class LiveFit_Custom(LiveFit):
     result : lmfit.ModelResult
     """
 
-    def __init__(
-        self,
-        model_name,
-        y,
-        independent_vars,
-        scan_range,
-        update_every=1,
-        background=None,
-    ):
+    def __init__(self, model_name, y, independent_vars, scan_range, update_every=1, background=None):
         self.x_start = min(scan_range)
         self.x_stop = max(scan_range)
         self.x_span = abs(self.x_stop - self.x_start)
@@ -676,33 +617,27 @@ class LiveFit_Custom(LiveFit):
                 lm_model += self.get_model(background)
                 init_guess.update(self.get_initial_guess(background))
 
-        super().__init__(
-            lm_model,
-            y,
-            independent_vars,
-            init_guess=init_guess,
-            update_every=update_every,
-        )
+        super().__init__(lm_model, y, independent_vars, init_guess=init_guess, update_every=update_every)
 
     def get_model(self, model_name):
-        if model_name is "gauss":
+        if model_name == "gauss":
 
             def model_function(x, x0, prefactor, sigma):
                 return prefactor * np.exp(-((x - x0) ** 2) / (2 * sigma**2))
 
-        elif model_name is "lorentz":
+        elif model_name == "lorentz":
 
             def model_function(x, x0, prefactor, gamma):
                 return prefactor * (gamma**2) / ((x - x0) ** 2 + (gamma**2))
 
-        elif model_name is "doublesigmoid":
+        elif model_name == "doublesigmoid":
 
             def model_function(x, x0, prefactor, sigma, fwhm):
                 left = prefactor / (1 + np.exp(-(x - (x0 - fwhm * 0.5)) / sigma))
                 right = prefactor / (1 + np.exp(-(x - (x0 + fwhm * 0.5)) / sigma))
                 return prefactor * (left - right)
 
-        elif model_name is "square":
+        elif model_name == "square":
 
             def model_function(x, x0, prefactor, fwhm):
                 sigma = fwhm * 0.02
@@ -710,54 +645,54 @@ class LiveFit_Custom(LiveFit):
                 right = prefactor / (1 + np.exp(-(x - (x0 + fwhm * 0.5)) / sigma))
                 return prefactor * (left - right)
 
-        elif model_name is "sigmoid":
+        elif model_name == "sigmoid":
 
             def model_function(x, x0, prefactor, sigma):
                 return prefactor / (1 + np.exp(-(x - x0) / sigma))
 
-        elif model_name is "sigmoid_r":
+        elif model_name == "sigmoid_r":
 
             def model_function(x, x0, prefactor, sigma):
                 return prefactor / (1 + np.exp(+(x - x0) / sigma))
 
-        elif model_name is "step":
+        elif model_name == "step":
 
             def model_function(x, x0, prefactor, sigma):
                 return prefactor / (1 + np.exp(-(x - x0) / sigma))
 
-        elif model_name is "step_r":
+        elif model_name == "step_r":
 
             def model_function(x, x0, prefactor, sigma):
                 return prefactor / (1 + np.exp(+(x - x0) / sigma))
 
-        elif model_name is "tanh":
+        elif model_name == "tanh":
 
             def model_function(x, x0, prefactor, sigma):
                 return prefactor * 0.5 * (np.tanh((x - x0) / sigma) + 1.0)
 
-        elif model_name is "tanh_r":
+        elif model_name == "tanh_r":
 
             def model_function(x, x0, prefactor, sigma):
                 return prefactor * 0.5 * (np.tanh(-(x - x0) / sigma) + 1.0)
 
-        elif model_name is "erf":
+        elif model_name == "erf":
             import scipy
 
             def model_function(x, x0, prefactor, sigma):
                 return prefactor * 0.5 * (scipy.special.erf((x - x0) / sigma) + 1.0)
 
-        elif model_name is "erf_r":
+        elif model_name == "erf_r":
             import scipy
 
             def model_function(x, x0, prefactor, sigma):
                 return prefactor * 0.5 * (scipy.special.erf(-(x - x0) / sigma) + 1.0)
 
-        elif model_name is "constant":
+        elif model_name == "constant":
 
             def model_function(x, offset):
                 return x * 0 + offset
 
-        elif model_name is "linear":
+        elif model_name == "linear":
 
             def model_function(x, m, b):
                 return m * x + b
@@ -973,7 +908,7 @@ def fit_scan(
         fig = plt.figure(figsize=(11, 7), facecolor="white")
         fig.canvas.manager.toolbar.pan()
 
-    fig.canvas.manager.set_window_title(title)
+    # fig.canvas.set_window_title(title)
     ax = fig.gca()
 
     subs = []
@@ -998,13 +933,7 @@ def fit_scan(
         # Perform a fit
 
         # livefit = LiveFit(lm_model, plot_y, {'x': motor.name}, init_guess)
-        livefit = LiveFit_Custom(
-            fit,
-            plot_y,
-            {"x": motor.name},
-            scan_range=[start, stop],
-            background=background,
-        )
+        livefit = LiveFit_Custom(fit, plot_y, {"x": motor.name}, scan_range=[start, stop], background=background)
 
         # livefitplot = LiveFitPlot(livefit, color='k')
         livefitplot = LiveFitPlot_Custom(livefit, ax=ax, scan_range=[start, stop])
@@ -1061,15 +990,7 @@ def fit_scan(
 
 
 def fit_edge(
-    motor,
-    span,
-    num=11,
-    detectors=None,
-    detector_suffix="",
-    plot=True,
-    toggle_beam=True,
-    wait_time=None,
-    md={},
+    motor, span, num=11, detectors=None, detector_suffix="", plot=True, toggle_beam=True, wait_time=None, md={}
 ):
     """
     Optimized fit_scan for finding a (decreasing) step-edge.
@@ -1125,7 +1046,7 @@ def fit_edge(
         title = "fit_scan: {} vs. {}".format(detectors[0].name, motor.name)
         fig = None
         for i in plt.get_fignums():
-            title_cur = plt.figure(i).canvas.manager.window.windowTitle()
+            # title_cur = plt.figure(i).canvas.manager.window.windowTitle()
             if title_cur == title:
                 fig = plt.figure(i)
                 break
@@ -1136,7 +1057,7 @@ def fit_edge(
             fig = plt.figure(figsize=(11, 7), facecolor="white")
             fig.canvas.manager.toolbar.pan()
 
-        fig.canvas.manager.set_window_title(title)
+        # fig.canvas.set_window_title(title)
         ax = fig.gca()
 
         liveplot = LivePlot_Custom(plot_y, motor.name, ax=ax)
@@ -1224,9 +1145,7 @@ def fit_edge(
         if plot:
             xe = 0.25
             fit_x = np.linspace(
-                np.min(livetable.xdata) - xe * x_span,
-                np.max(livetable.xdata) + xe * x_span,
-                num=500,
+                np.min(livetable.xdata) - xe * x_span, np.max(livetable.xdata) + xe * x_span, num=500
             )
             fit_y = model(lm_result.params.valuesdict(), fit_x)
             # liveplot.add_line(fit_x, fit_y, color='b', linewidth=2.5)
@@ -1336,7 +1255,7 @@ def _test_fit_scan(
         fig = plt.figure(figsize=(11, 7), facecolor="white")
         fig.canvas.manager.toolbar.pan()
 
-    fig.canvas.manager.set_window_title(title)
+    fig.canvas.set_window_title(title)
     ax = fig.gca()
 
     subs = []
@@ -1361,13 +1280,7 @@ def _test_fit_scan(
         # Perform a fit
 
         # livefit = LiveFit(lm_model, plot_y, {'x': motor.name}, init_guess)
-        livefit = LiveFit_Custom(
-            fit,
-            plot_y,
-            {"x": motor.name},
-            scan_range=[start, stop],
-            background=background,
-        )
+        livefit = LiveFit_Custom(fit, plot_y, {"x": motor.name}, scan_range=[start, stop], background=background)
 
         # livefitplot = LiveFitPlot(livefit, color='k')
         livefitplot = LiveFitPlot_Custom(livefit, ax=ax, scan_range=[start, stop])

@@ -258,12 +258,7 @@ class Sample(SampleTSAXS):
     # self.thabs(0.0)
 
     def alignVeryQuick(
-        self,
-        intensity=INTENSITY_EXPECTED_025,
-        align_step=9,
-        reflection_angle=0.07,
-        mode_control=True,
-        verbosity=3,
+        self, intensity=INTENSITY_EXPECTED_025, align_step=9, reflection_angle=0.07, mode_control=True, verbosity=3
     ):
         if mode_control:
             get_beamline().modeAlignment()
@@ -318,12 +313,7 @@ class CapillaryHolderCustom(CapillaryHolder):
         # self.temp_series_heating2 = np.arange(100, 150, 5)
         # self.temp_series_heating3 = np.arange(150, 235+.1, 2)
         self.temp_series = np.concatenate(
-            (
-                self.temp_series_heating1,
-                self.temp_series_heating2,
-                self.temp_series_heating3,
-            ),
-            axis=0,
+            (self.temp_series_heating1, self.temp_series_heating2, self.temp_series_heating3), axis=0
         )
         # self.temp_series_cooling = np.arange(230, 100-.1, -5)
         # self.temp_series = np.concatenate((self.temp_series_heating, self.temp_series_cooling), axis=0)
@@ -364,13 +354,7 @@ class CapillaryHolderCustom(CapillaryHolder):
     ):
         for sample in self.getSamples():
             # sample.incident_angles_default = [0.08, 0.1, 0.12]
-            sample.naming_scheme = [
-                "name",
-                "extra",
-                "temperature",
-                "clock",
-                "exposure_time",
-            ]
+            sample.naming_scheme = ["name", "extra", "temperature", "clock", "exposure_time"]
 
         ##run the Bar at RT
         # if step < 1:
@@ -398,8 +382,7 @@ class CapillaryHolderCustom(CapillaryHolder):
                     if verbosity >= 3:
                         print(
                             "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
-                                self.temperature_setpoint() - 273.15,
-                                self.temperature(verbosity=0),
+                                self.temperature_setpoint() - 273.15, self.temperature(verbosity=0)
                             ),
                             end="",
                         )
@@ -458,13 +441,7 @@ class CapillaryHolderCustom(CapillaryHolder):
         **md,
     ):
         for sample in self.getSamples():
-            sample.naming_scheme = [
-                "name",
-                "extra",
-                "temperature",
-                "clock",
-                "exposure_time",
-            ]
+            sample.naming_scheme = ["name", "extra", "temperature", "clock", "exposure_time"]
             # sample.naming_scheme = ['name', 'extra', 'temperature_B', 'clock', 'exposure_time']
 
         # run the Bar at RT
@@ -483,8 +460,7 @@ class CapillaryHolderCustom(CapillaryHolder):
                     if verbosity >= 3:
                         print(
                             "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
-                                self.temperature_setpoint() - 273.15,
-                                self.temperature(verbosity=0),
+                                self.temperature_setpoint() - 273.15, self.temperature(verbosity=0)
                             ),
                             end="",
                         )
@@ -519,13 +495,7 @@ class CapillaryHolderCustom(CapillaryHolder):
         **md,
     ):
         for sample in self.getSamples():
-            sample.naming_scheme = [
-                "name",
-                "extra",
-                "temperature",
-                "clock",
-                "exposure_time",
-            ]
+            sample.naming_scheme = ["name", "extra", "temperature", "clock", "exposure_time"]
             # sample.naming_scheme = ['name', 'extra', 'temperature_B', 'clock', 'exposure_time']
 
         # run the Bar at RT
@@ -544,8 +514,7 @@ class CapillaryHolderCustom(CapillaryHolder):
                     if verbosity >= 3:
                         print(
                             "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
-                                self.temperature_setpoint() - 273.15,
-                                self.temperature(verbosity=0),
+                                self.temperature_setpoint() - 273.15, self.temperature(verbosity=0)
                             ),
                             end="",
                         )
@@ -581,13 +550,7 @@ class CapillaryHolderCustom(CapillaryHolder):
     ):
         for sample in self.getSamples():
             # sample.incident_angles_default = [0.08, 0.1, 0.12]
-            sample.naming_scheme = [
-                "name",
-                "extra",
-                "temperature",
-                "clock",
-                "exposure_time",
-            ]
+            sample.naming_scheme = ["name", "extra", "temperature", "clock", "exposure_time"]
 
         ##run the Bar at RT
         # if step < 1:
@@ -660,14 +623,7 @@ class GIBarCustom(GIBar_long_thermal):
         **md,
     ):
         self.incident_angles_default = [0.08, 0.1, 0.12]
-        self.naming_scheme = [
-            "name",
-            "extra",
-            "temperature",
-            "th",
-            "x",
-            "exposure_time",
-        ]
+        self.naming_scheme = ["name", "extra", "temperature", "th", "x", "exposure_time"]
 
         # run the sample at RT
         # if step < 1:
@@ -689,8 +645,7 @@ class GIBarCustom(GIBar_long_thermal):
                     if verbosity >= 3:
                         print(
                             "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
-                                self.temperature_setpoint() - 273.15,
-                                self.temperature(verbosity=0),
+                                self.temperature_setpoint() - 273.15, self.temperature(verbosity=0)
                             ),
                             end="",
                         )
@@ -751,8 +706,7 @@ class GIBarCustom(GIBar_long_thermal):
                     if verbosity >= 3:
                         print(
                             "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
-                                self.temperature_setpoint() - 273.15,
-                                self.temperature(verbosity=0),
+                                self.temperature_setpoint() - 273.15, self.temperature(verbosity=0)
                             ),
                             end="",
                         )

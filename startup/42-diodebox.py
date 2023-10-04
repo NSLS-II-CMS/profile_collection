@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # XF:11BMB-CT{DIODE-Local:3}OutCh00:Data-SP
 
 # PV list of Diode box: AO, Analog Output

@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 import time
 
 # import select
@@ -229,8 +231,7 @@ class PhotonicSciences_CMS(Device):
             ):
                 percentage = 100 * (time.time() - start_time) / exposure_time
                 print(
-                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format((time.time() - start_time), percentage),
-                    end="",
+                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format((time.time() - start_time), percentage), end=""
                 )
                 time.sleep(poling_period)
         else:

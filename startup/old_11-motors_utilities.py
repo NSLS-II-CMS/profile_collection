@@ -1,3 +1,5 @@
+print(f"Loading {__file__!r} ...")
+
 # def wh_all():
 # wh_pos([mono_bragg,mono_pitch2,mono_roll2,mono_perp2])
 # wh_pos([mir_usx,mir_dsx,mir_usy,mir_dsyi,mir_dsyo,mir_bend])
