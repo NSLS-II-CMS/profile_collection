@@ -302,9 +302,7 @@ class LinkamTensile(LinkamThermal):
             print("Mode:      stop.")
 
         else:
-            return print(
-                "Wrong mode. Please choose from 0-velocity, 1-step, 3-force, 4-relax and 5-stop"
-            )
+            return print("Wrong mode. Please choose from 0-velocity, 1-step, 3-force, 4-relax and 5-stop")
 
         return self.mode_setpoint.put(mode)
 
@@ -491,9 +489,9 @@ class LinkamTensile(LinkamThermal):
 
         # setting for the tensile part
         text += f"\nCurrent mode = {self.getMode(verbosity=5)}\n\n"
-        text += f"\nCurrent distance = {self.distance.get():1f}, setpoint={self.distance_setpoi.get():1f}\n\n"
-        text += f"\nCurrent velocity = {self.velocity.get():1f}, setpoint={self.velocity_setpoi.get():1f}\n\n"
-        text += f"\nCurrent force = {self.force.get():1f}, setpoint={self.force_setpoi.get():1f}\n\n"
+        text += f"\nCurrent distance = {self.distance.get():1f}, setpoint={self.distance_setposition.get():1f}\n\n"
+        text += f"\nCurrent velocity = {self.velocity.get():1f}, setpoint={self.velocity_setposition.get():1f}\n\n"
+        text += f"\nCurrent force = {self.force.get():1f}, setpoint={self.force_setposition.get():1f}\n\n"
 
     # force = Cpt(EpicsSignal, 'TST_FORCE_SETPOINT')
     # distance = Cpt(EpicsSignal, 'TST_MTR_DIST_SP') #relative distance

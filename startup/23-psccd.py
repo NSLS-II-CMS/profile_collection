@@ -32,7 +32,7 @@ class PhotonicSciences_CMS(Device):
         configuration_attrs=None,
         name="PhotonicSciences_CMS",
         parent=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             prefix=prefix,
@@ -41,7 +41,7 @@ class PhotonicSciences_CMS(Device):
             configuration_attrs=configuration_attrs,
             name=name,
             parent=parent,
-            **kwargs
+            **kwargs,
         )
 
         self.file_path = "/nsls2/xf11bm/waxsdet/images"
@@ -64,9 +64,7 @@ class PhotonicSciences_CMS(Device):
     def stage(self, *args, poling_period=0.1, **kwargs):
         # Give detector a chance to get ready
         start_time = time.time()
-        while (not self.detector_is_ready(verbosity=0)) and (
-            time.time() - start_time
-        ) < (self.max_wait_time):
+        while (not self.detector_is_ready(verbosity=0)) and (time.time() - start_time) < (self.max_wait_time):
             time.sleep(poling_period)
 
         if not self.detector_is_ready():
@@ -128,11 +126,7 @@ class PhotonicSciences_CMS(Device):
         txt = ""
         msg_received = ""
 
-        while (
-            terminator not in txt
-            and time.time() - start_time < timeout_s
-            and amount_received < amount_cutoff
-        ):
+        while terminator not in txt and time.time() - start_time < timeout_s and amount_received < amount_cutoff:
             try:
                 data = self.sock.recv(1)
             except:
@@ -178,9 +172,7 @@ class PhotonicSciences_CMS(Device):
             binx = 2
             biny = 2
 
-        return self.send_get_reply(
-            "BN {:d} {:d}".format(binx, biny), verbosity=verbosity
-        )
+        return self.send_get_reply("BN {:d} {:d}".format(binx, biny), verbosity=verbosity)
 
     def detector_trigger(self, verbosity=3):
         return self.send_get_reply("TR", verbosity=verbosity)
@@ -197,9 +189,7 @@ class PhotonicSciences_CMS(Device):
 
     def detector_set_exposure_time(self, exposure_time, verbosity=3):
         self.exposure_time = exposure_time
-        reply = self.send_get_reply(
-            "EX {:10.2f}".format(exposure_time), verbosity=verbosity
-        )
+        reply = self.send_get_reply("EX {:10.2f}".format(exposure_time), verbosity=verbosity)
 
         return reply
 
@@ -222,9 +212,7 @@ class PhotonicSciences_CMS(Device):
 
         return reply
 
-    def detector_measure(
-        self, exposure_time=None, savename="_current", verbosity=3, poling_period=0.1
-    ):
+    def detector_measure(self, exposure_time=None, savename="_current", verbosity=3, poling_period=0.1):
         if exposure_time is not None:
             self.detector_set_exposure_time(exposure_time)
             self.exposure_time = exposure_time
@@ -236,14 +224,12 @@ class PhotonicSciences_CMS(Device):
         if verbosity >= 2:
             start_time = time.time()
             time.sleep(0.2)
-            while (not self.detector_is_ready(verbosity=0)) and (
-                time.time() - start_time
-            ) < (exposure_time + self.max_wait_time):
+            while (not self.detector_is_ready(verbosity=0)) and (time.time() - start_time) < (
+                exposure_time + self.max_wait_time
+            ):
                 percentage = 100 * (time.time() - start_time) / exposure_time
                 print(
-                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format(
-                        (time.time() - start_time), percentage
-                    ),
+                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format((time.time() - start_time), percentage),
                     end="",
                 )
                 time.sleep(poling_period)

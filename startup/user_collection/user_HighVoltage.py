@@ -134,7 +134,7 @@ class Sample(SampleTSAXS):
         extra=None,
         measure_type="measureTimeSeries",
         verbosity=3,
-        **md
+        **md,
     ):
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
@@ -145,7 +145,7 @@ class Sample(SampleTSAXS):
             extra=extra,
             measure_type=measure_type,
             verbosity=verbosity,
-            **md
+            **md,
         )
         self.naming_scheme = self.naming_scheme_hold
 
@@ -180,26 +180,19 @@ class Sample(SampleTSAXS):
         # increasing
         T_ramp_set(5)
         for temperature in self.T_series:
-            self.setTemperature(
-                temperature, output_channel=output_channel, verbosity=verbosity
-            )
+            self.setTemperature(temperature, output_channel=output_channel, verbosity=verbosity)
 
             # Wait until we reach the temperature
             # while abs(self.temperature(verbosity=0) - temperature)>temperature_tolerance:
             while (
-                abs(
-                    self.temperature(temperature_probe=temperature_probe, verbosity=0)
-                    - temperature
-                )
+                abs(self.temperature(temperature_probe=temperature_probe, verbosity=0) - temperature)
                 > temperature_tolerance
             ):
                 if verbosity >= 3:
                     print(
                         "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
                             self.temperature_setpoint() - 273.15,
-                            self.temperature(
-                                temperature_probe=temperature_probe, verbosity=0
-                            ),
+                            self.temperature(temperature_probe=temperature_probe, verbosity=0),
                         ),
                         end="",
                     )
@@ -216,17 +209,12 @@ class Sample(SampleTSAXS):
 
         # Wait until we reach the temperature
         # while abs(self.temperature(verbosity=0) - temperature)>temperature_tolerance:
-        while (
-            abs(self.temperature(temperature_probe=temperature_probe, verbosity=0) - T1)
-            > temperature_tolerance
-        ):
+        while abs(self.temperature(temperature_probe=temperature_probe, verbosity=0) - T1) > temperature_tolerance:
             if verbosity >= 3:
                 print(
                     "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
                         self.temperature_setpoint() - 273.15,
-                        self.temperature(
-                            temperature_probe=temperature_probe, verbosity=0
-                        ),
+                        self.temperature(temperature_probe=temperature_probe, verbosity=0),
                     ),
                     end="",
                 )
@@ -244,17 +232,12 @@ class Sample(SampleTSAXS):
 
         # Wait until we reach the temperature
         # while abs(self.temperature(verbosity=0) - temperature)>temperature_tolerance:
-        while (
-            abs(self.temperature(temperature_probe=temperature_probe, verbosity=0) - T2)
-            > temperature_tolerance
-        ):
+        while abs(self.temperature(temperature_probe=temperature_probe, verbosity=0) - T2) > temperature_tolerance:
             if verbosity >= 3:
                 print(
                     "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
                         self.temperature_setpoint() - 273.15,
-                        self.temperature(
-                            temperature_probe=temperature_probe, verbosity=0
-                        ),
+                        self.temperature(temperature_probe=temperature_probe, verbosity=0),
                     ),
                     end="",
                 )
@@ -271,10 +254,7 @@ class Sample(SampleTSAXS):
         self.setTemperature(T3, output_channel=output_channel, verbosity=verbosity)
 
         while (
-            abs(
-                self.temperature(temperature_probe=temperature_probe, verbosity=0)
-                - (T3 - 1)
-            )
+            abs(self.temperature(temperature_probe=temperature_probe, verbosity=0) - (T3 - 1))
             > temperature_tolerance
         ):
             self.measure(exposure_time=exposure_time)
@@ -311,9 +291,7 @@ class Sample(SampleTSAXS):
                 incident_angles = self.incident_angles
 
             swaxs_on()
-            self.measureIncidentAngles_Stitch(
-                incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md
-            )
+            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md)
             # waxs_on()
             # self._test2_measureIncidentAngles(self.incident_angles_default, exposure_time=self.WAXS_time, tiling='ygaps', **md)
 
@@ -326,10 +304,7 @@ class Sample(SampleTSAXS):
         ion_chamber_readout4 = caget("XF:11BMB-BI{IM:3}:IC4_MON")
 
         ion_chamber_readout = (
-            ion_chamber_readout1
-            + ion_chamber_readout2
-            + ion_chamber_readout3
-            + ion_chamber_readout4
+            ion_chamber_readout1 + ion_chamber_readout2 + ion_chamber_readout3 + ion_chamber_readout4
         )
 
         return ion_chamber_readout > 1 * 5e-08
@@ -363,9 +338,7 @@ class Sample(SampleTSAXS):
                 incident_angles = self.incident_angles
 
             saxs_on_det()
-            self.measureIncidentAngles_Stitch(
-                incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md
-            )
+            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md)
 
             # if self.exposure_time_SAXS==None:
             # self.measureIncidentAngles(incident_angles, exposure_time=self.SAXS_time, tiling=self.tiling, **md)
@@ -395,11 +368,7 @@ class Sample(SampleTSAXS):
             if get_beamline().current_mode != "alignment":
                 # if verbosity>=2:
                 # print("WARNING: Beamline is not in alignment mode (mode is '{}')".format(get_beamline().current_mode))
-                print(
-                    "Switching to alignment mode (current mode is '{}')".format(
-                        get_beamline().current_mode
-                    )
-                )
+                print("Switching to alignment mode (current mode is '{}')".format(get_beamline().current_mode))
                 get_beamline().modeAlignment()
 
             get_beamline().setDirectBeamROI()
@@ -438,9 +407,7 @@ class Sample(SampleTSAXS):
             waxs_on()
             # for detector in get_beamline().detector:
             # detector.setExposureTime(self.MAXS_time)
-            self.measureIncidentAngles_Stitch(
-                incident_angles, exposure_time=self.WAXS_time, tiling="ygaps", **md
-            )
+            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=self.WAXS_time, tiling="ygaps", **md)
 
             # if self.exposure_time_MAXS==None:
             # self.measureIncidentAngles(incident_angles, exposure_time=self.MAXS_time, tiling=self.tiling, **md)
@@ -449,9 +416,7 @@ class Sample(SampleTSAXS):
 
             self.thabs(0.0)
 
-    def do_WAXS(
-        self, step=0, align_step=0, reflection_angle=0.12, tiling="ygaps", **md
-    ):
+    def do_WAXS(self, step=0, align_step=0, reflection_angle=0.12, tiling="ygaps", **md):
         if step <= 1:
             saxs_on()
             get_beamline().modeAlignment()
@@ -482,9 +447,7 @@ class Sample(SampleTSAXS):
             waxs_on()  # edited from waxs_on 3/25/19 through a saxs_on error
             # for detector in get_beamline().detector:
             # detector.setExposureTime(self.MAXS_time)
-            self.measureIncidentAngles_Stitch(
-                incident_angles, exposure_time=self.WAXS_time, tiling=tiling, **md
-            )
+            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=self.WAXS_time, tiling=tiling, **md)
 
             # if self.exposure_time_MAXS==None:
             # self.measureIncidentAngles(incident_angles, exposure_time=self.MAXS_time, tiling=self.tiling, **md)
@@ -529,9 +492,7 @@ class Sample(SampleTSAXS):
         verbosity=3,
     ):
         # def ROI3 in 160pixels with the center located at reflection beam
-        get_beamline().setReflectedBeamROI(
-            total_angle=reflection_angle * 2, size=ROI_size
-        )  # set ROI3
+        get_beamline().setReflectedBeamROI(total_angle=reflection_angle * 2, size=ROI_size)  # set ROI3
 
         rel_th = 1
         ct = 0
@@ -566,9 +527,7 @@ class Sample(SampleTSAXS):
 
             rel_ypos = refl_ypos - ROI_size[1] / 2
 
-            rel_th = (
-                rel_ypos / get_beamline().SAXS.distance / 1000 * 0.172 / np.pi * 180 / 2
-            )
+            rel_th = rel_ypos / get_beamline().SAXS.distance / 1000 * 0.172 / np.pi * 180 / 2
 
             print("The th offset is {}".format(rel_th))
             self.thr(rel_th)
@@ -604,11 +563,7 @@ class Sample(SampleTSAXS):
             if get_beamline().current_mode != "alignment":
                 # if verbosity>=2:
                 # print("WARNING: Beamline is not in alignment mode (mode is '{}')".format(get_beamline().current_mode))
-                print(
-                    "Switching to alignment mode (current mode is '{}')".format(
-                        get_beamline().current_mode
-                    )
-                )
+                print("Switching to alignment mode (current mode is '{}')".format(get_beamline().current_mode))
                 get_beamline().modeAlignment()
 
             get_beamline().setDirectBeamROI()
@@ -650,9 +605,7 @@ class Sample(SampleTSAXS):
             )
 
             # Find the peak
-            self.thsearch(
-                step_size=0.4, min_step=0.01, target="max", verbosity=verbosity
-            )
+            self.thsearch(step_size=0.4, min_step=0.01, target="max", verbosity=verbosity)
 
         if step <= 4:
             if verbosity >= 4:

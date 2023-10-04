@@ -25,9 +25,7 @@ from bluesky.suspenders import SuspendFloor, SuspendCeil
 # RE.install_suspender(sus)
 
 
-RE.md[
-    "experiment_alias_directory"
-] = "/nsls2/data/cms/legacy/xf11bm/data/2023_1/beamline/Commissioning"
+RE.md["experiment_alias_directory"] = "/nsls2/data/cms/legacy/xf11bm/data/2023_1/beamline/Commissioning"
 # cms.SAXS.setCalibration([737, 1680-582], 3, [-65, -73]) #3m, 13.5kev
 # cms.SAXS.setCalibration([738, 1097], 3.0, [-65, -73])   #3m,13.5kev
 # cms.SAXS.setCalibration([738, 1680-590], 2, [-65, -73])
@@ -216,7 +214,7 @@ class Sample(SampleTSAXS):
         measure_type="Series_measure",
         verbosity=3,
         fill_gaps=False,
-        **md
+        **md,
     ):
         """
         Continueous shots with internal trigger of detectors. (burst mode)
@@ -285,9 +283,7 @@ class Sample(SampleTSAXS):
         savename = self.get_savename(savename_extra=extra)
         if verbosity >= 2 and (get_beamline().current_mode != "measurement"):
             print(
-                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(
-                    get_beamline().current_mode
-                )
+                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(get_beamline().current_mode)
             )
 
         if verbosity >= 1 and len(get_beamline().detector) < 1:
@@ -327,9 +323,7 @@ class Sample(SampleTSAXS):
         # data collected, link uid to file name
         for detector in cms.detector:
             print("handling the file names")
-            self.handle_fileseries(
-                detector, num_frames=num_frames, extra=extra, verbosity=verbosity, **md
-            )
+            self.handle_fileseries(detector, num_frames=num_frames, extra=extra, verbosity=verbosity, **md)
 
     # def setLinkamRate(self, rate):
     #     caput('XF:11BM-ES:{LINKAM}:RAMPRATE:SET', rate)
@@ -351,9 +345,7 @@ class Sample(SampleTSAXS):
     # def linkamTemperature(self):
     #     return caget('XF:11BM-ES:{LINKAM}:TEMP')
 
-    def measureTimeSeries_custom(
-        self, maxTime=60 * 60 * 6, exposure_time=10, interval=20, reset_clock=True
-    ):
+    def measureTimeSeries_custom(self, maxTime=60 * 60 * 6, exposure_time=10, interval=20, reset_clock=True):
         if reset_clock == True:
             self.reset_clock()
 
@@ -394,9 +386,7 @@ class Sample(SampleTSAXS):
         # self.measure(exposure_time)
         if step < 3:
             # for index, temperature in enumerate(temp_sequence):
-            for temperature, rate, wait_time in zip(
-                temp_sequence, rate_sequence, wait_sequence
-            ):
+            for temperature, rate, wait_time in zip(temp_sequence, rate_sequence, wait_sequence):
                 start_time = np.ceil(self.clock() / interval) * interval
                 trigger_time = np.arange(start_time, maxTime, interval)
                 LThermal.setTemperatureRate(rate)
@@ -436,7 +426,7 @@ class Sample(SampleTSAXS):
         extra=None,
         measure_type="measureTimeSeries",
         verbosity=3,
-        **md
+        **md,
     ):
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
@@ -447,7 +437,7 @@ class Sample(SampleTSAXS):
             extra=extra,
             measure_type=measure_type,
             verbosity=verbosity,
-            **md
+            **md,
         )
         self.naming_scheme = self.naming_scheme_hold
 
@@ -455,9 +445,7 @@ class Sample(SampleTSAXS):
         super().goto(label, verbosity=verbosity, **additional)
         # You can add customized 'goto' behavior here
 
-    def measureTimeSeries_custom(
-        self, maxTime=60 * 60 * 1.6, exposure_time=6, interval=12, reset_clock=True
-    ):
+    def measureTimeSeries_custom(self, maxTime=60 * 60 * 1.6, exposure_time=6, interval=12, reset_clock=True):
         if reset_clock == True:
             self.reset_clock()
 
@@ -578,9 +566,7 @@ class Sample(SampleTSAXS):
                 incident_angles = self.incident_angles
 
             swaxs_on()
-            self.measureIncidentAngles_Stitch(
-                incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md
-            )
+            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md)
             # waxs_on()
             # self._test2_measureIncidentAngles(self.incident_angles_default, exposure_time=self.WAXS_time, tiling='ygaps', **md)
 
@@ -699,7 +685,7 @@ class CapillaryHolderCustom(CapillaryHolder):
         int_measure=True,
         output_file="Transmission_output",
         verbosity=3,
-        **md
+        **md,
     ):
         if step < 5:
             swaxs_on()

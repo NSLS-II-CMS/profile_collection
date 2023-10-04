@@ -137,7 +137,7 @@ class Sample(SampleTSAXS):
         extra=None,
         measure_type="measureTimeSeries",
         verbosity=3,
-        **md
+        **md,
     ):
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
@@ -148,7 +148,7 @@ class Sample(SampleTSAXS):
             extra=extra,
             measure_type=measure_type,
             verbosity=verbosity,
-            **md
+            **md,
         )
         self.naming_scheme = self.naming_scheme_hold
 
@@ -277,9 +277,7 @@ class Sample(SampleTSAXS):
         # fit_scan(smy, 0.4, 13, fit='HMi')
         # fit_scan(sth, 0.8, 21, fit='COM')
 
-        self.ysearch(
-            step_size=0.05, min_step=0.01, intensity=intensity, target=0.5, polarity=-1
-        )
+        self.ysearch(step_size=0.05, min_step=0.01, intensity=intensity, target=0.5, polarity=-1)
         self.thsearch(step_size=0.1, min_step=0.01, target="max")
 
         self.setOrigin(["y", "th"])
@@ -296,10 +294,7 @@ class Sample(SampleTSAXS):
         ion_chamber_readout4 = caget("XF:11BMB-BI{IM:3}:IC4_MON")
 
         ion_chamber_readout = (
-            ion_chamber_readout1
-            + ion_chamber_readout2
-            + ion_chamber_readout3
-            + ion_chamber_readout4
+            ion_chamber_readout1 + ion_chamber_readout2 + ion_chamber_readout3 + ion_chamber_readout4
         )
 
         return ion_chamber_readout > 1 * 5e-08
@@ -365,7 +360,7 @@ class CapillaryHolderCustom(CapillaryHolder):
         verbosity=3,
         x_offset=-1,
         x_step=+0.10,
-        **md
+        **md,
     ):
         for sample in self.getSamples():
             # sample.incident_angles_default = [0.08, 0.1, 0.12]
@@ -399,10 +394,7 @@ class CapillaryHolderCustom(CapillaryHolder):
             flow_max()
             for temperature in self.temp_series_cooling:
                 self.setTemperature(temperature)
-                while (
-                    abs(self.temperature(verbosity=0) - temperature)
-                    > temperature_tolerance
-                ):
+                while abs(self.temperature(verbosity=0) - temperature) > temperature_tolerance:
                     if verbosity >= 3:
                         print(
                             "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
@@ -463,7 +455,7 @@ class CapillaryHolderCustom(CapillaryHolder):
         verbosity=3,
         x_offset=-1,
         x_step=+0.10,
-        **md
+        **md,
     ):
         for sample in self.getSamples():
             sample.naming_scheme = [
@@ -485,12 +477,7 @@ class CapillaryHolderCustom(CapillaryHolder):
             for temperature in self.temp_series_heating:
                 self.setTemperature(temperature)
                 while (
-                    abs(
-                        self.temperature(
-                            temperature_probe=temperature_probe, verbosity=0
-                        )
-                        - temperature
-                    )
+                    abs(self.temperature(temperature_probe=temperature_probe, verbosity=0) - temperature)
                     > temperature_tolerance
                 ):
                     if verbosity >= 3:
@@ -529,7 +516,7 @@ class CapillaryHolderCustom(CapillaryHolder):
         verbosity=3,
         x_offset=-1,
         x_step=+0.10,
-        **md
+        **md,
     ):
         for sample in self.getSamples():
             sample.naming_scheme = [
@@ -551,12 +538,7 @@ class CapillaryHolderCustom(CapillaryHolder):
             for temperature in self.temp_series:
                 self.setTemperature(temperature)
                 while (
-                    abs(
-                        self.temperature(
-                            temperature_probe=temperature_probe, verbosity=0
-                        )
-                        - temperature
-                    )
+                    abs(self.temperature(temperature_probe=temperature_probe, verbosity=0) - temperature)
                     > temperature_tolerance
                 ):
                     if verbosity >= 3:
@@ -595,7 +577,7 @@ class CapillaryHolderCustom(CapillaryHolder):
         verbosity=3,
         x_offset=-1,
         x_step=+0.10,
-        **md
+        **md,
     ):
         for sample in self.getSamples():
             # sample.incident_angles_default = [0.08, 0.1, 0.12]
@@ -675,7 +657,7 @@ class GIBarCustom(GIBar_long_thermal):
         verbosity=3,
         x_offset=-1,
         x_step=+0.10,
-        **md
+        **md,
     ):
         self.incident_angles_default = [0.08, 0.1, 0.12]
         self.naming_scheme = [
@@ -703,10 +685,7 @@ class GIBarCustom(GIBar_long_thermal):
             flow_max()
             for temperature in self.temp_series_cooling1:
                 self.setTemperature(temperature)
-                while (
-                    abs(self.temperature(verbosity=0) - temperature)
-                    > temperature_tolerance
-                ):
+                while abs(self.temperature(verbosity=0) - temperature) > temperature_tolerance:
                     if verbosity >= 3:
                         print(
                             "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
@@ -740,9 +719,7 @@ class GIBarCustom(GIBar_long_thermal):
                         for sample in self.getSamples():
                             sample.gotoOrigin(["x", "y", "th"])
                             sample.xr(x_offset)
-                            sample.alignVeryQuick(
-                                intensity=INTENSITY_EXPECTED_025, mode_control=False
-                            )
+                            sample.alignVeryQuick(intensity=INTENSITY_EXPECTED_025, mode_control=False)
 
                         get_beamline().modeMeasurement()
 
@@ -760,13 +737,9 @@ class GIBarCustom(GIBar_long_thermal):
                     sample.gotoOrigin(["x", "y", "th"])
                     sample.xr(x_offset)
                     if sample.name == "2B":
-                        sample.measureIncidentAngles(
-                            exposure_time=exposure_time_WAXS / 3, **md
-                        )
+                        sample.measureIncidentAngles(exposure_time=exposure_time_WAXS / 3, **md)
                     else:
-                        sample.measureIncidentAngles(
-                            exposure_time=exposure_time_WAXS, **md
-                        )
+                        sample.measureIncidentAngles(exposure_time=exposure_time_WAXS, **md)
                     sample.thabs(0.0)
 
         # heating process
@@ -774,10 +747,7 @@ class GIBarCustom(GIBar_long_thermal):
             flow_off()
             for temperature in self.temp_series_heating1:
                 self.setTemperature(temperature)
-                while (
-                    abs(self.temperature(verbosity=0) - temperature)
-                    > temperature_tolerance
-                ):
+                while abs(self.temperature(verbosity=0) - temperature) > temperature_tolerance:
                     if verbosity >= 3:
                         print(
                             "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
@@ -811,9 +781,7 @@ class GIBarCustom(GIBar_long_thermal):
                         for sample in self.getSamples():
                             sample.gotoOrigin(["x", "y", "th"])
                             sample.xr(x_offset)
-                            sample.alignVeryQuick(
-                                intensity=INTENSITY_EXPECTED_025, mode_control=False
-                            )
+                            sample.alignVeryQuick(intensity=INTENSITY_EXPECTED_025, mode_control=False)
 
                         beam.off()
                         get_beamline().modeMeasurement()
@@ -832,13 +800,9 @@ class GIBarCustom(GIBar_long_thermal):
                     sample.gotoOrigin(["x", "y", "th"])
                     sample.xr(x_offset)
                     if sample.name == "2B":
-                        sample.measureIncidentAngles(
-                            exposure_time=exposure_time_WAXS / 3, **md
-                        )
+                        sample.measureIncidentAngles(exposure_time=exposure_time_WAXS / 3, **md)
                     else:
-                        sample.measureIncidentAngles(
-                            exposure_time=exposure_time_WAXS, **md
-                        )
+                        sample.measureIncidentAngles(exposure_time=exposure_time_WAXS, **md)
                     sample.thabs(0.0)
 
         if step < 20:

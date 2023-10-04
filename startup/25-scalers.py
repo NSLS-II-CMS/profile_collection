@@ -87,18 +87,14 @@ class EpicsSignalROWait(ophyd.EpicsSignalRO):
         return super().read(*args, **kwargs)
 
 
-bim6 = EpicsSignalROWait(
-    "XF:11BMB-BI{IM:2}EM180:Current1:MeanValue_RBV", wait_time=1, name="bim6"
-)
+bim6 = EpicsSignalROWait("XF:11BMB-BI{IM:2}EM180:Current1:MeanValue_RBV", wait_time=1, name="bim6")
 
 
 class EpicsSignalROIntegrate(ophyd.EpicsSignalRO):
     """Customized version of EpicsSignal that has manually integrates (averages
     a few values). This can be used for signals that are otherwise too erratic."""
 
-    def __init__(
-        self, *args, wait_time=None, integrate_num=1, integrate_delay=0.01, **kwargs
-    ):
+    def __init__(self, *args, wait_time=None, integrate_num=1, integrate_delay=0.01, **kwargs):
         if wait_time is not None:
             self._wait_time = wait_time
         else:

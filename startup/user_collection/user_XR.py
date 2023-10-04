@@ -99,7 +99,7 @@ class Sample(SampleXR_WAXS):
         extra=None,
         measure_type="measureTimeSeries",
         verbosity=3,
-        **md
+        **md,
     ):
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
@@ -110,7 +110,7 @@ class Sample(SampleXR_WAXS):
             extra=extra,
             measure_type=measure_type,
             verbosity=verbosity,
-            **md
+            **md,
         )
         self.naming_scheme = self.naming_scheme_hold
 
@@ -177,10 +177,7 @@ class Sample(SampleXR_WAXS):
                 value = detector.read()[value_name]["value"]
                 self.yr(+2)
 
-            if (
-                "beam_intensity_expected" in RE.md
-                and value < RE.md["beam_intensity_expected"] * 0.75
-            ):
+            if "beam_intensity_expected" in RE.md and value < RE.md["beam_intensity_expected"] * 0.75:
                 print(
                     "WARNING: Direct beam intensity ({}) lower than it should be ({})".format(
                         value, RE.md["beam_intensity_expected"]
@@ -198,9 +195,7 @@ class Sample(SampleXR_WAXS):
             )
 
             # Find the peak
-            self.thsearch(
-                step_size=0.4, min_step=0.01, target="max", verbosity=verbosity
-            )
+            self.thsearch(step_size=0.4, min_step=0.01, target="max", verbosity=verbosity)
 
         if step <= 4:
             if verbosity >= 4:
@@ -267,9 +262,7 @@ class Sample(SampleXR_WAXS):
         # fit_scan(smy, 0.4, 13, fit='HMi')
         # fit_scan(sth, 0.8, 21, fit='COM')
 
-        self.ysearch(
-            step_size=0.05, min_step=0.01, intensity=intensity, target=0.5, polarity=-1
-        )
+        self.ysearch(step_size=0.05, min_step=0.01, intensity=intensity, target=0.5, polarity=-1)
         self.thsearch(step_size=0.1, min_step=0.01, target="max")
 
         self.setOrigin(["y", "th"])
@@ -306,9 +299,7 @@ class Sample(SampleXR_WAXS):
             self.XR_check_alignment(th_angle=1, roi_size=[10, 10])
             # self.XR_scan(theta_range=[0, .15], theta_delta=0.01, roi_size=[10,10], exposure_time=1)
             # self.XR_scan(theta_range=[0, .5], theta_delta=0.015, roi_size=[10,10], exposure_time=1)
-            self.XR_scan(
-                theta_range=[0, 3], theta_delta=0.04, roi_size=[10, 10], exposure_time=1
-            )
+            self.XR_scan(theta_range=[0, 3], theta_delta=0.04, roi_size=[10, 10], exposure_time=1)
             self.tho()
             # saxs_on()
             # self.measureIncidentAngles(self.incident_angles_default, exposure_time=self.SAXS_time , **md)
@@ -401,7 +392,7 @@ class GIBarCustom(GIBar_long_thermal):
         wait_time=200,
         verbosity=3,
         x_step=0.20,
-        **md
+        **md,
     ):
         # will do heat only
         # TODO change beamstop
@@ -439,10 +430,7 @@ class GIBarCustom(GIBar_long_thermal):
         if step < 10:
             for ct, temperature in np.ndenumerate(self.temp_series):
                 self.setTemperature(temperature)
-                while (
-                    abs(self.temperature(verbosity=0) - temperature)
-                    > temperature_tolerance
-                ):
+                while abs(self.temperature(verbosity=0) - temperature) > temperature_tolerance:
                     if verbosity >= 3:
                         print(
                             "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
@@ -479,9 +467,7 @@ RE.md["experiment_project"] = "polymeric semiconductor thin films"
 
 print("\n\n\nReminders:")
 print("    Define your detectors using, e.g.: detselect(pilatus2M)")
-print(
-    "    Reload your user-specific script, e.g.: %run -i /GPFS/xf11bm/data/2017_2/user_group/user.py"
-)
+print("    Reload your user-specific script, e.g.: %run -i /GPFS/xf11bm/data/2017_2/user_group/user.py")
 print("\n")
 
 

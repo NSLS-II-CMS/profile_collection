@@ -94,8 +94,7 @@ s5 = MotorCenterAndGap("XF:11BMB-OP{Slt:5", name="s5")
 
 # attenuators
 filters = {
-    f"filter{ifoil}": Filter(f"XF:11BMB-OP{{Fltr:{ifoil}}}", name=f"filter{ifoil}")
-    for ifoil in range(1, 8 + 1)
+    f"filter{ifoil}": Filter(f"XF:11BMB-OP{{Fltr:{ifoil}}}", name=f"filter{ifoil}") for ifoil in range(1, 8 + 1)
 }
 # filters_sts = [fil.sts.get() for fil in filters.values()]
 # filters_cmd = [fil.cmd.get() for fil in filters.values()]
@@ -114,8 +113,12 @@ bim5y = EpicsMotor("XF:11BMB-BI{IM:5-Ax:Y}Mtr", name="bim5y")
 if beamline_stage == "default":
     smx = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:X}Mtr", name="smx")
     smy = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:Z}Mtr", name="smy")
+    # 2023-Sep-12, change sth and schi back to original setting
     sth = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:theta}Mtr", name="sth")
     schi = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:chi}Mtr", name="schi")
+    # 2023-Jul-29 theta not stable, switch to chi for incident angle
+    # sth = EpicsMotor('XF:11BMB-ES{Chm:Smpl-Ax:chi}Mtr', name='sth')
+    # schi = EpicsMotor('XF:11BMB-ES{Chm:Smpl-Ax:theta}Mtr', name='schi')
 
 elif beamline_stage == "open_MAXS":
     smx = EpicsMotor("XF:11BMB-ES{Chm:Smpl2-Ax:X}Mtr", name="smx")
@@ -133,20 +136,25 @@ elif beamline_stage == "BigHuber":
     sth = EpicsMotor("XF:11BMB-ES{Chm:Smpl3-Ax:theta}Mtr", name="sth")
     schi = EpicsMotor("XF:11BMB-ES{Chm:Smpl3-Ax:chi}Mtr", name="schi")
 
-    # Newports
-    smx = EpicsMotor("XF:11BMB-ES{PTA:Sample-Ax:X}Mtr", name="smx")
-    laserx = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:X}Mtr", name="laserx")
-    lasery = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:Y}Mtr", name="lasery")
+    # # Newports for PTA
+    # smx = EpicsMotor('XF:11BMB-ES{PTA:Sample-Ax:X}Mtr', name='smx')
+    # laserx = EpicsMotor('XF:11BMB-ES{PTA:Laser-Ax:X}Mtr', name='laserx')
+    # lasery = EpicsMotor('XF:11BMB-ES{PTA:Laser-Ax:Y}Mtr', name='lasery')
+
+    # # GDoerk's spray coater
+    smx = EpicsMotor("XF:11BMB-ES{Chm:Smpl2-Ax:X}Mtr", name="smx")
 
 
 # goniometer
 smy2 = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:Y}Mtr", name="smy2")
 sphi = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:phi}Mtr", name="sphi")
-# srot = EpicsMotor('XF:11BMB-ES{SM:1-Ax:Srot}Mtr', name='srot')
-# strans = EpicsMotor('XF:11BMB-ES{SM:1-Ax:Strans}Mtr', name='strans')
-# strans2 = EpicsMotor('XF:11BMB-ES{SM:1-Ax:Strans2}Mtr', name='strans2')
-# stilt = EpicsMotor('XF:11BMB-ES{SM:1-Ax:Stilt}Mtr', name='stilt')
-# stilt2 = EpicsMotor('XF:11BMB-ES{SM:1-Ax:Stilt2}Mtr', name='stilt2')
+
+
+srot = EpicsMotor("XF:11BMB-ES{SM:1-Ax:Srot}Mtr", name="srot")
+strans = EpicsMotor("XF:11BMB-ES{SM:1-Ax:Strans}Mtr", name="strans")
+strans2 = EpicsMotor("XF:11BMB-ES{SM:1-Ax:Strans2}Mtr", name="strans2")
+stilt = EpicsMotor("XF:11BMB-ES{SM:1-Ax:Stilt}Mtr", name="stilt")
+stilt2 = EpicsMotor("XF:11BMB-ES{SM:1-Ax:Stilt2}Mtr", name="stilt2")
 
 # the srot is fixed after repair but two module controllers are broken,
 # strans, strans2, stilt, stilt2 and strot are moved to backup controllers
@@ -157,11 +165,11 @@ sphi = EpicsMotor("XF:11BMB-ES{Chm:Smpl-Ax:phi}Mtr", name="sphi")
 # stilt2 = EpicsMotor('XF:11BMB-ES{Spare:L-Ax:1}Mtr', name='stilt2')
 # srot = EpicsMotor('XF:11BMB-ES{Spare:L-Ax:L}Mtr', name='srot')
 
-srot = None
-strans = None
-strans2 = None
-stilt = None
-stilt2 = None
+# srot = None
+# strans = None
+# strans2 = None
+# stilt = None
+# stilt2 = None
 
 ## stages for on-axis sample camera mirror/lens
 camx = EpicsMotor("XF:11BMB-ES{Cam:OnAxis-Ax:X1}Mtr", name="camx")
@@ -210,6 +218,11 @@ bsphi = EpicsMotor("XF:11BMB-ES{Spare:L-Ax:M}Mtr", name="bsphi")
 
 ##stage for vacuum gate
 gatex = EpicsMotor("XF:11BMB-ES{Chm:Gate-Ax:X}Mtr", name="gatex")
+
+
+# For MDrive (X, Y, edited by YZ, 20230920)
+mdx = EpicsMotor("XF:11BM-ES{Mdrive-Ax:X}Mtr", name="mdx")
+mdy = EpicsMotor("XF:11BM-ES{Mdrive-Ax:Y}Mtr", name="mdy")
 
 
 ## easy access for stages

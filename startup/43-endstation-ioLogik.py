@@ -119,14 +119,7 @@ for ii in range(1, 7):
 
 class ioLogik(Device):
     def __init__(
-        self,
-        prefix="",
-        *args,
-        read_attrs=None,
-        configuration_attrs=None,
-        name="ioLogik",
-        parent=None,
-        **kwargs
+        self, prefix="", *args, read_attrs=None, configuration_attrs=None, name="ioLogik", parent=None, **kwargs
     ):
         super().__init__(
             prefix=prefix,
@@ -135,7 +128,7 @@ class ioLogik(Device):
             configuration_attrs=configuration_attrs,
             name=name,
             parent=parent,
-            **kwargs
+            **kwargs,
         )
 
     def read(self, port):
@@ -153,9 +146,7 @@ class ioLogik(Device):
                 caput(port.sp, val)
                 if verbosity >= 3:
                     time.sleep(0.2)
-                    return print(
-                        "The {} is set as {}.".format(port.name, self.read(port))
-                    )
+                    return print("The {} is set as {}.".format(port.name, self.read(port)))
         else:
             print("The port is not valid.")
 
@@ -219,11 +210,7 @@ class ioLogik(Device):
 
         if verbosity >= 3:
             print("Raw sensor RH = {:.3f} pct.".format(sensor_RH))
-            print(
-                "T-corrected RH = {:.3f} pct at {:.3f} degC.".format(
-                    true_RH, temperature
-                )
-            )
+            print("T-corrected RH = {:.3f} pct at {:.3f} degC.".format(true_RH, temperature))
         return true_RH
 
 
@@ -249,7 +236,7 @@ class ioLogik(Device):
 
 class MassFlowControl(Device):
     def __init__(self):
-        pass
+        self.setDevice()
         # self.FlowRate_Sts = 'XF:11BMB-ES{FC:1}F-I'
         # self.FlowRate_SP = 'XF:11BMB-ES{FC:1}F:SP-SP'
         # self.Mode_Sts = 'XF:11BMB-ES{FC:1}Mode:Opr-Sts'
@@ -279,9 +266,7 @@ class MassFlowControl(Device):
         self.Mode_Sts = "XF:11BMB-ES{{FC:{}}}Mode:Opr-Sts".format(device_no)
         self.Mode_SP = "XF:11BMB-ES{{FC:{}}}Mode:Opr-Sel".format(device_no)
         self.ScaleFactor_SP = "XF:11BMB-ES{{FC:{}}}Val:ScaleFactor-SP".format(device_no)
-        self.ScaleFactor_Sts = "XF:11BMB-ES{{FC:{}}}Val:ScaleFactor-RB".format(
-            device_no
-        )
+        self.ScaleFactor_Sts = "XF:11BMB-ES{{FC:{}}}Val:ScaleFactor-RB".format(device_no)
         self.NominalRange_SP = "XF:11BMB-ES{{FC:{}}}F:FullRng-SP".format(device_no)
         self.NominalRange_Sts = "XF:11BMB-ES{{FC:{}}}F:FullRng-RB".format(device_no)
 
@@ -390,11 +375,7 @@ class MassFlowControl(Device):
 
         self.setDevice(device=device)
         if verbosity >= 3:
-            print(
-                "The range of this MFC device is up to {} SCCM.".format(
-                    caget(self.NominalRange_Sts)
-                )
-            )
+            print("The range of this MFC device is up to {} SCCM.".format(caget(self.NominalRange_Sts)))
         return caget(self.NominalRange_Sts)
 
     def setDeviceRange(self, val, device=None, verbosity=3):
@@ -480,15 +461,9 @@ class SorrensonPowerSupply(Device):
             else:
                 print("Current status = OFF")
             print(
-                "Current V = {:.1f}, setpoint V = {:.1f}.".format(
-                    self.voltage.get(), self.voltage_setpoint.get()
-                )
+                "Current V = {:.1f}, setpoint V = {:.1f}.".format(self.voltage.get(), self.voltage_setpoint.get())
             )
-            print(
-                "Current I = {:.1f}, limit I = {:.1f}.".format(
-                    self.current.get(), self.current_setpoint.get()
-                )
-            )
+            print("Current I = {:.1f}, limit I = {:.1f}.".format(self.current.get(), self.current_setpoint.get()))
         return self.state(verbosity=0), self.voltage.get(), self.current.get()
 
     def setVoltageLinear(self, Vstart, Vend, period, wait_time=0.1, verbosity=3):
@@ -561,11 +536,7 @@ class Chiller(Device):
 
     def temperature_setpoint(self, verbosity=3):
         if verbosity >= 3:
-            print(
-                "The set point of temperature is to {}.".format(
-                    self.ChillerSetpoint.get()
-                )
-            )
+            print("The set point of temperature is to {}.".format(self.ChillerSetpoint.get()))
         return self.ChillerSetpoint.get()
 
 

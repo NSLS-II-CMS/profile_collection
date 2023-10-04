@@ -213,10 +213,7 @@ class Sample(SampleTSAXS):
                 value = detector.read()[value_name]["value"]
                 self.yr(+2)
 
-            if (
-                "beam_intensity_expected" in RE.md
-                and value < RE.md["beam_intensity_expected"] * 0.75
-            ):
+            if "beam_intensity_expected" in RE.md and value < RE.md["beam_intensity_expected"] * 0.75:
                 print(
                     "WARNING: Direct beam intensity ({}) lower than it should be ({})".format(
                         value, RE.md["beam_intensity_expected"]
@@ -234,9 +231,7 @@ class Sample(SampleTSAXS):
             )
 
             # Find the peak
-            self.thsearch(
-                step_size=0.4, min_step=0.01, target="max", verbosity=verbosity
-            )
+            self.thsearch(step_size=0.4, min_step=0.01, target="max", verbosity=verbosity)
 
         if step <= 4:
             if verbosity >= 4:
@@ -293,7 +288,7 @@ class Sample(SampleTSAXS):
         verbosity=3,
         tiling=False,
         fix_name=True,
-        **md
+        **md,
     ):
         # Initial sam.do() alignment of the sample seems to dewet (ionize the air around) the sample so multix time series should not include the x position of the alignment for best measurements.
         if fix_name and ("clock" not in self.naming_scheme):
@@ -344,23 +339,14 @@ class Sample(SampleTSAXS):
             for temperature in temp_cool_seq:
                 self.setTemperature(temperature, output_channel="3")
                 while (
-                    abs(
-                        self.temperature(
-                            temperature_probe=temperature_probe, output_channel="3"
-                        )
-                        - temperature
-                    )
+                    abs(self.temperature(temperature_probe=temperature_probe, output_channel="3") - temperature)
                     > temp_tolerance
                 ):
                     time.sleep(2)
-                    self.temperature(
-                        temperature_probe=temperature_probe, output_channel="3"
-                    )
+                    self.temperature(temperature_probe=temperature_probe, output_channel="3")
 
                 print(
-                    "reach the set temperature: {}C and start waiting for {}s".format(
-                        temperature, wait_time_cool
-                    )
+                    "reach the set temperature: {}C and start waiting for {}s".format(temperature, wait_time_cool)
                 )
                 time.sleep(wait_time_cool)
                 self.measure(exposure_time=exposure_time)
@@ -378,32 +364,20 @@ class Sample(SampleTSAXS):
         temp_update_time=5,
         exposure_time=0,
     ):
-        if (
-            temperature_start == None
-            or temperature_start < 0.0
-            or temperature_start >= 250
-        ):
+        if temperature_start == None or temperature_start < 0.0 or temperature_start >= 250:
             print("temperature_start must be set between 0 and 250 degC.\n")
             return 0
 
-        if (
-            temperature_final == None
-            or temperature_final < 0.0
-            or temperature_final >= 250
-        ):
+        if temperature_final == None or temperature_final < 0.0 or temperature_final >= 250:
             print("temperature_final must be set between 0 and 250 degC.\n")
             return 0
 
         temperature_step = (temperature_final - temperature_start) / abs(num_intervals)
 
         if temperature_final < temperature_start:
-            temperature_series = np.arange(
-                temperature_start, temperature_final - 0.0001, temperature_step
-            )
+            temperature_series = np.arange(temperature_start, temperature_final - 0.0001, temperature_step)
         else:
-            temperature_series = np.arange(
-                temperature_start, temperature_final + 0.0001, temperature_step
-            )
+            temperature_series = np.arange(temperature_start, temperature_final + 0.0001, temperature_step)
 
         tscan_zero_time = time.time()
         self.tscan_seconds = []
@@ -425,9 +399,7 @@ class Sample(SampleTSAXS):
             for t_wait in np.arange(0, wait_time, temp_update_time):
                 time.sleep(temp_update_time)
                 current_time = time.time() - tscan_zero_time
-                current_temperature = self.temperature(
-                    temperature_probe="C", output_channel="3", verbosity=2
-                )
+                current_temperature = self.temperature(temperature_probe="C", output_channel="3", verbosity=2)
                 self.tscan_seconds.append(current_time)
                 self.tscan_degC.append(current_temperature)
                 print("{:.3f} {:.3f}".format(current_time, current_temperature))
@@ -470,10 +442,7 @@ class Sample(SampleTSAXS):
         ion_chamber_readout4 = caget("XF:11BMB-BI{IM:3}:IC4_MON")
 
         ion_chamber_readout = (
-            ion_chamber_readout1
-            + ion_chamber_readout2
-            + ion_chamber_readout3
-            + ion_chamber_readout4
+            ion_chamber_readout1 + ion_chamber_readout2 + ion_chamber_readout3 + ion_chamber_readout4
         )
 
         return ion_chamber_readout > 1 * 1e-08
@@ -484,9 +453,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
         super().__init__(name=name, base=base, **kwargs)
 
         self._axes["y"].origin = 13.4  # smy position for slot 4 of 7-capillary cassette
-        self._axes[
-            "x"
-        ].origin = -17.6  # smx position for slot 4 of 7-capillary cassette
+        self._axes["x"].origin = -17.6  # smx position for slot 4 of 7-capillary cassette
 
         # self.temperatures_default = [30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 165, 160, 155, 150, 145, 140, 135, 130, 125, 120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 60, 55, 50, 45, 40, 35]
 
@@ -506,32 +473,20 @@ class CapillaryHoldeCustom(CapillaryHolder):
         temp_update_time=5,
         exposure_time=0,
     ):
-        if (
-            temperature_start == None
-            or temperature_start < 0.0
-            or temperature_start >= 250
-        ):
+        if temperature_start == None or temperature_start < 0.0 or temperature_start >= 250:
             print("temperature_start must be set between 0 and 250 degC.\n")
             return 0
 
-        if (
-            temperature_final == None
-            or temperature_final < 0.0
-            or temperature_final >= 250
-        ):
+        if temperature_final == None or temperature_final < 0.0 or temperature_final >= 250:
             print("temperature_final must be set between 0 and 250 degC.\n")
             return 0
 
         temperature_step = (temperature_final - temperature_start) / abs(num_intervals)
 
         if temperature_final < temperature_start:
-            temperature_series = np.arange(
-                temperature_start, temperature_final - 0.0001, temperature_step
-            )
+            temperature_series = np.arange(temperature_start, temperature_final - 0.0001, temperature_step)
         else:
-            temperature_series = np.arange(
-                temperature_start, temperature_final + 0.0001, temperature_step
-            )
+            temperature_series = np.arange(temperature_start, temperature_final + 0.0001, temperature_step)
 
         tscan_zero_time = time.time()
         self.tscan_seconds = []
@@ -553,9 +508,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
             for t_wait in np.arange(0, wait_time, temp_update_time):
                 time.sleep(temp_update_time)
                 current_time = time.time() - tscan_zero_time
-                current_temperature = self.temperature(
-                    temperature_probe="C", output_channel="3", verbosity=2
-                )
+                current_temperature = self.temperature(temperature_probe="C", output_channel="3", verbosity=2)
                 self.tscan_seconds.append(current_time)
                 self.tscan_degC.append(current_temperature)
                 print("{:.3f} {:.3f}".format(current_time, current_temperature))
@@ -612,9 +565,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
             self.temperature(temperature_probe="B")
             time.sleep(30)
             while self.IC_int() == False:
-                print(
-                    "The beam intensity is lower than it should be. Beam may be lost."
-                )
+                print("The beam intensity is lower than it should be. Beam may be lost.")
                 sleep(120)
             # for tt in self.temperature_default:
             # if abs(temperature-tt)<0.01:
@@ -629,14 +580,10 @@ class CapillaryHoldeCustom(CapillaryHolder):
             self.temperature(temperature_probe="B")
             time.sleep(30)
             while self.IC_int() == False:
-                print(
-                    "The beam intensity is lower than it should be. Beam may be lost."
-                )
+                print("The beam intensity is lower than it should be. Beam may be lost.")
                 time.sleep(120)
 
-    def do_series(
-        self, y_pos=2.6, exposure_time=10, num_frames=5000, wait_time=0, verbosity=3
-    ):
+    def do_series(self, y_pos=2.6, exposure_time=10, num_frames=5000, wait_time=0, verbosity=3):
         for ii in range(num_frames):
             for sample in self.getSamples():
                 if verbosity >= 3:
@@ -688,10 +635,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
 
     def do_series_smarter(self, num_frames=5000, wait_time=0):
         for ii in range(num_frames):
-            if (
-                self.temperature(temperature_probe="B") > 25
-                and self.temperature(temperature_probe="B") < 70
-            ):
+            if self.temperature(temperature_probe="B") > 25 and self.temperature(temperature_probe="B") < 70:
                 detselect([pilatus2M, psccd])
                 self.doSamples()
             elif self.temperature(temperature_probe="B") > 70:
@@ -703,9 +647,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
                 time.sleep(wait_time)
 
             while self.IC_int() == False:
-                print(
-                    "The beam intensity is lower than it should be. Beam may be lost."
-                )
+                print("The beam intensity is lower than it should be. Beam may be lost.")
                 sleep(120)
 
     def do_series_temperature(self, temperature=120, num_frames=5000, wait_time=0):
@@ -718,9 +660,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
                 time.sleep(wait_time)
 
             while self.IC_int() == False:
-                print(
-                    "The beam intensity is lower than it should be. Beam may be lost."
-                )
+                print("The beam intensity is lower than it should be. Beam may be lost.")
                 time.sleep(120)
 
             if self.temperature < temperature + 1:
@@ -744,9 +684,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
                 time.sleep(wait_time)
 
             while self.IC_int() == False:
-                print(
-                    "The beam intensity is lower than it should be. Beam may be lost."
-                )
+                print("The beam intensity is lower than it should be. Beam may be lost.")
                 sleep(120)
 
     def IC_int(self):
@@ -756,10 +694,7 @@ class CapillaryHoldeCustom(CapillaryHolder):
         ion_chamber_readout4 = caget("XF:11BMB-BI{IM:3}:IC4_MON")
 
         ion_chamber_readout = (
-            ion_chamber_readout1
-            + ion_chamber_readout2
-            + ion_chamber_readout3
-            + ion_chamber_readout4
+            ion_chamber_readout1 + ion_chamber_readout2 + ion_chamber_readout3 + ion_chamber_readout4
         )
 
         return ion_chamber_readout > 1 * 1e-08

@@ -27,7 +27,7 @@ class Agilent_34970A(Device):
         configuration_attrs=None,
         name="Agilent_34970A",
         parent=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             prefix=prefix,
@@ -36,7 +36,7 @@ class Agilent_34970A(Device):
             configuration_attrs=configuration_attrs,
             name=name,
             parent=parent,
-            **kwargs
+            **kwargs,
         )
 
         # self.port_number = 9
@@ -92,11 +92,7 @@ class Agilent_34970A(Device):
         txt = ""
         msg_received = ""
 
-        while (
-            terminator not in txt
-            and time.time() - start_time < timeout_s
-            and amount_received < amount_cutoff
-        ):
+        while terminator not in txt and time.time() - start_time < timeout_s and amount_received < amount_cutoff:
             try:
                 data = self.sock.recv(1)
             except:
@@ -142,9 +138,7 @@ class Agilent_34970A(Device):
         read_channel = int(self.HP34901_channel + channel)
         self.send_socket("INPUT:IMP:AUTO ON, (@{chan})\n".format(chan=read_channel))
         self.send_socket("SENSE:ZERO:AUTO ON, (@{chan})\n".format(chan=read_channel))
-        self.send_socket(
-            "MEAS:VOLT:DC? AUTO,MAX, (@{chan})\n".format(chan=read_channel)
-        )
+        self.send_socket("MEAS:VOLT:DC? AUTO,MAX, (@{chan})\n".format(chan=read_channel))
         dcv = float(self.read_socket(verbosity=1))
 
         if verbosity > 1:
@@ -166,19 +160,11 @@ class Agilent_34970A(Device):
             return 0
 
         dac_channel = int(self.HP34907_channel + channel + 3)
-        self.send_socket(
-            "SOURCE:VOLTAGE {volts}, (@{chan})\n".format(
-                volts=voltage, chan=dac_channel
-            )
-        )
+        self.send_socket("SOURCE:VOLTAGE {volts}, (@{chan})\n".format(volts=voltage, chan=dac_channel))
         # self.send_socket('SOURCE:VOLTAGE {volts}, (@{chan})\r'.format(volts=voltage, chan=dac_channel))
 
         if verbosity > 1:
-            print(
-                "DAC output channel {chan} set to {volts} VDC.\n".format(
-                    chan=channel, volts=voltage
-                )
-            )
+            print("DAC output channel {chan} set to {volts} VDC.\n".format(chan=channel, volts=voltage))
 
         return 1
 
@@ -193,11 +179,7 @@ class Agilent_34970A(Device):
         voltage = float(self.read_socket(verbosity=1))
 
         if verbosity > 1:
-            print(
-                "DAC output channel {chan} set to {volts} VDC.\n".format(
-                    chan=channel, volts=voltage
-                )
-            )
+            print("DAC output channel {chan} set to {volts} VDC.\n".format(chan=channel, volts=voltage))
 
         return voltage
 
@@ -210,18 +192,10 @@ class Agilent_34970A(Device):
         dio_channel = int(self.HP34907_channel + channel)
         diovalue = (value ^ 0xF) & 0xF
         # self.send_socket('SOURCE:DIGITAL:DATA:BYTE {byte}, (@{chan})\n'.format(byte=diovalue, chan=dio_channel))
-        self.send_socket(
-            "SOURCE:DIGITAL:DATA:BYTE {byte}, (@{chan})\n".format(
-                byte=value, chan=dio_channel
-            )
-        )
+        self.send_socket("SOURCE:DIGITAL:DATA:BYTE {byte}, (@{chan})\n".format(byte=value, chan=dio_channel))
 
         if verbosity > 1:
-            print(
-                "DIO output channel {chan} set to {val}.\n".format(
-                    chan=channel, val=value
-                )
-            )
+            print("DIO output channel {chan} set to {val}.\n".format(chan=channel, val=value))
 
         return 1
 
@@ -232,18 +206,12 @@ class Agilent_34970A(Device):
             return 0
 
         dio_channel = int(self.HP34907_channel + channel)
-        self.send_socket(
-            "SOURCE:DIGITAL:DATA:BYTE? (@{chan})\n".format(chan=dio_channel)
-        )
+        self.send_socket("SOURCE:DIGITAL:DATA:BYTE? (@{chan})\n".format(chan=dio_channel))
         value = int(self.read_socket(verbosity=1))
         diovalue = (value ^ 0xF) & 0xF
 
         if verbosity > 1:
-            print(
-                "DIO output channel {chan} set to {val}.\n".format(
-                    chan=channel, val=value
-                )
-            )
+            print("DIO output channel {chan} set to {val}.\n".format(chan=channel, val=value))
 
         return value
 
@@ -261,7 +229,7 @@ class Keithley_2000(Device):
         configuration_attrs=None,
         name="Keithley_2000",
         parent=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             prefix=prefix,
@@ -270,7 +238,7 @@ class Keithley_2000(Device):
             configuration_attrs=configuration_attrs,
             name=name,
             parent=parent,
-            **kwargs
+            **kwargs,
         )
 
         # self.port_number = 10
@@ -324,11 +292,7 @@ class Keithley_2000(Device):
         txt = ""
         msg_received = ""
 
-        while (
-            terminator not in txt
-            and time.time() - start_time < timeout_s
-            and amount_received < amount_cutoff
-        ):
+        while terminator not in txt and time.time() - start_time < timeout_s and amount_received < amount_cutoff:
             try:
                 data = self.sock.recv(1)
             except:
@@ -375,11 +339,7 @@ class Keithley_2000(Device):
         ohm = float(self.read_socket(verbosity=1))
 
         if verbosity > 1:
-            print(
-                "The resistance on channel {chan} is {res} Ohm.\n".format(
-                    chan=channel, res=ohm
-                )
-            )
+            print("The resistance on channel {chan} is {res} Ohm.\n".format(chan=channel, res=ohm))
 
         return ohm
 
@@ -394,11 +354,7 @@ class Keithley_2000(Device):
         dcv = float(self.read_socket(verbosity=1))
 
         if verbosity > 1:
-            print(
-                "The DC voltage on channel {chan} is {volts} VDC.\n".format(
-                    chan=channel, volts=dcv
-                )
-            )
+            print("The DC voltage on channel {chan} is {volts} VDC.\n".format(chan=channel, volts=dcv))
 
         return dcv
 
@@ -467,9 +423,7 @@ class Keithley_2000(Device):
 
         if verbosity > 1:
             print(
-                "The temperature (Pt100 RTD) on channel {chan} is {degC} degC.\n".format(
-                    chan=channel, degC=Temp
-                )
+                "The temperature (Pt100 RTD) on channel {chan} is {degC} degC.\n".format(chan=channel, degC=Temp)
             )
 
         return Temp
@@ -500,11 +454,7 @@ class TTL_control(object):
         onoff = int(bin(value)[2:].zfill(8)[-bit_pos])
 
         if verbosity > 1:
-            print(
-                "TTL unit {uu} port {pp} is currently set to {oo}.\n".format(
-                    uu=unit, pp=bit_pos, oo=onoff
-                )
-            )
+            print("TTL unit {uu} port {pp} is currently set to {oo}.\n".format(uu=unit, pp=bit_pos, oo=onoff))
 
         return onoff
 
@@ -521,11 +471,7 @@ class TTL_control(object):
             bits.append(b)
 
         if verbosity > 1:
-            print(
-                "TTL unit {uu} ports 1-8 are currently set to {ll}.\n".format(
-                    uu=unit, ll=bits
-                )
-            )
+            print("TTL unit {uu} ports 1-8 are currently set to {ll}.\n".format(uu=unit, ll=bits))
 
         return value
 
@@ -542,11 +488,7 @@ class TTL_control(object):
         b = self.readPort(unit, port, verbosity=1)
         if onoff == b:
             if verbosity > 1:
-                print(
-                    "TTL unit {uu} port {pp} is already set to {oo}.\n".format(
-                        uu=unit, pp=port, oo=onoff
-                    )
-                )
+                print("TTL unit {uu} port {pp} is already set to {oo}.\n".format(uu=unit, pp=port, oo=onoff))
             return 0
 
         value = agilent.readByteDIO(unit, verbosity=1)
@@ -561,19 +503,11 @@ class TTL_control(object):
         agilent.writeByteDIO(unit, value, verbosity=1)
         b_new = self.readPort(unit, port, verbosity=1)
         if b_new != onoff:
-            print(
-                "ERROR: TTL unit {uu} port {pp} is still set to {oo}.\n".format(
-                    uu=unit, pp=port, oo=b_new
-                )
-            )
+            print("ERROR: TTL unit {uu} port {pp} is still set to {oo}.\n".format(uu=unit, pp=port, oo=b_new))
             return 0
         else:
             if verbosity > 1:
-                print(
-                    "TTL unit {uu} port {pp} has been set to {oo}.\n".format(
-                        uu=unit, pp=port, oo=b_new
-                    )
-                )
+                print("TTL unit {uu} port {pp} has been set to {oo}.\n".format(uu=unit, pp=port, oo=b_new))
             return 1
 
     def setPortOn(self, unit, port, verbosity=2):
@@ -596,7 +530,7 @@ class Minichiller(Device):
         configuration_attrs=None,
         name="Minichiller",
         parent=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             prefix=prefix,
@@ -605,7 +539,7 @@ class Minichiller(Device):
             configuration_attrs=configuration_attrs,
             name=name,
             parent=parent,
-            **kwargs
+            **kwargs,
         )
 
         # self.port_number = 11
@@ -659,11 +593,7 @@ class Minichiller(Device):
         txt = ""
         msg_received = ""
 
-        while (
-            terminator not in txt
-            and time.time() - start_time < timeout_s
-            and amount_received < amount_cutoff
-        ):
+        while terminator not in txt and time.time() - start_time < timeout_s and amount_received < amount_cutoff:
             try:
                 data = self.sock.recv(1)
             except:
@@ -736,7 +666,7 @@ class SyringePump(Device):
         configuration_attrs=None,
         name="Minichiller",
         parent=None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__(
             prefix=prefix,
@@ -745,7 +675,7 @@ class SyringePump(Device):
             configuration_attrs=configuration_attrs,
             name=name,
             parent=parent,
-            **kwargs
+            **kwargs,
         )
 
         # self.port_number = 11
@@ -799,11 +729,7 @@ class SyringePump(Device):
         txt = ""
         msg_received = ""
 
-        while (
-            terminator not in txt
-            and time.time() - start_time < timeout_s
-            and amount_received < amount_cutoff
-        ):
+        while terminator not in txt and time.time() - start_time < timeout_s and amount_received < amount_cutoff:
             try:
                 data = self.sock.recv(1)
             except:
@@ -884,8 +810,4 @@ def flow_max():
 
 def flow_on(voltage=1):
     agilent.setDAC(1, voltage)
-    print(
-        "Voltage is set as {}. Please check the flow rate from flow meter.".format(
-            agilent.readDAC(1)
-        )
-    )
+    print("Voltage is set as {}. Please check the flow rate from flow meter.".format(agilent.readDAC(1)))

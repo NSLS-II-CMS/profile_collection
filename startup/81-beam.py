@@ -59,18 +59,13 @@ class BeamlineDetector(object):
 
         # Add an optional prefix
         if prefix is not None:
-            md_return = {
-                "{:s}{:s}".format(prefix, key): value
-                for key, value in md_return.items()
-            }
+            md_return = {"{:s}{:s}".format(prefix, key): value for key, value in md_return.items()}
 
         return md_return
 
 
 class CMS_SAXS_Detector(BeamlineDetector):
-    def setCalibration(
-        self, direct_beam, distance, detector_position=None, pixel_size=0.172
-    ):
+    def setCalibration(self, direct_beam, distance, detector_position=None, pixel_size=0.172):
         self.direct_beam = direct_beam
         self.distance = distance
         if detector_position is None:
@@ -97,12 +92,8 @@ class CMS_SAXS_Detector(BeamlineDetector):
         md_return["name"] = self.detector.name
         md_return["epics_name"] = "{Det:PIL2M}"
 
-        md_return["x0_pix"] = round(
-            x0 + (position_current_x - position_defined_x) / self.pixel_size, 2
-        )
-        md_return["y0_pix"] = round(
-            y0 + (position_current_y - position_defined_y) / self.pixel_size, 2
-        )
+        md_return["x0_pix"] = round(x0 + (position_current_x - position_defined_x) / self.pixel_size, 2)
+        md_return["y0_pix"] = round(y0 + (position_current_y - position_defined_y) / self.pixel_size, 2)
 
         md_return["distance_m"] = self.distance
 
@@ -166,10 +157,7 @@ class CMS_SAXS_Detector(BeamlineDetector):
 
         # Add an optional prefix
         if prefix is not None:
-            md_return = {
-                "{:s}{:s}".format(prefix, key): value
-                for key, value in md_return.items()
-            }
+            md_return = {"{:s}{:s}".format(prefix, key): value for key, value in md_return.items()}
 
         return md_return
 
@@ -180,9 +168,7 @@ class CMS_WAXS_Detector(BeamlineDetector):
 
         self.md = md
 
-    def setCalibration(
-        self, direct_beam, distance, detector_position=None, pixel_size=0.172
-    ):
+    def setCalibration(self, direct_beam, distance, detector_position=None, pixel_size=0.172):
         self.direct_beam = direct_beam
         self.distance = distance
         if detector_position is None:
@@ -211,78 +197,39 @@ class CMS_WAXS_Detector(BeamlineDetector):
         # md_return['x0_pix'] = round( x0 + (position_current_x-position_defined_x)/self.pixel_size , 2 )
         # md_return['y0_pix'] = round( y0 + (position_current_y-position_defined_y)/self.pixel_size , 2 )
         # if pilatus_name==pilatus800:
-        md_return["x0_pix"] = round(
-            x0 + (position_current_x - position_defined_x) / self.pixel_size, 2
-        )
-        md_return["y0_pix"] = round(
-            y0 + (position_current_y - position_defined_y) / self.pixel_size, 2
-        )
+        md_return["x0_pix"] = round(x0 + (position_current_x - position_defined_x) / self.pixel_size, 2)
+        md_return["y0_pix"] = round(y0 + (position_current_y - position_defined_y) / self.pixel_size, 2)
 
         # TODO:WAXS PV
 
         md_return["distance_m"] = self.distance
 
-        md_return["ROI1_X_min"] = caget(
-            "XF:11BMB-ES{}:ROI1:MinX".format(pilatus_Epicsname)
-        )
-        md_return["ROI1_X_size"] = caget(
-            "XF:11BMB-ES{}:ROI1:SizeX".format(pilatus_Epicsname)
-        )
-        md_return["ROI1_Y_min"] = caget(
-            "XF:11BMB-ES{}:ROI1:MinY".format(pilatus_Epicsname)
-        )
-        md_return["ROI1_Y_size"] = caget(
-            "XF:11BMB-ES{}:ROI1:SizeY".format(pilatus_Epicsname)
-        )
+        md_return["ROI1_X_min"] = caget("XF:11BMB-ES{}:ROI1:MinX".format(pilatus_Epicsname))
+        md_return["ROI1_X_size"] = caget("XF:11BMB-ES{}:ROI1:SizeX".format(pilatus_Epicsname))
+        md_return["ROI1_Y_min"] = caget("XF:11BMB-ES{}:ROI1:MinY".format(pilatus_Epicsname))
+        md_return["ROI1_Y_size"] = caget("XF:11BMB-ES{}:ROI1:SizeY".format(pilatus_Epicsname))
 
-        md_return["ROI2_X_min"] = caget(
-            "XF:11BMB-ES{}:ROI2:MinX".format(pilatus_Epicsname)
-        )
-        md_return["ROI2_X_size"] = caget(
-            "XF:11BMB-ES{}:ROI2:SizeX".format(pilatus_Epicsname)
-        )
-        md_return["ROI2_Y_min"] = caget(
-            "XF:11BMB-ES{}:ROI2:MinY".format(pilatus_Epicsname)
-        )
-        md_return["ROI2_Y_size"] = caget(
-            "XF:11BMB-ES{}:ROI2:SizeY".format(pilatus_Epicsname)
-        )
+        md_return["ROI2_X_min"] = caget("XF:11BMB-ES{}:ROI2:MinX".format(pilatus_Epicsname))
+        md_return["ROI2_X_size"] = caget("XF:11BMB-ES{}:ROI2:SizeX".format(pilatus_Epicsname))
+        md_return["ROI2_Y_min"] = caget("XF:11BMB-ES{}:ROI2:MinY".format(pilatus_Epicsname))
+        md_return["ROI2_Y_size"] = caget("XF:11BMB-ES{}:ROI2:SizeY".format(pilatus_Epicsname))
 
-        md_return["ROI3_X_min"] = caget(
-            "XF:11BMB-ES{}:ROI3:MinX".format(pilatus_Epicsname)
-        )
-        md_return["ROI3_X_size"] = caget(
-            "XF:11BMB-ES{}:ROI3:SizeX".format(pilatus_Epicsname)
-        )
-        md_return["ROI3_Y_min"] = caget(
-            "XF:11BMB-ES{}:ROI3:MinY".format(pilatus_Epicsname)
-        )
-        md_return["ROI3_Y_size"] = caget(
-            "XF:11BMB-ES{}:ROI3:SizeY".format(pilatus_Epicsname)
-        )
+        md_return["ROI3_X_min"] = caget("XF:11BMB-ES{}:ROI3:MinX".format(pilatus_Epicsname))
+        md_return["ROI3_X_size"] = caget("XF:11BMB-ES{}:ROI3:SizeX".format(pilatus_Epicsname))
+        md_return["ROI3_Y_min"] = caget("XF:11BMB-ES{}:ROI3:MinY".format(pilatus_Epicsname))
+        md_return["ROI3_Y_size"] = caget("XF:11BMB-ES{}:ROI3:SizeY".format(pilatus_Epicsname))
 
-        md_return["ROI4_X_min"] = caget(
-            "XF:11BMB-ES{}:ROI4:MinX".format(pilatus_Epicsname)
-        )
-        md_return["ROI4_X_size"] = caget(
-            "XF:11BMB-ES{}:ROI4:SizeX".format(pilatus_Epicsname)
-        )
-        md_return["ROI4_Y_min"] = caget(
-            "XF:11BMB-ES{}:ROI4:MinY".format(pilatus_Epicsname)
-        )
-        md_return["ROI4_Y_size"] = caget(
-            "XF:11BMB-ES{}:ROI4:SizeY".format(pilatus_Epicsname)
-        )
+        md_return["ROI4_X_min"] = caget("XF:11BMB-ES{}:ROI4:MinX".format(pilatus_Epicsname))
+        md_return["ROI4_X_size"] = caget("XF:11BMB-ES{}:ROI4:SizeX".format(pilatus_Epicsname))
+        md_return["ROI4_Y_min"] = caget("XF:11BMB-ES{}:ROI4:MinY".format(pilatus_Epicsname))
+        md_return["ROI4_Y_size"] = caget("XF:11BMB-ES{}:ROI4:SizeY".format(pilatus_Epicsname))
 
         # Include the user-specified metadata
         md_return.update(md)
 
         # Add an optional prefix
         if prefix is not None:
-            md_return = {
-                "{:s}{:s}".format(prefix, key): value
-                for key, value in md_return.items()
-            }
+            md_return = {"{:s}{:s}".format(prefix, key): value for key, value in md_return.items()}
 
         return md_return
 
@@ -349,9 +296,7 @@ class Shutter(BeamlineElement):
     #  Close:  XF:11BMA-PPS{PSh}Cmd:Cls-Cmd
 
     def __init__(self, name, zposition, description="", pv=None, **args):
-        super().__init__(
-            name=name, zposition=zposition, description=description, pv=pv, **args
-        )
+        super().__init__(name=name, zposition=zposition, description=description, pv=pv, **args)
         self.has_flux = False
 
     def state(self):
@@ -414,16 +359,8 @@ class GateValve(Shutter):
 
 
 class ThreePoleWiggler(BeamlineElement):
-    def __init__(
-        self,
-        name="3PW",
-        zposition=0.0,
-        description="Three-pole wiggler source of x-rays",
-        **args
-    ):
-        super().__init__(
-            name=name, zposition=zposition, description=description, **args
-        )
+    def __init__(self, name="3PW", zposition=0.0, description="Three-pole wiggler source of x-rays", **args):
+        super().__init__(name=name, zposition=zposition, description=description, **args)
 
         # TODO: Find out the right conversion factor
         self.conversion_factor = 3e18 / 500.0  # (ph/s)/mA
@@ -455,11 +392,7 @@ class ThreePoleWiggler(BeamlineElement):
         if self.state() == "in":
             ring_current = caget("SR:OPS-BI{DCCT:1}I:Real-I")
             if verbosity >= 2:
-                print(
-                    "{:s} is inserted; ring current = {:.1f} mA".format(
-                        self.name, ring_current
-                    )
-                )
+                print("{:s} is inserted; ring current = {:.1f} mA".format(self.name, ring_current))
 
             return ring_current
 
@@ -490,12 +423,8 @@ class Monitor(BeamlineElement):
 class DiagnosticScreen(Monitor):
     # XF:11BMB-BI{FS:4}Pos-Sts
 
-    def __init__(
-        self, name, zposition, description="", pv=None, epics_signal=None, **args
-    ):
-        super().__init__(
-            name=name, zposition=zposition, description=description, pv=pv, **args
-        )
+    def __init__(self, name, zposition, description="", pv=None, epics_signal=None, **args):
+        super().__init__(name=name, zposition=zposition, description=description, pv=pv, **args)
         self.epics_signal = epics_signal
         self.has_flux = False
 
@@ -557,11 +486,9 @@ class PointDiode_CMS(Monitor):
         description="Bar holding a point-diode, downstream of sample.",
         pv="XF:11BMB-BI{IM:2}EM180:Current1:MeanValue_RBV",
         epics_signal=None,
-        **args
+        **args,
     ):
-        super().__init__(
-            name=name, zposition=zposition, description=description, pv=pv, **args
-        )
+        super().__init__(name=name, zposition=zposition, description=description, pv=pv, **args)
         self.has_flux = True
 
         if epics_signal == None:
@@ -653,11 +580,9 @@ class IonChamber_CMS(Monitor):
         description="Ion chamber (FMB Oxford I404) at start of endstation hutch",
         pv=None,
         beam=None,
-        **args
+        **args,
     ):
-        super().__init__(
-            name=name, zposition=zposition, description=description, pv=pv, **args
-        )
+        super().__init__(name=name, zposition=zposition, description=description, pv=pv, **args)
         self.has_flux = True
 
         self.beam = beam
@@ -721,10 +646,7 @@ class IonChamber_CMS(Monitor):
         # based on polynomial fit to the calculated abs length data from: henke.lbl.gov/optical_constants/atten2.html
         # see /home/xf11bm/masa/atten_len_N2*
         abs_len = (
-            355.21
-            - 112.26 * energy_keV
-            + 11.200 * np.square(energy_keV)
-            - 0.10611 * np.power(energy_keV, 3.0)
+            355.21 - 112.26 * energy_keV + 11.200 * np.square(energy_keV) - 0.10611 * np.power(energy_keV, 3.0)
         )
 
         N_abs = current * V_ion / (qe * energy_keV)
@@ -748,17 +670,9 @@ class IonChamber_CMS(Monitor):
 
         if verbosity >= 3:
             print("Flux for {:s} ({:s})".format(self.name, self.description))
-            print(
-                "  Horizontal:  {:9.4g}  +  {:9.4g}  =  {:9.4g} ph/s".format(
-                    h1, h2, h1 + h2
-                )
-            )
+            print("  Horizontal:  {:9.4g}  +  {:9.4g}  =  {:9.4g} ph/s".format(h1, h2, h1 + h2))
             print("    position: {:.3f}".format(self.h_position()))
-            print(
-                "  Vertical:    {:9.4g}  +  {:9.4g}  =  {:9.4g} ph/s".format(
-                    v1, v2, v1 + v2
-                )
-            )
+            print("  Vertical:    {:9.4g}  +  {:9.4g}  =  {:9.4g} ph/s".format(v1, v2, v1 + v2))
             print("    position: {:.3f}".format(self.v_position()))
 
         if verbosity >= 2:
@@ -778,11 +692,9 @@ class Scintillator_CMS(Monitor):
         description="Scintillation detector (FMB Oxford C400) between S3 and KB tank in endstation hutch. Captures scattering off of a Kapton film at 45 degrees.",
         pv=None,
         beam=None,
-        **args
+        **args,
     ):
-        super().__init__(
-            name=name, zposition=zposition, description=description, pv=pv, **args
-        )
+        super().__init__(name=name, zposition=zposition, description=description, pv=pv, **args)
         self.has_flux = True
 
         self.beam = beam
@@ -856,11 +768,9 @@ class DiamondDiode_CMS(Monitor):
         description="Diamond diode BPM (Dectris RIGI via FMB Oxford F460) between KB tank and sample chamber in endstation hutch. Needs to be insered into beam via IM:5.",
         pv=None,
         beam=None,
-        **args
+        **args,
     ):
-        super().__init__(
-            name=name, zposition=zposition, description=description, pv=pv, **args
-        )
+        super().__init__(name=name, zposition=zposition, description=description, pv=pv, **args)
         self.has_flux = True
 
         self.beam = beam
@@ -880,18 +790,14 @@ class DiamondDiode_CMS(Monitor):
     def v_position(self):
         total = self.i0.value + self.i1.value + self.i2.value + self.i3.value
         if total > 0:
-            return (self.i0.value + self.i1.value - self.i2.value - self.i3.value) / (
-                total
-            )
+            return (self.i0.value + self.i1.value - self.i2.value - self.i3.value) / (total)
         else:
             return 0
 
     def h_position(self):
         total = self.i0.value + self.i1.value + self.i2.value + self.i3.value
         if total > 0:
-            return (self.i1.value + self.i3.value - self.i0.value - self.i2.value) / (
-                total
-            )
+            return (self.i1.value + self.i3.value - self.i0.value - self.i2.value) / (total)
         else:
             return 0
 
@@ -899,9 +805,7 @@ class DiamondDiode_CMS(Monitor):
         # total = self.i0.value + self.i1.value + self.i2.value + self.i3.value
         ## 07/12/2017  Total dark current with beam off is ~9.3e-10 A.
         dark_current = 9.3e-10
-        total = (
-            self.i0.value + self.i1.value + self.i2.value + self.i3.value - dark_current
-        )
+        total = self.i0.value + self.i1.value + self.i2.value + self.i3.value - dark_current
 
         if verbosity >= 3:
             print("Reading for {:s} ({:s})".format(self.name, self.description))
@@ -916,11 +820,7 @@ class DiamondDiode_CMS(Monitor):
                     self.i0.value, self.i2.value, self.i0.value + self.i2.value
                 )
             )
-            print(
-                "    Position [-1(L) to 1(R), 0 at center]: {:.3f}".format(
-                    self.h_position()
-                )
-            )
+            print("    Position [-1(L) to 1(R), 0 at center]: {:.3f}".format(self.h_position()))
             print("  Vertical:")
             print(
                 "    Top:  {:9.4g}  +  {:9.4g}  =  {:9.4g} A".format(
@@ -932,11 +832,7 @@ class DiamondDiode_CMS(Monitor):
                     self.i2.value, self.i3.value, self.i2.value + self.i3.value
                 )
             )
-            print(
-                "    Position [-1(B) to 1(T), 0 at center]: {:.3f}".format(
-                    self.v_position()
-                )
-            )
+            print("    Position [-1(B) to 1(T), 0 at center]: {:.3f}".format(self.v_position()))
 
         if verbosity >= 2:
             print("  Total current:  {:9.4g} A".format(total))
@@ -980,19 +876,11 @@ class DiamondDiode_CMS(Monitor):
             print("  Horizontal:")
             print("    Right:  {:9.4g} ph/s".format(right))
             print("    Left:  {:9.4g} ph/s".format(left))
-            print(
-                "    Position [-1(L) to 1(R), 0 at center]: {:.3f}".format(
-                    self.h_position()
-                )
-            )
+            print("    Position [-1(L) to 1(R), 0 at center]: {:.3f}".format(self.h_position()))
             print("  Vertical:")
             print("    Top:  {:9.4g} ph/s".format(top))
             print("    Bottom:  {:9.4g} ph/s".format(bottom))
-            print(
-                "    Position [-1(B) to 1(T), 0 at center]: {:.3f}".format(
-                    self.v_position()
-                )
-            )
+            print("    Position [-1(B) to 1(T), 0 at center]: {:.3f}".format(self.v_position()))
 
         if verbosity >= 2:
             print("  Total flux:  {:9.4g} ph/s".format(total))
@@ -1026,9 +914,7 @@ class CMSBeam(object):
 
         self.mono.transmission = transmission
 
-        self.attenuator = BeamlineElement(
-            "attenuator", 53.8, description="Attenuator/filter box"
-        )
+        self.attenuator = BeamlineElement("attenuator", 53.8, description="Attenuator/filter box")
         self.attenuator.has_flux = False
 
         def reading(verbosity=0):
@@ -1037,9 +923,7 @@ class CMSBeam(object):
         self.attenuator.reading = reading
         self.attenuator.transmission = self.transmission
 
-        self.attenuator2 = BeamlineElement(
-            "attenuator2", 58.6, description="Nb foil absorber"
-        )
+        self.attenuator2 = BeamlineElement("attenuator2", 58.6, description="Nb foil absorber")
         self.attenuator2.has_flux = False
 
         def reading(verbosity=0):
@@ -1108,12 +992,8 @@ class CMSBeam(object):
             # Rely on the fact that these are defined in 20-area-detectors.py
             # self.fs1 = DiagnosticScreen( 'fs1', 27.2, pv='XF:11BMA-BI{FS:1}', epics_signal=fs1 )
             # self.fs2 = DiagnosticScreen( 'fs2', 29.1, pv='XF:11BMA-BI{FS:2}', epics_signal=fs2 )
-            self.fs3 = DiagnosticScreen(
-                "fs3", 55.8, pv="XF:11BMB-BI{FS:3}", epics_signal=fs3
-            )
-            self.fs4 = DiagnosticScreen(
-                "fs4", 58.2, pv="XF:11BMB-BI{FS:4}", epics_signal=fs4
-            )
+            self.fs3 = DiagnosticScreen("fs3", 55.8, pv="XF:11BMB-BI{FS:3}", epics_signal=fs3)
+            self.fs4 = DiagnosticScreen("fs4", 58.2, pv="XF:11BMB-BI{FS:4}", epics_signal=fs4)
             # self.fs5 = DiagnosticScreen( 'fs5', 70.0, pv='XF:11BMB-BI{FS:Test-Cam:1}', epics_signal=fs5 )
 
         self.bim3 = IonChamber_CMS(beam=self)
@@ -1143,9 +1023,7 @@ class CMSBeam(object):
         self.elements.append(GateValve("GV", 28.0, pv="XF:11BMA-VA{Slt:0-GV:1}"))
         self.elements.append(BeamlineElement("mirror", 29.1))
         self.elements.append(GateValve("GV", 30.5, pv="XF:11BMA-VA{Mir:Tor-GV:1}"))
-        self.elements.append(
-            BeamlineElement("fs2 (manual)", 30.9)
-        )  # self.elements.append(self.fs2)
+        self.elements.append(BeamlineElement("fs2 (manual)", 30.9))  # self.elements.append(self.fs2)
         self.elements.append(Shutter("photon shutter", 33.7, pv="XF:11BMA-PPS{PSh}"))
         self.elements.append(GateValve("GV", 34.0, pv="XF:11BMA-VA{PSh:1-GV:1}"))
 
@@ -1263,11 +1141,7 @@ class CMSBeam(object):
             mono_bragg.move(Bragg_deg)
 
             if verbosity >= 1:
-                print(
-                    "mono_bragg moved from {:.4f} deg to {:.4f} deg".format(
-                        Bragg_deg_initial, Bragg_deg
-                    )
-                )
+                print("mono_bragg moved from {:.4f} deg to {:.4f} deg".format(Bragg_deg_initial, Bragg_deg))
 
         elif verbosity >= 1:
             print("No move was made.")
@@ -1300,19 +1174,11 @@ class CMSBeam(object):
         h, v = self.size(verbosity=0)
 
         if verbosity >= 3:
-            print(
-                "Changing horizontal beam size from {:.3f} mm to {:.3f} mm".format(
-                    h, horizontal
-                )
-            )
+            print("Changing horizontal beam size from {:.3f} mm to {:.3f} mm".format(h, horizontal))
         self.beam_defining_slit.xg.user_setpoint.value = horizontal
 
         if verbosity >= 3:
-            print(
-                "Changing vertical beam size from {:.3f} mm to {:.3f} mm".format(
-                    v, vertical
-                )
-            )
+            print("Changing vertical beam size from {:.3f} mm to {:.3f} mm".format(v, vertical))
 
         self.beam_defining_slit.yg.user_setpoint.value = vertical
 
@@ -1353,11 +1219,7 @@ class CMSBeam(object):
 
         if horizontal < 0:
             if verbosity >= 1:
-                print(
-                    "Horizontal divergence less than zero ({}) doesn't make sense.".format(
-                        horizontal
-                    )
-                )
+                print("Horizontal divergence less than zero ({}) doesn't make sense.".format(horizontal))
 
         elif horizontal > 1.5:
             if verbosity >= 1:
@@ -1365,20 +1227,12 @@ class CMSBeam(object):
 
         else:
             if verbosity >= 3:
-                print(
-                    "Changing horizontal divergence from {:.3f} mrad to {:.3f} mrad.".format(
-                        h, horizontal
-                    )
-                )
+                print("Changing horizontal divergence from {:.3f} mrad to {:.3f} mrad.".format(h, horizontal))
             caput("FE:C11B-OP{Slt:12-Ax:X}size", horizontal_mm)
 
         if vertical < 0:
             if verbosity >= 1:
-                print(
-                    "Vertical divergence less than zero ({}) doesn't make sense.".format(
-                        vertical
-                    )
-                )
+                print("Vertical divergence less than zero ({}) doesn't make sense.".format(vertical))
 
         elif vertical > 0.15:
             if verbosity >= 1:
@@ -1386,11 +1240,7 @@ class CMSBeam(object):
 
         else:
             if verbosity >= 3:
-                print(
-                    "Changing vertical divergence from {:.3f} mrad to {:.3f} mrad.".format(
-                        v, vertical
-                    )
-                )
+                print("Changing vertical divergence from {:.3f} mrad to {:.3f} mrad.".format(v, vertical))
             caput("FE:C11B-OP{Slt:12-Ax:Y}size", vertical_mm)
 
     # Experimental Shutter
@@ -1590,18 +1440,11 @@ class CMSBeam(object):
         energy_keV = self.energy(verbosity=0)
 
         if energy_keV < 6.0 or energy_keV > 18.0:
-            print(
-                "Transmission data not available at the current X-ray energy ({.2f} keV).".format(
-                    energy_keV
-                )
-            )
+            print("Transmission data not available at the current X-ray energy ({.2f} keV).".format(energy_keV))
 
         else:
             # The states of the foils in the filter box
-            N = [
-                caget("XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts".format(ifoil))
-                for ifoil in range(1, 8 + 1)
-            ]
+            N = [caget("XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts".format(ifoil)) for ifoil in range(1, 8 + 1)]
             # N = [fil.sts.get() for fil in self.atten_filter.values()]
             tr_tot = self.calc_transmission_filters(N, verbosity=verbosity)
 
@@ -1662,11 +1505,7 @@ class CMSBeam(object):
             if verbosity >= 5:
                 print("  state:      {} T = {:.6g}".format(filter_settings, tr_tot))
             if verbosity >= 4:
-                print(
-                    "{:d} × 0.25 mm Al ({:.4g}) and {:d} × 0.10 mm Nb ({:.4g})".format(
-                        N_Al, tr_Al, N_Nb, tr_Nb
-                    )
-                )
+                print("{:d} × 0.25 mm Al ({:.4g}) and {:d} × 0.10 mm Nb ({:.4g})".format(N_Al, tr_Al, N_Nb, tr_Nb))
             if verbosity >= 1:
                 print("transmission = {:.6g}".format(tr_tot))
 
@@ -1683,10 +1522,7 @@ class CMSBeam(object):
         if verbosity >= 4:
             print("Filters:")
             # The states of the foils in the filter box
-            filters_initial = [
-                caget("XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts".format(ifoil))
-                for ifoil in range(1, 8 + 1)
-            ]
+            filters_initial = [caget("XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts".format(ifoil)) for ifoil in range(1, 8 + 1)]
             print(
                 "  initial:    {} T = {:.6g}".format(
                     filters_initial,
@@ -1717,9 +1553,7 @@ class CMSBeam(object):
 
                 else:
                     if verbosity >= 3:
-                        state_actual = caget(
-                            "XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts".format(ifoil)
-                        )
+                        state_actual = caget("XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts".format(ifoil))
                         state_actual_str = "IN" if state_actual == 1 else "OUT"
                         print(
                             "WARNING: Filter state {} not recognized. Filter {:d} is {:s}.".format(
@@ -1730,10 +1564,7 @@ class CMSBeam(object):
             time.sleep(1.0)  # Wait for filter box to settle
 
         if verbosity >= 4:
-            filters_final = [
-                caget("XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts".format(ifoil))
-                for ifoil in range(1, 8 + 1)
-            ]
+            filters_final = [caget("XF:11BMB-OP{{Fltr:{:d}}}Pos-Sts".format(ifoil)) for ifoil in range(1, 8 + 1)]
             print(
                 "  final:      {} T = {:.6g}".format(
                     filters_final,
@@ -1752,21 +1583,13 @@ class CMSBeam(object):
         energy_keV = self.energy(verbosity=0)
 
         if energy_keV < 6.0 or energy_keV > 18.0:
-            print(
-                "Transmission data not available at the current X-ray energy ({.2f} keV).".format(
-                    energy_keV
-                )
-            )
+            print("Transmission data not available at the current X-ray energy ({.2f} keV).".format(energy_keV))
 
         elif transmission > 1.0:
             print("A transmission above 1.0 is not possible.")
 
         elif transmission < 1e-10:
-            print(
-                "A transmission this low ({:g}) cannot be reliably achieved.".format(
-                    transmission
-                )
-            )
+            print("A transmission this low ({:g}) cannot be reliably achieved.".format(transmission))
 
         else:
             E = energy_keV
@@ -1812,10 +1635,7 @@ class CMSBeam(object):
             self.set_attenuation_filters(N, verbosity=verbosity)
 
         # Check that transmission was actually correctly changed
-        if (
-            abs(self.transmission(verbosity=0) - transmission) / transmission
-            > tolerance
-        ):
+        if abs(self.transmission(verbosity=0) - transmission) / transmission > tolerance:
             if retries > 0:
                 # time.sleep(0.5)
                 # Try again
@@ -1847,15 +1667,12 @@ class CMSBeam(object):
         energy_keV = self.energy(verbosity=0)
 
         if energy_keV < 6.0 or energy_keV > 18.0:
-            print(
-                "Transmission data not available at the current X-ray energy ({.2f} keV).".format(
-                    energy_keV
-                )
-            )
+            print("Transmission data not available at the current X-ray energy ({.2f} keV).".format(energy_keV))
 
         else:
             # The foil layers
             slot = np.floor((armr.position - self.armr_absorber_o + 3 - 0.1) / 6)
+            # slot = np.floor((armr.position - self.armr_absorber_o+.1)/10)
             if slot > 6 or slot < 0:
                 return print("Absorber slot should in the range of [0, 6]")
 
@@ -1885,7 +1702,7 @@ class CMSBeam(object):
         l_Nb = 1.4476e-3 - 5.6011e-4 * E + 1.0401e-4 * E2 + 8.7961e-6 * E3
         d_l_Nb = d_Nb / l_Nb
 
-        absorber_transmission = exp(-slot * d_l_Nb)
+        # absorber_transmission = exp(-slot*d_l_Nb)
 
         if abs(E - 13.5) < 0.01:
             self.absorber_transmission_list = [
@@ -1900,13 +1717,30 @@ class CMSBeam(object):
         elif abs(E - 17) < 0.01:
             self.absorber_transmission_list = self.absorber_transmission_list_17kev
         elif abs(E - 10) < 0.1:
-            self.absorber_transmission_list = self.absorber_transmission_list_10kev
+            # self.absorber_transmission_list = self.absorber_transmission_list_10kev
+            beam_int = np.array(
+                [
+                    3606803 / 403323 * 3296026,
+                    3606803,
+                    406113,
+                    50002,
+                    6268,
+                    6268 / 3520688 * 384577,
+                    6268 / 3520688 * 43940,
+                    6268 / 3520688 * 5383,
+                ]
+            )
+
+            #
+            self.absorber_transmission_list = beam_int / beam_int[0]  # changed by RL, 202307
 
         else:
             tmp_list = []
             for i in np.arange(6 + 1):
                 tmp_list.append(exp(-i * d_l_Nb))
             self.absorber_transmission_list = tmp_list
+
+        absorber_transmission = self.absorber_transmission_list[int(slot)]
 
         if verbosity >= 1:
             print("transmission = {:.6g}".format(absorber_transmission))
@@ -1922,20 +1756,21 @@ class CMSBeam(object):
         energy_keV = self.energy(verbosity=0)
 
         if energy_keV < 6.0 or energy_keV > 18.0:
-            print(
-                "Transmission data not available at the current X-ray energy ({.2f} keV).".format(
-                    energy_keV
-                )
-            )
-        elif slot < 0 or slot > 6:
-            print("Absorber cannot move beyond [0, 6]")
+            print("Transmission data not available at the current X-ray energy ({.2f} keV).".format(energy_keV))
+        # elif slot < 0 or slot > 6:
+        #     print('Absorber cannot move beyond [0, 6]')
+        elif slot < 0 or slot > 7:  # changed by RL, 202307
+            print("Absorber cannot move beyond [0, 7]")
 
         else:
             # move to slot # for correct attenuation.
-            armr.move(self.armr_absorber_o + slot * 6)  # 6 mm wide per slot
+            # armr_pos = self.armr_absorber_o+slot*10 # 10 mm wide per slot for OPLS absorber 10mm wide, changed by RL, 202307
+            armr_pos = self.armr_absorber_o + slot * 6  # 6 mm wide per slot, changed back by RL, 202309
+            # armr.move(self.armr_absorber_o+slot*6)
+            armr.move(armr_pos)
 
         # Check that absorber was actually correctly moved
-        if abs(armr.position - (self.armr_absorber_o + slot * 6)) > tolerance:
+        if abs(armr.position - armr_pos) > tolerance:
             if retries > 0:
                 # time.sleep(0.5)
                 # Try again
@@ -1969,15 +1804,9 @@ class CMSBeam(object):
         """
 
         if verbosity >= 1:
-            print(
-                "+--------+------------------+-----+-------------+-------------+-------------+"
-            )
-            print(
-                "| pos    | name             |path | reading     | flux (ph/s) | expected    |"
-            )
-            print(
-                "|--------|------------------|-----|-------------|-------------|-------------|"
-            )
+            print("+--------+------------------+-----+-------------+-------------+-------------+")
+            print("| pos    | name             |path | reading     | flux (ph/s) | expected    |")
+            print("|--------|------------------|-----|-------------|-------------|-------------|")
 
         last_z = -100
         beam = True
@@ -1991,17 +1820,11 @@ class CMSBeam(object):
 
             if verbosity >= 4:
                 if element.zposition >= 0 and last_z < 0:
-                    print(
-                        "| Front End                 |     |             |             |             |"
-                    )
+                    print("| Front End                 |     |             |             |             |")
                 if element.zposition > 25 and last_z < 25:
-                    print(
-                        "| FOE                       |     |             |             |             |"
-                    )
+                    print("| FOE                       |     |             |             |             |")
                 if element.zposition > 50 and last_z < 50:
-                    print(
-                        "| Endstation                |     |             |             |             |"
-                    )
+                    print("| Endstation                |     |             |             |             |")
             last_z = element.zposition
             flux_expected
             if verbosity >= 1:
@@ -2062,9 +1885,7 @@ class CMSBeam(object):
             # beam = True # For testing
 
         if verbosity >= 1:
-            print(
-                "+--------+------------------+-----+-------------+-------------+-------------+"
-            )
+            print("+--------+------------------+-----+-------------+-------------+-------------+")
 
     # End class CMSBeam(object)
     ########################################
@@ -2108,10 +1929,7 @@ class Beamline(object):
 
         # Add an optional prefix
         if prefix is not None:
-            md_return = {
-                "{:s}{:s}".format(prefix, key): value
-                for key, value in md_return.items()
-            }
+            md_return = {"{:s}{:s}".format(prefix, key): value for key, value in md_return.items()}
 
         return md_return
 
@@ -2140,9 +1958,7 @@ class Beamline(object):
         for motor in motors:
             offset = float(caget(motor.prefix + ".OFF"))
             direction = int(caget(motor.prefix + ".DIR"))
-            log_text += "{} | {} | {} | {} |\n".format(
-                motor.name, motor.user_readback.value, offset, direction
-            )
+            log_text += "{} | {} | {} | {} |\n".format(motor.name, motor.user_readback.value, offset, direction)
 
         md_current = {k: v for k, v in RE.md.items()}
         md_current.update(md)
@@ -2217,25 +2033,13 @@ class CMS_Beamline(Beamline):
         self._pump_Pipe = TriState("XF:11BMB-VA{BT:SAXS-IV", name="pump_Pipe")
         self._pump_FS4 = TriState("XF:11BMB-VA{FS:4-IV", name="pump_FS4")
         self._GV_SAXS = TwoButtonShutterNC("XF:11BMB-VA{Chm:Det-GV:1}", name="GV_SAXS")
-        self._pump1_toggle = EpicsSignal(
-            "XF:11BMB-VA{BT:SAXS-Pmp:1}Cmd:Enbl-Cmd", name="pump1_toggle"
-        )
-        self._pump1_state = EpicsSignal(
-            "XF:11BMB-VA{BT:SAXS-Pmp:1}Sts:Enbl-Sts", name="pump1_state"
-        )
-        self._pump2_toggle = EpicsSignal(
-            "XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd", name="pump1_toggle"
-        )
-        self._pump2_state = EpicsSignal(
-            "XF:11BMB-VA{Chm:Det-Pmp:1}Sts:Enbl-Sts", name="pump1_state"
-        )
+        self._pump1_toggle = EpicsSignal("XF:11BMB-VA{BT:SAXS-Pmp:1}Cmd:Enbl-Cmd", name="pump1_toggle")
+        self._pump1_state = EpicsSignal("XF:11BMB-VA{BT:SAXS-Pmp:1}Sts:Enbl-Sts", name="pump1_state")
+        self._pump2_toggle = EpicsSignal("XF:11BMB-VA{Chm:Det-Pmp:1}Cmd:Enbl-Cmd", name="pump1_toggle")
+        self._pump2_state = EpicsSignal("XF:11BMB-VA{Chm:Det-Pmp:1}Sts:Enbl-Sts", name="pump1_state")
 
-        self._WAXS_outlet_sts = EpicsSignal(
-            "XF:11BMB-VA{Chm:Det}UserCmd-Sts", name="WAXS_outlet_sts"
-        )
-        self._WAXS_outlet_toggle = EpicsSignal(
-            "XF:11BMB-VA{Chm:Det}UserButton", name="WAXS_outlet_toggle"
-        )
+        self._WAXS_outlet_sts = EpicsSignal("XF:11BMB-VA{Chm:Det}UserCmd-Sts", name="WAXS_outlet_sts")
+        self._WAXS_outlet_toggle = EpicsSignal("XF:11BMB-VA{Chm:Det}UserButton", name="WAXS_outlet_toggle")
 
     def modeAlignment_bim6(self, verbosity=3):
         self.current_mode = "undefined"
@@ -2293,7 +2097,8 @@ class CMS_Beamline(Beamline):
             self.beam.setTransmission(1e-8)
 
         # mov(bsx, -10.95)
-        bsx.move(self.bsx_pos + 5)
+        # bsx.move(self.bsx_pos+5)
+        bsx.move(self.bsx_pos + 3)
 
         # detselect(pilatus300, suffix='_stats4_total')
         # caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime', 0.5)
@@ -2485,9 +2290,7 @@ class CMS_Beamline(Beamline):
         # check the difference of pressures
         start_time = time.time()
         if self.diffPressure(verbosity=0) != 1:
-            return print(
-                "Check the system. Vacuum may be not necessary for the sample."
-            )
+            return print("Check the system. Vacuum may be not necessary for the sample.")
         # close 2s vent valve
         yield from bps.mov(self._vent_Smpl, "Close")
         # close 2d pump valve -- protect WAXS detector
@@ -2551,7 +2354,7 @@ class CMS_Beamline(Beamline):
         while self._PV_Smpl_pressure.get() < 100:
             yield from bps.sleep(3)
         yield from bps.mov(self._vent_Smpl, "Open")
-        while self._PV_Smpl_pressure.get() < 980:
+        while self._PV_Smpl_pressure.get() < 950:
             print("waiting to complete venting.")
             yield from bps.sleep(3)
         print("The venting is completed after {}s.".format(time.time() - start_time))
@@ -2567,8 +2370,13 @@ class CMS_Beamline(Beamline):
             yield from bps.mov(self._pump2_toggle, 0)
             yield from bps.sleep(1)
 
-    def pumpSample(self, threshold=0.7):
+    def pumpSample(self, threshold=0.7, restartWAXS=False):
         RE(self._pumpSample(threshold=threshold))
+
+        if restartWAXS == True:  # changed by RL 230814
+            restartWAXS()
+            RE(pilatus800.setExposureTime(3.2))
+            RE(pilatus800.setExposureTime(0.5))
 
     def ventSample(self):
         RE(self._ventSample())
@@ -2713,9 +2521,7 @@ class CMS_Beamline(Beamline):
                 return print("Error: valves for pump1 are NOT closed properly.")
 
         # turn off pump1
-        while (
-            caget("XF:11BMB-VA{BT:SAXS-Pmp:1}Sts:Enbl-Sts") == 1 and tries <= max_tries
-        ):
+        while caget("XF:11BMB-VA{BT:SAXS-Pmp:1}Sts:Enbl-Sts") == 1 and tries <= max_tries:
             caput("XF:11BMB-VA{BT:SAXS-Pmp:1}Cmd:Enbl-Cmd", 0)
             time.sleep(1.0)
 
@@ -2727,9 +2533,7 @@ class CMS_Beamline(Beamline):
     # self.pumpSample(verbosity=verbosity)
     # self._actuate_open(self.PV_SAXS_GV)
 
-    def checkPressure(
-        self, PV, range_low=None, range_high=None, readout_period=1.0, verbosity=3
-    ):
+    def checkPressure(self, PV, range_low=None, range_high=None, readout_period=1.0, verbosity=3):
         """Monitors the pressure in the sample/WAXS chamber, printing the current value.
         If range arguments are provided, the monitoring will end once the pressure
         is outside the range.
@@ -2759,9 +2563,7 @@ class CMS_Beamline(Beamline):
                     )
                 elif verbosity >= 2:
                     print(
-                        "Sample chamber pressure: {:8.2f} mbar ({:5.3f} atm)    \r".format(
-                            P_mbar, P_atm
-                        ),
+                        "Sample chamber pressure: {:8.2f} mbar ({:5.3f} atm)    \r".format(P_mbar, P_atm),
                         end="",
                         flush=True,
                     )
@@ -2897,9 +2699,7 @@ class CMS_Beamline(Beamline):
         if verbosity >= 1:
             print("Sample chamber is ready to be opened.")
 
-    def chamberPressure(
-        self, range_low=None, range_high=None, readout_period=1.0, verbosity=3
-    ):
+    def chamberPressure(self, range_low=None, range_high=None, readout_period=1.0, verbosity=3):
         """Monitors the pressure in the sample chamber, printing the current value.
         If range arguments are provided, the monitoring will end once the pressure
         is outside the range.
@@ -2930,9 +2730,7 @@ class CMS_Beamline(Beamline):
                     )
                 elif verbosity >= 2:
                     print(
-                        "Sample chamber pressure: {:8.2f} mbar ({:5.3f} atm)    \r".format(
-                            P_mbar, P_atm
-                        ),
+                        "Sample chamber pressure: {:8.2f} mbar ({:5.3f} atm)    \r".format(P_mbar, P_atm),
                         end="",
                         flush=True,
                     )
@@ -3070,9 +2868,7 @@ class CMS_Beamline(Beamline):
     def get_md(self, prefix=None, **md):
         md_current = self.md.copy()
         md_current["calibration_energy_keV"] = round(self.beam.energy(verbosity=0), 3)
-        md_current["calibration_wavelength_A"] = round(
-            self.beam.wavelength(verbosity=0), 5
-        )
+        md_current["calibration_wavelength_A"] = round(self.beam.wavelength(verbosity=0), 5)
 
         h, v = self.beam.size(verbosity=0)
         md_current["beam_size_x_mm"] = h
@@ -3106,10 +2902,7 @@ class CMS_Beamline(Beamline):
 
         # Add an optional prefix
         if prefix is not None:
-            md_current = {
-                "{:s}{:s}".format(prefix, key): value
-                for key, value in md_current.items()
-            }
+            md_current = {"{:s}{:s}".format(prefix, key): value for key, value in md_current.items()}
 
         return md_current
 
@@ -3118,9 +2911,7 @@ class CMS_Beamline(Beamline):
         meta-data fields."""
 
         if verbosity >= 3:
-            print(
-                "This will guide you through adding some meta-data for the upcoming experiment."
-            )
+            print("This will guide you through adding some meta-data for the upcoming experiment.")
         if verbosity >= 4:
             print(
                 "You can accept default values (shown in square [] brackets) by pressing enter. You can leave a value blank (or put a space) to skip that entry."
@@ -3175,14 +2966,10 @@ class CMS_Beamline(Beamline):
             print("You can also add/edit metadata directly using the RE.md object.")
 
         if os.path.exists(RE.md["experiment_alias_directory"]):
-            print(
-                "/n The folder has existed. Please change folder name if necessary./n"
-            )
+            print("/n The folder has existed. Please change folder name if necessary./n")
         else:
             os.makedirs(RE.md["experiment_alias_directory"], exist_ok=True)
-            os.makedirs(
-                os.path.join(RE.md["experiment_alias_directory"], "waxs"), exist_ok=True
-            )
+            os.makedirs(os.path.join(RE.md["experiment_alias_directory"], "waxs"), exist_ok=True)
             os.makedirs(
                 os.path.join(RE.md["experiment_alias_directory"], "waxs/raw"),
                 exist_ok=True,
@@ -3191,9 +2978,7 @@ class CMS_Beamline(Beamline):
                 os.path.join(RE.md["experiment_alias_directory"], "waxs/analysis"),
                 exist_ok=True,
             )
-            os.makedirs(
-                os.path.join(RE.md["experiment_alias_directory"], "saxs"), exist_ok=True
-            )
+            os.makedirs(os.path.join(RE.md["experiment_alias_directory"], "saxs"), exist_ok=True)
             os.makedirs(
                 os.path.join(RE.md["experiment_alias_directory"], "saxs/raw"),
                 exist_ok=True,
@@ -3202,14 +2987,10 @@ class CMS_Beamline(Beamline):
                 os.path.join(RE.md["experiment_alias_directory"], "saxs/analysis"),
                 exist_ok=True,
             )
-            os.makedirs(
-                os.path.join(RE.md["experiment_alias_directory"], "data"), exist_ok=True
-            )
+            os.makedirs(os.path.join(RE.md["experiment_alias_directory"], "data"), exist_ok=True)
             # os.makedirs(os.path.join(RE.md['experiment_alias_directory'], 'saxs'), exist_ok=True)
             print(
-                "/n The folder ::: {} ::: has been made for users. /n".format(
-                    RE.md["experiment_alias_directory"]
-                )
+                "/n The folder ::: {} ::: has been made for users. /n".format(RE.md["experiment_alias_directory"])
             )
 
     def _ask_question(self, key, text, default=None):
@@ -3218,9 +2999,7 @@ class CMS_Beamline(Beamline):
 
         if default is None:
             ret = input(
-                "  Q{:d}/{:d}. {:s}: ".format(
-                    self._dialog_question_number, self._dialog_total_questions, text
-                )
+                "  Q{:d}/{:d}. {:s}: ".format(self._dialog_question_number, self._dialog_total_questions, text)
             )
 
         else:
@@ -3451,13 +3230,9 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
 
         # detselect(pilatus300, suffix='_stats4_total')
 
-        caput(
-            "XF:11BMB-ES{}:ROI4:MinX".format(pilatus_Epicsname), int(x0 - size[0] / 2)
-        )
+        caput("XF:11BMB-ES{}:ROI4:MinX".format(pilatus_Epicsname), int(x0 - size[0] / 2))
         caput("XF:11BMB-ES{}:ROI4:SizeX".format(pilatus_Epicsname), int(size[0]))
-        caput(
-            "XF:11BMB-ES{}:ROI4:MinY".format(pilatus_Epicsname), int(y0 - size[1] / 2)
-        )
+        caput("XF:11BMB-ES{}:ROI4:MinY".format(pilatus_Epicsname), int(y0 - size[1] / 2))
         caput("XF:11BMB-ES{}:ROI4:SizeY".format(pilatus_Epicsname), int(size[1]))
 
         detselect(pilatus_name, suffix="_stats4_total")
@@ -3508,9 +3283,7 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
 
         # detselect(pilatus300, suffix='_stats3_total')
 
-        caput(
-            "XF:11BMB-ES{}:ROI3:MinX".format(pilatus_Epicsname), int(x0 - size[0] / 2)
-        )
+        caput("XF:11BMB-ES{}:ROI3:MinX".format(pilatus_Epicsname), int(x0 - size[0] / 2))
         caput("XF:11BMB-ES{}:ROI3:SizeX".format(pilatus_Epicsname), int(size[0]))
         caput("XF:11BMB-ES{}:ROI3:MinY".format(pilatus_Epicsname), y_pos)
         caput("XF:11BMB-ES{}:ROI3:SizeY".format(pilatus_Epicsname), int(size[1]))
@@ -3563,18 +3336,14 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
 
         # detselect(pilatus300, suffix='_stats3_total')
 
-        caput(
-            "XF:11BMB-ES{}:ROI2:MinX".format(pilatus_Epicsname), int(x0 - size[0] / 2)
-        )
+        caput("XF:11BMB-ES{}:ROI2:MinX".format(pilatus_Epicsname), int(x0 - size[0] / 2))
         caput("XF:11BMB-ES{}:ROI2:SizeX".format(pilatus_Epicsname), int(size[0]))
         caput("XF:11BMB-ES{}:ROI2:MinY".format(pilatus_Epicsname), y_pos)
         caput("XF:11BMB-ES{}:ROI2:SizeY".format(pilatus_Epicsname), int(size[1]))
 
         detselect(pilatus_name, suffix="_stats2_total")
 
-    def setSpecularReflectivityROI(
-        self, total_angle=0.16, size=[10, 10], default_SAXSy=None, verbosity=3
-    ):
+    def setSpecularReflectivityROI(self, total_angle=0.16, size=[10, 10], default_SAXSy=None, verbosity=3):
         """Update the ROIs (stats1, stats2) for the specular reflected beam on the Pilatus
         detector. This (should) update correctly based on the current SAXSx, SAXSy.
 
@@ -3597,11 +3366,7 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         if default_SAXSy is not None:
             if abs(default_SAXSy - SAXSy.position) > 0.01:
                 SAXSy.move(default_SAXSy)
-                print(
-                    "SAXS detector has been shifted to default SAXSy = {:.3f} mm.".format(
-                        SAXSy.position
-                    )
-                )
+                print("SAXS detector has been shifted to default SAXSy = {:.3f} mm.".format(SAXSy.position))
 
         # These positions are updated based on current detector position
         det_md = detector.get_md()
@@ -3669,9 +3434,7 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         # detselect(pilatus300, suffix='_stats3_total')
 
         # ROI1: Raw signal
-        caput(
-            "XF:11BMB-ES{}:ROI1:MinX".format(pilatus_Epicsname), int(x0 - size[0] / 2)
-        )
+        caput("XF:11BMB-ES{}:ROI1:MinX".format(pilatus_Epicsname), int(x0 - size[0] / 2))
         caput("XF:11BMB-ES{}:ROI1:SizeX".format(pilatus_Epicsname), int(size[0]))
         caput("XF:11BMB-ES{}:ROI1:MinY".format(pilatus_Epicsname), y_pos)
         caput("XF:11BMB-ES{}:ROI1:SizeY".format(pilatus_Epicsname), int(size[1]))
@@ -3743,9 +3506,7 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         else:
             return default_SAXSy
 
-    def setSpecularReflectivityROI_update(
-        self, total_angle=0.16, size=[10, 10], default_SAXSy=None, verbosity=3
-    ):
+    def setSpecularReflectivityROI_update(self, total_angle=0.16, size=[10, 10], default_SAXSy=None, verbosity=3):
         """Update the ROIs (stats1, stats2) for the specular reflected beam on the Pilatus
         detector. This (should) update correctly based on the current SAXSx, SAXSy.
 
@@ -3794,9 +3555,7 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         y_pos = int(y0 - size[1] / 2 - y_offset_pix)
 
         # ROI1: Raw signal
-        caput(
-            "XF:11BMB-ES{}:ROI1:MinX".format(pilatus_Epicsname), int(x0 - size[0] / 2)
-        )
+        caput("XF:11BMB-ES{}:ROI1:MinX".format(pilatus_Epicsname), int(x0 - size[0] / 2))
         caput("XF:11BMB-ES{}:ROI1:SizeX".format(pilatus_Epicsname), int(size[0]))
         caput("XF:11BMB-ES{}:ROI1:MinY".format(pilatus_Epicsname), y_pos)
         caput("XF:11BMB-ES{}:ROI1:SizeY".format(pilatus_Epicsname), int(size[1]))
@@ -4021,11 +3780,7 @@ class CMS_Beamline_XR(CMS_Beamline_GISAXS):
         if default_WAXSy is not None:
             if abs(default_WAXSy - WAXSy.position) > 0.01:
                 WAXSy.move(default_WAXSy)
-                print(
-                    "WAXS detector has been shifted to default WAXSy = {:.3f} mm.".format(
-                        WAXSy.position
-                    )
-                )
+                print("WAXS detector has been shifted to default WAXSy = {:.3f} mm.".format(WAXSy.position))
 
         # These positions are updated based on current detector position
         det_md = detector.get_md()
@@ -4054,9 +3809,7 @@ class CMS_Beamline_XR(CMS_Beamline_GISAXS):
             y_roi.append(y_pos + i)
 
         # flag for whether the ROI falls on intermodule gap
-        flag_ROIonGap = len(np.unique(y_gap_800 + y_roi)) < (
-            len(y_gap_800) + len(y_roi)
-        )
+        flag_ROIonGap = len(np.unique(y_gap_800 + y_roi)) < (len(y_gap_800) + len(y_roi))
 
         # Move SAXSy if ROI falls on intermodule gap; if not, move on
         if flag_ROIonGap == True:
@@ -4092,9 +3845,7 @@ class CMS_Beamline_XR(CMS_Beamline_GISAXS):
         # detselect(pilatus_name, suffix='_stats1_total')
         detselect(pilatus800, suffix="_stats1_total")
 
-    def setXRROI_WAXSy(
-        self, total_angle=0.16, size=[10, 10], default_WAXSy=None, verbosity=3
-    ):
+    def setXRROI_WAXSy(self, total_angle=0.16, size=[10, 10], default_WAXSy=None, verbosity=3):
         """Update the ROIs (stats1, stats2) for the specular reflected beam on the Pilatus 800
         detector. This (should) update correctly based on the XR_POS2 position.
 
@@ -4132,9 +3883,7 @@ class CMS_Beamline_XR(CMS_Beamline_GISAXS):
             y_roi.append(y_pos + i)
 
         # flag for whether the ROI falls on intermodule gap
-        flag_ROIonGap = len(np.unique(y_gap_800 + y_roi)) < (
-            len(y_gap_800) + len(y_roi)
-        )
+        flag_ROIonGap = len(np.unique(y_gap_800 + y_roi)) < (len(y_gap_800) + len(y_roi))
 
         # Move SAXSy if ROI falls on intermodule gap; if not, move on
         if flag_ROIonGap == True:
@@ -4145,9 +3894,7 @@ class CMS_Beamline_XR(CMS_Beamline_GISAXS):
         else:
             self.setWAXSpos(total_angle=0.0, roi=self.XR_pos2, verbosity=3)
 
-    def setXRROI_update(
-        self, total_angle=0.16, size=[10, 10], default_WAXSy=None, verbosity=3
-    ):
+    def setXRROI_update(self, total_angle=0.16, size=[10, 10], default_WAXSy=None, verbosity=3):
         """Update the ROIs (stats1, stats2) for the specular reflected beam on the Pilatus 800
         detector. This (should) update correctly based on the current WAXSx, WAXSy.
 

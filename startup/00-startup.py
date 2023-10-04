@@ -76,19 +76,13 @@ def _epicssignal_get(self, *, as_string=None, connection_timeout=1.0, **kwargs):
             attempts += 1
             ret = self._read_pv.get(as_string=as_string, **kwargs)
             if ret is None:
-                print(
-                    f"*** PV GET TIMED OUT {self._read_pv.pvname} *** attempt #{attempts}/{max_attempts}"
-                )
+                print(f"*** PV GET TIMED OUT {self._read_pv.pvname} *** attempt #{attempts}/{max_attempts}")
         if ret is None:
-            print(
-                f"*** PV GET TIMED OUT {self._read_pv.pvname} *** return `None` as value :("
-            )
+            print(f"*** PV GET TIMED OUT {self._read_pv.pvname} *** return `None` as value :(")
             # TODO we really want to raise TimeoutError here, but that may cause more
             # issues in the codebase than we have the time to fix...
             # If this causes issues, remove it to keep the old functionality...
-            raise TimeoutError(
-                "Failed to get %s after %d attempts" % (self._read_pv.pvname, attempts)
-            )
+            raise TimeoutError("Failed to get %s after %d attempts" % (self._read_pv.pvname, attempts))
         if attempts > 1:
             print(f"*** PV GET succeeded {self._read_pv.pvname} on attempt #{attempts}")
 
@@ -159,9 +153,7 @@ except ImportError:
 
             import weakref
 
-            self._finalizer = weakref.finalize(
-                self, finalize, self._file, self._cache, PersistentDict._dump
-            )
+            self._finalizer = weakref.finalize(self, finalize, self._file, self._cache, PersistentDict._dump)
 
         @property
         def directory(self):
@@ -202,9 +194,8 @@ except ImportError:
             self._cache = dict(super().items())
 
 
-runengine_metadata_dir = appdirs.user_data_dir(appname="bluesky") / Path(
-    "runengine-metadata"
-)
+# runengine_metadata_dir = appdirs.user_data_dir(appname="bluesky") / Path("runengine-metadata")
+runengine_metadata_dir = "/nsls2/data/cms/shared/config/runengine-metadata"
 
 # PersistentDict will create the directory if it does not exist
 RE.md = PersistentDict(runengine_metadata_dir)

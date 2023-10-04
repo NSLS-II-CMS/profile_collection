@@ -108,8 +108,5 @@ def ave_mir_y():
     dsyi = caget("XF:11BMA-OP{Mir:Tor-Ax:YDI}Mtr.RBV")
     dsyo = caget("XF:11BMA-OP{Mir:Tor-Ax:YDO}Mtr.RBV")
     ave_y = 0.5 * (usy + 0.5 * (dsyi + dsyo))
-    print(
-        "Average mirror support height = %.4f mm relative to nominal zero height (1400 mm)"
-        % ave_y
-    )
+    print("Average mirror support height = %.4f mm relative to nominal zero height (1400 mm)" % ave_y)
     return ave_y

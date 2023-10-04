@@ -14,7 +14,8 @@ class archiver(Device):
         self.arvconf = ArchiverConfig(self.bpl_url)
         self.cf_update = "/cf-update/"
         self.pvfinder = PVFinder(self.cf_update)
-        self.ar_url = "http://epics-services-cms.nsls2.bnl.local:11165"
+        self.ar_url = "http://epics-services-cms.nsls2.bnl.local:11168"
+        # self.ar_url = 'http://epics-services-cms:11168'
         self.ar_tz = "US/Eastern"
         self.config = {"url": self.ar_url, "timezone": self.ar_tz}
         self.arvReader = ArchiverReader(self.config)
@@ -24,7 +25,7 @@ class archiver(Device):
         self.PVs_name_default = []
         self.PV_dict_default = dict()
 
-    def setStage(self, stage):
+    def setStage(self, stage="LinkamTensile"):
         if stage == "LinkamTensile":
             self.PVs_default = [
                 "XF:11BM-ES:{LINKAM}:TEMP",
@@ -55,9 +56,7 @@ class archiver(Device):
     def readPVs(self):
         print(self.PV_dict_default)
 
-    def saveArchiver(
-        self, scan_id=None, folder=None, PVs=None, PVs_name=None, plot=True
-    ):
+    def saveArchiver(self, scan_id=None, folder=None, PVs=None, PVs_name=None, plot=True):
         # create the PVs for saving
 
         PV_dict = self.getDict(PVs=PVs, PVs_name=PVs_name)
@@ -65,12 +64,7 @@ class archiver(Device):
         # idenfity the start and end points of the uid
         #
 
-        uid_list = [
-            [
-                h.start["uid"]
-                for h in db(scan_id=scan_id, experimental_directory=folder)
-            ][0]
-        ]
+        uid_list = [[h.start["uid"] for h in db(scan_id=scan_id, experimental_directory=folder)][0]]
 
         pre = 0
         post = 0
@@ -121,9 +115,7 @@ class archiver(Device):
                 plt.xlabel("t$_1$ [s]")  # plt.xlabel('epoch [s]')
 
         if plot:
-            plt.title(
-                "uid: %s  sample: %s" % (md["uid"][:8], md["sample"]), fontsize=14
-            )
+            plt.title("uid: %s  sample: %s" % (md["uid"][:8], md["sample"]), fontsize=14)
             plt.ylim(-2, 1)
             plt.legend(loc="upper left", bbox_to_anchor=(1.2, 0.98))
 

@@ -120,9 +120,7 @@ def get_atten_trans():
         tr_Al = exp(-N_Al * d_Al / l_Al)
         tr_tot = tr_Nb * tr_Al
 
-        print(
-            "%dx 0.25mm Al (%.1e) and %dx 0.10mm Nb (%.1e)" % (N_Al, tr_Al, N_Nb, tr_Nb)
-        )
+        print("%dx 0.25mm Al (%.1e) and %dx 0.10mm Nb (%.1e)" % (N_Al, tr_Al, N_Nb, tr_Nb))
         print("Combined transmission is %.1e" % tr_tot)
 
         return tr_tot
@@ -389,7 +387,7 @@ def config_update():
 
     # load the previous config file
     cms_config = pds.read_csv(CMS_CONFIG_FILENAME, index_col=0)
-    cms_config_update = cms_config.append(current_config_DF, ignore_index=True)
+    cms_config_update = pds.concat([cms_config, current_config_DF], ignore_index=True)
 
     # save to file
     cms_config_update.to_csv(CMS_CONFIG_FILENAME)
@@ -414,28 +412,18 @@ def config_load():
     # tmp = cms_config._position_safe.values[-1]
     # robot._position_safe = [float(pos) for pos in tmp[1:-1].split(',')]
 
-    robot._position_safe = [
-        float(pos) for pos in cms_config._position_safe.values[-1][1:-1].split(",")
-    ]
+    robot._position_safe = [float(pos) for pos in cms_config._position_safe.values[-1][1:-1].split(",")]
 
     # robot._position_safe = cms_config._position_safe.values[-1]
     robot._position_sample_gripped = [
-        float(pos)
-        for pos in cms_config._position_sample_gripped.values[-1][1:-1].split(",")
+        float(pos) for pos in cms_config._position_sample_gripped.values[-1][1:-1].split(",")
     ]
-    robot._position_hold = [
-        float(pos) for pos in cms_config._position_hold.values[-1][1:-1].split(",")
-    ]
-    robot._position_garage = [
-        float(pos) for pos in cms_config._position_garage.values[-1][1:-1].split(",")
-    ]
+    robot._position_hold = [float(pos) for pos in cms_config._position_hold.values[-1][1:-1].split(",")]
+    robot._position_garage = [float(pos) for pos in cms_config._position_garage.values[-1][1:-1].split(",")]
     robot._position_stg_exchange = [
-        float(pos)
-        for pos in cms_config._position_stg_exchange.values[-1][1:-1].split(",")
+        float(pos) for pos in cms_config._position_stg_exchange.values[-1][1:-1].split(",")
     ]
-    robot._position_stg_safe = [
-        float(pos) for pos in cms_config._position_stg_safe.values[-1][1:-1].split(",")
-    ]
+    robot._position_stg_safe = [float(pos) for pos in cms_config._position_stg_safe.values[-1][1:-1].split(",")]
 
 
 ## output the scan data and save them in user_folder/data.
@@ -532,11 +520,7 @@ def metadata_output(output_file, SAF=None, experiment_alias_directory=None):
     output_data = pds.DataFrame()
 
     for header in headers:
-        if (
-            "sample_name" in header.start
-            and "sample_x" in header.start
-            and "sample_clock" in header.start
-        ):
+        if "sample_name" in header.start and "sample_x" in header.start and "sample_clock" in header.start:
             current_data = {
                 "a_scan_id": header.start["scan_id"],
                 "b_sample_name": header.start["sample_name"],
@@ -547,7 +531,8 @@ def metadata_output(output_file, SAF=None, experiment_alias_directory=None):
             }
             current = pds.DataFrame(data=current_data, index=[1])
 
-        output_data = output_data.append(current_data, ignore_index=True)
+        # output_data = output_data.append(current_data, ignore_index=True)
+        output_data = pds.concat([output_data, current_data], ignore_index=True)
 
         # output_data = output_data.iloc[0:0]
 

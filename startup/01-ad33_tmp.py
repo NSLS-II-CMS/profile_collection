@@ -98,9 +98,7 @@ except ImportError:
             default_read_attrs=("x", "y"),
         )
         profile_size = DDC(
-            ad_group(
-                EpicsSignalRO, (("x", "ProfileSizeX_RBV"), ("y", "ProfileSizeY_RBV"))
-            ),
+            ad_group(EpicsSignalRO, (("x", "ProfileSizeX_RBV"), ("y", "ProfileSizeY_RBV"))),
             doc="Profile size in XY",
             default_read_attrs=("x", "y"),
         )

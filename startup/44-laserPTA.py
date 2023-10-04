@@ -1,9 +1,16 @@
+from epics import caput, caget
+
+
 class PhotoThermalAnnealer:
     def __init__(self, print_code="PTA> "):
         # self.controlTTL_PV = 'XF:11BMB-ES{IO}AO:3-SP'
-        self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
+        # self.controlTTL_PV = 'XF:11BM-ES{Ecat:DO1_2}'
         # self.powerV_PV = 'XF:11BMB-ES{IO}AO:4-SP'
-        self.powerV_PV = "XF:11BM-ES{Ecat:AO1}1"
+        # self.powerV_PV = 'XF:11BM-ES{Ecat:AO1}1'
+
+        # setting at Feb 2023
+        self.powerV_PV = "XF:11BM-ES{Ecat:AO2}1"
+        self.controlTTL_PV = "XF:11BM-ES{Ecat:DO1_2}"
 
         self.print_code = print_code
         # if verbosity>=3:
@@ -35,11 +42,7 @@ class PhotoThermalAnnealer:
             np.asarray(data)[:, 0], np.asarray(data)[:, 1]
         )
         if verbosity >= 5:
-            print(
-                "    m = {:.3f} ; b = {:.3f} [R = {:.2f}]".format(
-                    slope, intercept, r_value
-                )
-            )
+            print("    m = {:.3f} ; b = {:.3f} [R = {:.2f}]".format(slope, intercept, r_value))
 
         return slope, intercept, r_value
 
@@ -47,10 +50,10 @@ class PhotoThermalAnnealer:
     ########################################
 
     def laserOn(self):
-        caput(self.controlTTL_PV, 0)
+        caput(self.controlTTL_PV, 1)
 
     def laserOff(self):
-        caput(self.controlTTL_PV, 1)
+        caput(self.controlTTL_PV, 0)
 
     def laserPulse(self, duration, power_W=None):
         if power_W is not None:
@@ -70,11 +73,7 @@ class PhotoThermalAnnealer:
         power_W = self.laser_calib_m * Voltage + self.laser_calib_b
 
         if verbosity >= 3:
-            print(
-                "{}    Voltage = {:.2f} V ({:.2f} W)".format(
-                    self.print_code, Voltage, power_W
-                )
-            )
+            print("{}    Voltage = {:.2f} V ({:.2f} W)".format(self.print_code, Voltage, power_W))
 
         return Voltage
 
@@ -83,11 +82,7 @@ class PhotoThermalAnnealer:
         power_W = self.laser_calib_m * Voltage + self.laser_calib_b
 
         if verbosity >= 3:
-            print(
-                "{}    Power = {:.2f} W ({:.2f} V)".format(
-                    self.print_code, power_W, Voltage
-                )
-            )
+            print("{}    Power = {:.2f} W ({:.2f} V)".format(self.print_code, power_W, Voltage))
 
         return power_W
 
@@ -177,11 +172,7 @@ class PhotoThermalAnnealer:
         T = m * power_W + b + T_base
 
         if verbosity >= 3:
-            print(
-                "{}Current set temperature is {:.2f}°C (using {:.2f} W)".format(
-                    self.print_code, T, power_W
-                )
-            )
+            print("{}Current set temperature is {:.2f}°C (using {:.2f} W)".format(self.print_code, T, power_W))
             if caget(self.controlTTL_PV) == True:
                 print("{}  Note: Laser is not turned on.".format(self.print_code))
 
@@ -219,9 +210,7 @@ class PhotoThermalAnnealer:
     # RTP protocols
     ########################################
 
-    def controlTemperature(
-        self, T_target, adjust_strength=0.5, delay_time=0.1, adjust_clip=1, verbosity=3
-    ):
+    def controlTemperature(self, T_target, adjust_strength=0.5, delay_time=0.1, adjust_clip=1, verbosity=3):
         m, b = self.calibration_m, self.calibration_b  # [°C/W] , [°C]
 
         power_W_nominal = (T_target - b) / m
@@ -302,11 +291,7 @@ class PhotoThermalAnnealer:
 
         if dwell_time is not None:
             if verbosity >= 3:
-                print(
-                    "{}  Holding at T = {:.1f}°C for {:.1f} s...".format(
-                        self.print_code, T_target, dwell_time
-                    )
-                )
+                print("{}  Holding at T = {:.1f}°C for {:.1f} s...".format(self.print_code, T_target, dwell_time))
             time.sleep(dwell_time)
             self.laserOff()
             if verbosity >= 3:
@@ -387,9 +372,7 @@ class PhotoThermalAnnealer:
 
         velocity = round(velocity, 4)
 
-        self.msg(
-            "sweep %.1f mm (@ %.4f mm/s)" % (length, velocity), priority=1, indent=1
-        )
+        self.msg("sweep %.1f mm (@ %.4f mm/s)" % (length, velocity), priority=1, indent=1)
 
         sweep_time = abs(length / velocity)
         # self.stage.move_relative( +length, velocity=velocity )
@@ -421,9 +404,7 @@ class PhotoThermalAnnealer:
 
         velocity = round(velocity, 4)
 
-        self.msg(
-            "sweep %.1f mm (@ %.4f mm/s)" % (length, velocity), priority=1, indent=1
-        )
+        self.msg("sweep %.1f mm (@ %.4f mm/s)" % (length, velocity), priority=1, indent=1)
 
         sweep_time = abs(length / velocity)
         # self.stage.move_relative( +length, velocity=velocity )
@@ -447,24 +428,17 @@ class PhotoThermalAnnealer:
         self.single_sweep(-length, velocity, delay_at_end=delay_at_end)
 
     def double_sweep_laser(self, length, velocity, start=None, delay_at_end=0.1):
-        self.single_sweep_laser(
-            +length, velocity, start=start, delay_at_end=delay_at_end
-        )
-        self.single_sweep_laser(
-            -length, velocity, start=None, delay_at_end=delay_at_end
-        )
+        self.single_sweep_laser(+length, velocity, start=start, delay_at_end=delay_at_end)
+        self.single_sweep_laser(-length, velocity, start=None, delay_at_end=delay_at_end)
 
     def anneal_cyclic(self, length, velocity, num_cycles, delay_at_end=0.1):
         self.msg(
-            "Cycling Anneal (%.1fmm X %.1f, @ %.4f mm/s)"
-            % (length, num_cycles, velocity),
+            "Cycling Anneal (%.1fmm X %.1f, @ %.4f mm/s)" % (length, num_cycles, velocity),
             1,
         )
 
         # Predict how long the anneal will take
-        predicted_duration = (
-            ((length / velocity) + delay_at_end) * 2 * num_cycles
-        )  # Stage motion
+        predicted_duration = ((length / velocity) + delay_at_end) * 2 * num_cycles  # Stage motion
         # predicted_duration += ( self.stage.com_wait_time*2 )*2*num_cycles # Serial communications
         self.start_timing(predicted_duration)
 
@@ -484,8 +458,7 @@ class PhotoThermalAnnealer:
         # Anneal cycles
         for cycle in range(num_cycles):
             self.msg(
-                "Cycle #: %d/%d (%.1f%% done)"
-                % (cycle + 1, num_cycles, (100.0 * cycle / num_cycles)),
+                "Cycle #: %d/%d (%.1f%% done)" % (cycle + 1, num_cycles, (100.0 * cycle / num_cycles)),
                 1,
             )
             # self.date_stamp(indent=1)
@@ -499,10 +472,7 @@ class PhotoThermalAnnealer:
             self.single_sweep(+length, velocity, delay_at_end=delay_at_end)
 
         self.end_timing()
-        self.msg(
-            "Run complete (%s)"
-            % (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        )
+        self.msg("Run complete (%s)" % (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     def anneal_cyclic_laser(
         self,
@@ -517,8 +487,7 @@ class PhotoThermalAnnealer:
         cycles_done=0,
     ):
         self.msg(
-            "Cycling Anneal (%.1fmm X %.1f, @ %.4f mm/s)"
-            % (length, num_cycles, velocity),
+            "Cycling Anneal (%.1fmm X %.1f, @ %.4f mm/s)" % (length, num_cycles, velocity),
             1,
         )
 
@@ -534,9 +503,7 @@ class PhotoThermalAnnealer:
 
         velocity = round(velocity, 4)
         # Predict how long the anneal will take
-        predicted_duration = (
-            ((length / velocity) + delay_at_end) * 2 * num_cycles
-        )  # Stage motion
+        predicted_duration = ((length / velocity) + delay_at_end) * 2 * num_cycles  # Stage motion
         # predicted_duration += ( self.stage.com_wait_time*2 )*2*num_cycles # Serial communications
         self.start_timing(predicted_duration)
 
@@ -556,17 +523,14 @@ class PhotoThermalAnnealer:
         # Anneal cycles
         for cycle in range(num_cycles):
             self.msg(
-                "Cycle #: %d/%d (%.1f%% done)"
-                % (cycle + 1, num_cycles, (100.0 * cycle / num_cycles)),
+                "Cycle #: %d/%d (%.1f%% done)" % (cycle + 1, num_cycles, (100.0 * cycle / num_cycles)),
                 1,
             )
             # self.date_stamp(indent=1)
             if self.is_timing():
                 self.timing_msg(indent=1)
 
-            self.double_sweep_laser(
-                length, velocity, start=None, delay_at_end=delay_at_end
-            )
+            self.double_sweep_laser(length, velocity, start=None, delay_at_end=delay_at_end)
 
             # Do the GISAXS measurement
             if (cycle + 1 + cycles_done) in measures:
@@ -581,32 +545,21 @@ class PhotoThermalAnnealer:
             self.single_sweep_laser(length, velocity, delay_at_end=delay_at_end)
 
         self.end_timing()
-        self.msg(
-            "Run complete (%s)"
-            % (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        )
+        self.msg("Run complete (%s)" % (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
-    def LZA_measure(
-        self, extra=None, incident_angles=None, exposure_time=10, x_step=0.05
-    ):
+    def LZA_measure(self, extra=None, incident_angles=None, exposure_time=10, x_step=0.05):
         sam.xr(x_step)
         if incident_angles is None:
             # incident_angles = sam.incident_angles_default
             incident_angles = [0.12]
-        sam.measureIncidentAngles(
-            incident_angles, exposure_time=exposure_time, extra=extra
-        )
+        sam.measureIncidentAngles(incident_angles, exposure_time=exposure_time, extra=extra)
 
-    def single_sweep_measure(
-        self, length=4, velocity=0.1, delay_at_end=0.1, exposure_time=1, extra=None
-    ):
+    def single_sweep_measure(self, length=4, velocity=0.1, delay_at_end=0.1, exposure_time=1, extra=None):
         """LZA sweep by moving the sample."""
 
         velocity = round(velocity, 4)
 
-        self.msg(
-            "sweep %.1f mm (@ %.4f mm/s)" % (length, velocity), priority=1, indent=1
-        )
+        self.msg("sweep %.1f mm (@ %.4f mm/s)" % (length, velocity), priority=1, indent=1)
 
         sweep_time = abs(length / velocity)
         # self.stage.move_relative( +length, velocity=velocity )
@@ -626,9 +579,7 @@ class PhotoThermalAnnealer:
 
         # time.sleep(sweep_time)
         num_images = int((length / velocity) / (exposure_time + 0.3))
-        sam.measure_burst(
-            exposure_time=exposure_time, num_images=num_images, extra=extra
-        )
+        sam.measure_burst(exposure_time=exposure_time, num_images=num_images, extra=extra)
 
         while (time.time() - start_time) < sweep_time:
             time.sleep(0.05)
@@ -645,9 +596,7 @@ class PhotoThermalAnnealer:
     # Other measurement styles
     ########################################
 
-    def thermal_gradient_T_conversion(
-        self, position, power_fractional=1.00, T_ambient=25
-    ):
+    def thermal_gradient_T_conversion(self, position, power_fractional=1.00, T_ambient=25):
         T_est = 492 - abs(position) * 24.7  # P_frac = 0.45
         T_est = 528 - abs(position) * 26.6  # P_frac = 0.50
         T_est = 950 - abs(position) * 53.2  # P_frac = 1.00
@@ -686,9 +635,7 @@ class PhotoThermalAnnealer:
 
         cms.modeMeasurement()
 
-        print(
-            "thermal gradient annealing using P_frac = {:.2f}".format(power_fractional)
-        )
+        print("thermal gradient annealing using P_frac = {:.2f}".format(power_fractional))
         self.centerLaser()
         self.setLaserPower(68.5 * power_fractional)
 
@@ -696,11 +643,7 @@ class PhotoThermalAnnealer:
             total_time = np.sum(heating_times[: i + 1]) + already_heated
 
             # Anneal sample
-            print(
-                " PTA will anneal sample for +{:.2f}s ({:.2f} s total)".format(
-                    heating_time, total_time
-                )
-            )
+            print(" PTA will anneal sample for +{:.2f}s ({:.2f} s total)".format(heating_time, total_time))
             if not testing:
                 sam.xo()
                 # self.centerLaser()
@@ -714,24 +657,16 @@ class PhotoThermalAnnealer:
                 # Measure spots
                 for position in positions:
                     T_est = self.thermal_gradient_T_conversion(position + x_offset)
-                    print(
-                        "     Sample move to {:.4f} mm (T_est = {:.1f}°C)".format(
-                            position + x_offset, T_est
-                        )
-                    )
+                    print("     Sample move to {:.4f} mm (T_est = {:.1f}°C)".format(position + x_offset, T_est))
 
-                    extra = "P{:.2f}T{:.1f}Ct{:.1f}s".format(
-                        power_fractional, T_est, total_time
-                    )
+                    extra = "P{:.2f}T{:.1f}Ct{:.1f}s".format(power_fractional, T_est, total_time)
                     print('      will append to filename: "{}"'.format(extra))
 
                     if not testing:
                         sam.xabs(position)
                         sam.xr(x_offset)
 
-                        sam.measureIncidentAngle(
-                            0.12, exposure_time=exposure_time, extra=extra
-                        )
+                        sam.measureIncidentAngle(0.12, exposure_time=exposure_time, extra=extra)
 
                 x_offset += x_step
 
@@ -808,4 +743,4 @@ class PhotoThermalAnnealer:
         self.laserPulse(duration)
 
 
-# pta = PhotoThermalAnnealer()
+pta = PhotoThermalAnnealer()

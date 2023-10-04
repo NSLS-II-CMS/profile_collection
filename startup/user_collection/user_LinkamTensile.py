@@ -39,9 +39,7 @@ from bluesky.suspenders import SuspendFloor, SuspendCeil
 # RE.install_suspender(sus)
 
 
-RE.md[
-    "experiment_alias_directory"
-] = "/nsls2/data/cms/legacy/xf11bm/data/2023_1/beamline"
+RE.md["experiment_alias_directory"] = "/nsls2/data/cms/legacy/xf11bm/data/2023_1/beamline"
 # cms.SAXS.setCalibration([737, 1680-582], 3, [-65, -73]) #3m, 13.5kev
 # cms.SAXS.setCalibration([738, 1097], 3.0, [-65, -73])   #3m,13.5kev
 # cms.SAXS.setCalibration([738, 1680-590], 2, [-65, -73])
@@ -262,9 +260,7 @@ class Sample(SampleTSAXS):
     # def linkamTemperature(self):
     #     return caget('XF:11BM-ES:{LINKAM}:TEMP')
 
-    def measureTimeSeries_custom(
-        self, maxTime=60 * 60 * 6, exposure_time=10, interval=20, reset_clock=True
-    ):
+    def measureTimeSeries_custom(self, maxTime=60 * 60 * 6, exposure_time=10, interval=20, reset_clock=True):
         if reset_clock == True:
             self.reset_clock()
 
@@ -286,9 +282,7 @@ class Sample(SampleTSAXS):
     #     self.expose(exposure_time=exposure_time, extra=extra, measure_type=measure_type, verbosity=verbosity, handlefile=False, **md)
     #     remove_last_Pilatus_series()
 
-    def measureTensile(
-        self, exposure_time=None, extra=None, measure_type="measure", verbosity=3, **md
-    ):
+    def measureTensile(self, exposure_time=None, extra=None, measure_type="measure", verbosity=3, **md):
         """Measure data by triggering the area detectors.
 
         Parameters
@@ -309,9 +303,7 @@ class Sample(SampleTSAXS):
 
         if verbosity >= 2 and (get_beamline().current_mode != "measurement"):
             print(
-                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(
-                    get_beamline().current_mode
-                )
+                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(get_beamline().current_mode)
             )
 
         if verbosity >= 1 and len(get_beamline().detector) < 1:
@@ -330,13 +322,7 @@ class Sample(SampleTSAXS):
         md_current["LTensile_stress"] = LTensile.STRESS.get()
         md_current.update(md)
 
-        self.expose(
-            exposure_time,
-            extra=extra,
-            verbosity=verbosity,
-            handlefile=True,
-            **md_current
-        )
+        self.expose(exposure_time, extra=extra, verbosity=verbosity, handlefile=True, **md_current)
         # self.expose(exposure_time, extra=extra, verbosity=verbosity, **md)
 
         self.md["measurement_ID"] += 1
@@ -366,9 +352,7 @@ class Sample(SampleTSAXS):
         # self.measure(exposure_time)
         if step < 3:
             # for index, temperature in enumerate(temp_sequence):
-            for temperature, rate, wait_time in zip(
-                temp_sequence, rate_sequence, wait_sequence
-            ):
+            for temperature, rate, wait_time in zip(temp_sequence, rate_sequence, wait_sequence):
                 start_time = np.ceil(self.clock() / interval) * interval
                 trigger_time = np.arange(start_time, maxTime, interval)
                 LThermal.setTemperatureRate(rate)
@@ -448,9 +432,7 @@ class Sample(SampleTSAXS):
             para = list(
                 map(
                     int,
-                    input(
-                        "\nEnter the numbers for [Temperature, T-rate, wait time, position, velocity] : "
-                    )
+                    input("\nEnter the numbers for [Temperature, T-rate, wait time, position, velocity] : ")
                     .strip()
                     .split(),
                 )
@@ -472,11 +454,7 @@ class Sample(SampleTSAXS):
             r_distance = stages_df["e_position"][ii] - stages_df["e_position"][ii - 1]
             # print(r_distance)
             if r_distance / stages_df["f_velocity"][ii] > stages_df["d_waitTime"][ii]:
-                print(
-                    "ALERT: you do NOT have enough time to finish step [ {} ].".format(
-                        ii
-                    )
-                )
+                print("ALERT: you do NOT have enough time to finish step [ {} ].".format(ii))
 
         self.LinkamTensile_stages_default = stages_df
         # print out the steps for review
@@ -524,11 +502,7 @@ class Sample(SampleTSAXS):
                     velocity,
                 ) = self.LinkamTensile_stages_default.loc[stage]
 
-                print(
-                    "Stage {} : {}".format(
-                        stage, self.LinkamTensile_stages_default.loc[stage]
-                    )
-                )
+                print("Stage {} : {}".format(stage, self.LinkamTensile_stages_default.loc[stage]))
 
                 start_time = np.ceil(self.clock() / interval) * interval
                 trigger_time = np.arange(start_time, maxTime, interval)
@@ -542,11 +516,7 @@ class Sample(SampleTSAXS):
 
                 currentTime = []
 
-                print(
-                    "Stage {} : complete the parameter settings and start the measurement".format(
-                        stage
-                    )
-                )
+                print("Stage {} : complete the parameter settings and start the measurement".format(stage))
                 for trigger in trigger_time:
                     while self.clock() < trigger:
                         time.sleep(0.2)
@@ -554,21 +524,11 @@ class Sample(SampleTSAXS):
 
                     # check if the stage is done.
                     #       move done                                     temperature done
-                    if (
-                        int(LTensile.status_code_Tensile.get()) & 4
-                        and int(LTensile.status_code.get()) & 2
-                    ):
+                    if int(LTensile.status_code_Tensile.get()) & 4 and int(LTensile.status_code.get()) & 2:
                         break
 
     def LinkamTensileSeries_step(
-        self,
-        num_frames,
-        exposure_time=0.095,
-        exposure_period=0.1,
-        detectors=None,
-        extra=None,
-        verbosity=3,
-        **md
+        self, num_frames, exposure_time=0.095, exposure_period=0.1, detectors=None, extra=None, verbosity=3, **md
     ):
         """
         Continueous shots with internal trigger of detectors.
@@ -591,9 +551,7 @@ class Sample(SampleTSAXS):
         """
 
         if exposure_period < exposure_time + 0.005:
-            return print(
-                "Error: exposure period should be at least 0.05s more than exposure time."
-            )
+            return print("Error: exposure period should be at least 0.05s more than exposure time.")
 
         if detectors == None:
             detectors = cms.detector
@@ -626,9 +584,7 @@ class Sample(SampleTSAXS):
 
         if verbosity >= 2 and (get_beamline().current_mode != "measurement"):
             print(
-                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(
-                    get_beamline().current_mode
-                )
+                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(get_beamline().current_mode)
             )
 
         if verbosity >= 1 and len(cms.detector) < 1:
@@ -668,11 +624,7 @@ class Sample(SampleTSAXS):
                     velocity,
                 ) = self.LinkamTensile_stages_default.loc[stage]
 
-                print(
-                    "Stage {} : {}".format(
-                        stage, self.LinkamTensile_stages_default.loc[stage]
-                    )
-                )
+                print("Stage {} : {}".format(stage, self.LinkamTensile_stages_default.loc[stage]))
 
                 # TODO:
                 yield from bps.mv(LTensile.temperature_rate_setpoint, rate)
@@ -682,10 +634,7 @@ class Sample(SampleTSAXS):
                 # yield from bps.mv(LTensile.position_setpoint, position)
                 print("1")
                 time.sleep(1)
-                while (
-                    int(LTensile.status_code_Tensile.get()) & 4
-                    and int(LTensile.status_code.get()) & 2
-                ) == 0:
+                while (int(LTensile.status_code_Tensile.get()) & 4 and int(LTensile.status_code.get()) & 2) == 0:
                     print("2")
                     print(LTensile.POS.get())
 
@@ -719,7 +668,7 @@ class Sample(SampleTSAXS):
         extra=None,
         measure_type="measureTimeSeries",
         verbosity=3,
-        **md
+        **md,
     ):
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
@@ -730,7 +679,7 @@ class Sample(SampleTSAXS):
             extra=extra,
             measure_type=measure_type,
             verbosity=verbosity,
-            **md
+            **md,
         )
         self.naming_scheme = self.naming_scheme_hold
 
@@ -738,9 +687,7 @@ class Sample(SampleTSAXS):
         super().goto(label, verbosity=verbosity, **additional)
         # You can add customized 'goto' behavior here
 
-    def measureTimeSeries_custom(
-        self, maxTime=60 * 60 * 1.6, exposure_time=6, interval=12, reset_clock=True
-    ):
+    def measureTimeSeries_custom(self, maxTime=60 * 60 * 1.6, exposure_time=6, interval=12, reset_clock=True):
         if reset_clock == True:
             self.reset_clock()
 

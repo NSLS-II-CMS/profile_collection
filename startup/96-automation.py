@@ -161,10 +161,7 @@ class SampleExchangeRobot(Stage):
 
         # Make sure homing actually started
         start_time = time.time()
-        while (
-            caget("XF:11BMB-ES{SM:1-Ax:Y}Sts:Homing-Sts") != 1
-            and time.time() - start_time < max_wait
-        ):
+        while caget("XF:11BMB-ES{SM:1-Ax:Y}Sts:Homing-Sts") != 1 and time.time() - start_time < max_wait:
             time.sleep(0.01)
             if verbosity >= 5:
                 print(
@@ -309,22 +306,14 @@ class SampleExchangeRobot(Stage):
         phi = self.phipos(verbosity=0)
         self._position_sample_gripped = x, y, z, phi  # x, y, z, phi
 
-        print(
-            "self._position_sample_gripped = [ {}, {}, {}, {} ] # x, y, z, phi".format(
-                x, y, z, phi
-            )
-        )
+        print("self._position_sample_gripped = [ {}, {}, {}, {} ] # x, y, z, phi".format(x, y, z, phi))
 
         # if hasattr(gs, 'robot'):
         # gs.robot['_position_sample_gripped'] = self._position_sample_gripped
 
         self._position_hold = 0, y, z, phi  # x, y, z, phi
 
-        print(
-            "self._position_hold = [ {}, {}, {}, {} ] # x, y, z, phi".format(
-                0, y, z, phi
-            )
-        )
+        print("self._position_hold = [ {}, {}, {}, {} ] # x, y, z, phi".format(0, y, z, phi))
 
         # if hasattr(gs, 'robot'):
         # gs.robot['_position_hold'] = self._position_hold
@@ -340,11 +329,7 @@ class SampleExchangeRobot(Stage):
 
         self._position_garage = x, y, z, phi  # x, y, z, phi
 
-        print(
-            "self._position_garage = [ {}, {}, {}, {} ] # x, y, z, phi".format(
-                x, y, z, phi
-            )
-        )
+        print("self._position_garage = [ {}, {}, {}, {} ] # x, y, z, phi".format(x, y, z, phi))
 
         # if hasattr(gs, 'robot'):
         # gs.robot['_position_garage'] = self._position_garage
@@ -377,9 +362,7 @@ class SampleExchangeRobot(Stage):
     def sequenceGotoSampleStageSlotted(self, x_motion=True, verbosity=3):
         if self._sample is not None:
             print(
-                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(
-                    self._sample.name
-                )
+                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(self._sample.name)
             )
             return
 
@@ -467,9 +450,7 @@ class SampleExchangeRobot(Stage):
     def sequenceGotoSampleStageSlotted(self, x_motion=True, verbosity=3):
         if self._sample is not None:
             print(
-                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(
-                    self._sample.name
-                )
+                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(self._sample.name)
             )
             return
 
@@ -501,9 +482,7 @@ class SampleExchangeRobot(Stage):
     def _sequenceGotoSampleStageSlotted(self, x_motion=True, verbosity=3):
         if self._sample is not None:
             print(
-                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(
-                    self._sample.name
-                )
+                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(self._sample.name)
             )
             return
 
@@ -588,9 +567,7 @@ class SampleExchangeRobot(Stage):
     def sequenceGetSampleFromStage(self, gotoSafe=True, verbosity=3):
         if self._sample is not None:
             print(
-                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(
-                    self._sample.name
-                )
+                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(self._sample.name)
             )
             return
 
@@ -638,9 +615,7 @@ class SampleExchangeRobot(Stage):
         if gotoSafe == True:
             self.sequenceGotoSafe(verbosity=verbosity)
 
-    def sequenceGetSampleFromGarage(
-        self, shelf_num, spot_num, gotoSafe=True, verbosity=3
-    ):
+    def sequenceGetSampleFromGarage(self, shelf_num, spot_num, gotoSafe=True, verbosity=3):
         if shelf_num < 1 or shelf_num > 4:
             print("ERROR: Invalid shelf {}".format(shelf_num))
             return
@@ -650,9 +625,7 @@ class SampleExchangeRobot(Stage):
 
         if self._sample is not None:
             print(
-                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(
-                    self._sample.name
-                )
+                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(self._sample.name)
             )
             return
 
@@ -693,9 +666,7 @@ class SampleExchangeRobot(Stage):
         if gotoSafe == True:
             self.sequenceGotoSafe(verbosity=verbosity)
 
-    def sequencePutSampleInGarage(
-        self, shelf_num, spot_num, gotoSafe=True, verbosity=3
-    ):
+    def sequencePutSampleInGarage(self, shelf_num, spot_num, gotoSafe=True, verbosity=3):
         if shelf_num < 1 or shelf_num > 4:
             print("ERROR: Invalid shelf {}".format(shelf_num))
             return
@@ -776,19 +747,11 @@ class SampleExchangeRobot(Stage):
         yactual = self.ypos(verbosity=0)
 
         if abs(x - xactual) > 0.2:
-            print(
-                "ERROR: x did not reach requested position (request = {}, actual = {})".format(
-                    x, xactual
-                )
-            )
+            print("ERROR: x did not reach requested position (request = {}, actual = {})".format(x, xactual))
             return False
 
         if abs(y - yactual) > 0.2:
-            print(
-                "ERROR: y did not reach requested position (request = {}, actual = {})".format(
-                    y, yactual
-                )
-            )
+            print("ERROR: y did not reach requested position (request = {}, actual = {})".format(y, yactual))
             return False
 
         return True
@@ -884,15 +847,11 @@ class SampleExchangeRobot(Stage):
 
         if self._sample is not None:
             print(
-                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(
-                    self._sample.name
-                )
+                "ERROR: There is already a sample being gripped by robot arm (sample {}.".format(self._sample.name)
             )
             return
 
-        self.sequenceGetSampleFromGarage(
-            shelf_num, spot_num, gotoSafe=gotoSafe, verbosity=verbosity
-        )
+        self.sequenceGetSampleFromGarage(shelf_num, spot_num, gotoSafe=gotoSafe, verbosity=verbosity)
         time.sleep(1)
         # always go back to safe position from or to the stage
         self.sequencePutSampleOntoStage(verbosity=verbosity)
@@ -908,9 +867,7 @@ class SampleExchangeRobot(Stage):
         self.sequenceGetSampleFromStage(verbosity=verbosity)
         time.sleep(1)
         # only this one need options NOT to return robot to the default position
-        self.sequencePutSampleInGarage(
-            shelf_num, spot_num, gotoSafe=gotoSafe, verbosity=verbosity
-        )
+        self.sequencePutSampleInGarage(shelf_num, spot_num, gotoSafe=gotoSafe, verbosity=verbosity)
 
     def _stress_test(self, cycles=2, verbosity=5):
         if not self.checkSafe():
@@ -930,17 +887,13 @@ class SampleExchangeRobot(Stage):
                     if verbosity >= 2:
                         print("Stress test garage ({}, {})".format(shelf_num, spot_num))
 
-                    self.sequenceGetSampleFromGarage(
-                        shelf_num, spot_num, verbosity=verbosity
-                    )
+                    self.sequenceGetSampleFromGarage(shelf_num, spot_num, verbosity=verbosity)
                     self.sequencePutSampleOntoStage(verbosity=verbosity)
 
                     time.sleep(3)
 
                     self.sequenceGetSampleFromStage(verbosity=verbosity)
-                    self.sequencePutSampleInGarage(
-                        shelf_num, spot_num, verbosity=verbosity
-                    )
+                    self.sequencePutSampleInGarage(shelf_num, spot_num, verbosity=verbosity)
 
     def run(self, cycles=1, verbosity=3):
         if not self.checkSafe():
@@ -984,9 +937,7 @@ class SampleExchangeRobot(Stage):
 
             self.sequenceGetSampleFromStage(verbosity=verbosity)
             time.sleep(2)
-            self.sequencePutSampleInGarage(
-                shelf_num, spot_num, gotoSafe=False, verbosity=verbosity
-            )
+            self.sequencePutSampleInGarage(shelf_num, spot_num, gotoSafe=False, verbosity=verbosity)
             time.sleep(2)
 
         self.sequenceGotoSafe(verbosity=verbosity)
@@ -1018,7 +969,9 @@ class Queue(CoordinateSystem):
 
         self._holders = {}
         self._current = None  # the current holder on the stage.
-        self._currentSample = None  # the current sample measured on the stage, self._currentSample = [holder, sample_number]
+        self._currentSample = (
+            None  # the current sample measured on the stage, self._currentSample = [holder, sample_number]
+        )
         self.status = None  # status of the current robot, including 'onStage', 'onRobot', 'inGarage'
         self._sequence = {}  # the current holder on the stage
 
@@ -1107,9 +1060,7 @@ class Queue(CoordinateSystem):
                         self._current = item
                         # print('There is no holder with the same name. Please double-check')
                 if self._current == None:
-                    print(
-                        "ERROR : The holder name is not in the queue list. Please double-check"
-                    )
+                    print("ERROR : The holder name is not in the queue list. Please double-check")
                     return
 
             elif ret1 == "y" or ret1 == "yes":
@@ -1374,6 +1325,25 @@ class Queue(CoordinateSystem):
             for sample_number, sample in sorted(holder._samples.items()):
                 print("{}: {:s}".format(sample_number, sample.name))
 
+    def checkSamples(self, verbosity=3):
+        if verbosity > 0:
+            self.listSamples()
+        # check positions to make sure the samples are in the range of smx
+        if verbosity > 3:
+            error_signal = False
+            for holder_number, holder in sorted(self._holders.items()):
+                for sample_number, sample in sorted(holder._samples.items()):
+                    sample_xpos = holder.position["x"] + sample.position
+                    if sample_xpos < smx.limits[0] or sample_xpos > smx.limits[-1]:
+                        print(
+                            "ERROR: out of limit of smx motor: holder--{}: sample--{}".format(
+                                holder_number, sample_number
+                            )
+                        )
+                        error_signal = True
+            if error_signal == True:
+                input(" Please ctrl+c and correct the errors.")
+
     def returnHolder(self, holder="current", gotoSafe=True, force=False):
         """return the holder from stage back to garage.
         holder = None:  retrun to default position
@@ -1397,13 +1367,8 @@ class Queue(CoordinateSystem):
                 else:
                     # TODO:
                     for hol in sorted(self._holders.items()):
-                        if (
-                            holder.slot_number == hol.slot_number
-                            and hol != self._current
-                        ):
-                            print(
-                                "There is holder position has been occupied in garage"
-                            )
+                        if holder.slot_number == hol.slot_number and hol != self._current:
+                            print("There is holder position has been occupied in garage")
                             return
 
                     answer = input("Is this slot {} safe for the holder?".format(slot))
@@ -1427,9 +1392,7 @@ class Queue(CoordinateSystem):
             self._current = holder
             self.status = "onStage"
             post_to_slack(
-                text="holder <<<{}>>> is onStage for measurements".format(
-                    self._current.name
-                ),
+                text="holder <<<{}>>> is onStage for measurements".format(self._current.name),
                 slack=slack,
             )
             return self._current
@@ -1440,9 +1403,7 @@ class Queue(CoordinateSystem):
                 self._current = holder
                 self.status = "onStage"
                 post_to_slack(
-                    text="holder <<<{}>>> is onStage for measurements".format(
-                        self._current.name
-                    ),
+                    text="holder <<<{}>>> is onStage for measurements".format(self._current.name),
                     slack=slack,
                 )
                 return self._current
@@ -1453,16 +1414,12 @@ class Queue(CoordinateSystem):
                 self._current = holder
                 self.status = "onStage"
                 post_to_slack(
-                    text="holder <<<{}>>> is onStage for measurements".format(
-                        self._current.name
-                    ),
+                    text="holder <<<{}>>> is onStage for measurements".format(self._current.name),
                     slack=slack,
                 )
                 return self._current
             else:
-                print(
-                    "Nothing happened becasue the stage is occupied. Make sure force=True"
-                )
+                print("Nothing happened becasue the stage is occupied. Make sure force=True")
                 return None
         else:
             print("There is holder on stage or robot arm. No room for the holder.")
@@ -1496,15 +1453,9 @@ class Queue(CoordinateSystem):
         else:
             print("Current sequence is defined as: ")
             for seq, holder in sorted(self._sequence.items()):
-                print(
-                    "Sequence NO. {} ======>  {} at Garage {}".format(
-                        seq, holder.name, holder.slot_number
-                    )
-                )
+                print("Sequence NO. {} ======>  {} at Garage {}".format(seq, holder.name, holder.slot_number))
 
-    def runSequence(
-        self, startSample=None, endSample=None, gotoSafeForce=True, currentSample=False
-    ):
+    def runSequence(self, startSample=None, endSample=None, gotoSafeForce=True, currentSample=False):
         """run the sequence of the holders in garage. It allows to start from a given sample.
         startSample: [holder, sample], like [[2, 3], 2]
         endSample: [holder, sample], like [[2, 3], 2]
@@ -1522,9 +1473,7 @@ class Queue(CoordinateSystem):
             )
             return
 
-        if (
-            startSample == None
-        ):  # when the input is None, the startSample from the first sample in the queue
+        if startSample == None:  # when the input is None, the startSample from the first sample in the queue
             # startSample = [[0, 0], 0]
             startHolder = min(self._sequence.items())[-1]
             startSample = [startHolder.slot_pos, min(startHolder._samples.items())[0]]
@@ -1547,15 +1496,11 @@ class Queue(CoordinateSystem):
         # if startSample[0] != endSample[0]:
         if startHolder != endHolder:
             if startHolder.sequence_number > endHolder.sequence_number:
-                return print(
-                    "The start holder is listed after the last one in the sequence. Please double-check"
-                )
+                return print("The start holder is listed after the last one in the sequence. Please double-check")
         # if the start and end samples are in the same bar
         else:
             if startSample[1] > endSample[1]:
-                return print(
-                    "The start sample is listed after the last one in the holder. Please double-check"
-                )
+                return print("The start sample is listed after the last one in the holder. Please double-check")
 
         # start the sequence
         for seq, holder in sorted(self._sequence.items()):
@@ -1569,19 +1514,12 @@ class Queue(CoordinateSystem):
 
             if holder.sequence_number == startHolder.sequence_number:
                 # double-check self._current #TODO:pickupHolder
-                if (
-                    self._current == None
-                    or self._current.slot_number != startHolder.slot_number
-                ):
+                if self._current == None or self._current.slot_number != startHolder.slot_number:
                     self.pickupHolder(holder, force=True, gotoSafe=gotoSafe)
                 # self._current.doSamples()
                 for sample_number, sample in sorted(self._current._samples.items()):
                     if sample_number >= int(startSample[1]):
-                        print(
-                            "working the the sample {} on holder {}".format(
-                                sample.name, holder.name
-                            )
-                        )
+                        print("working the the sample {} on holder {}".format(sample.name, holder.name))
                         self._currentSample = [holder, sample_number]
                         sample.do()  # run the sample
                         # self._currentSample = []
@@ -1592,22 +1530,14 @@ class Queue(CoordinateSystem):
                 self.pickupHolder(holder, force=True, gotoSafe=gotoSafe)
                 # self._current.doSamples()
                 for sample_number, sample in sorted(self._current._samples.items()):
-                    print(
-                        "working the the sample {} on holder {}".format(
-                            sample.name, holder.name
-                        )
-                    )
+                    print("working the the sample {} on holder {}".format(sample.name, holder.name))
                     self._currentSample = [holder, sample_number]
                     sample.do()  # run the sample
             if holder.sequence_number == endHolder.sequence_number:
                 self.pickupHolder(holder, force=True, gotoSafe=gotoSafe)
                 for sample_number, sample in sorted(self._current._samples.items()):
                     if int(sample_number) <= int(endSample[1]):
-                        print(
-                            "working the the sample {} on holder {}".format(
-                                sample.name, holder.name
-                            )
-                        )
+                        print("working the the sample {} on holder {}".format(sample.name, holder.name))
                         self._currentSample = [holder, sample_number]
                         sample.do()  # run the sample
 
@@ -1616,9 +1546,7 @@ class Queue(CoordinateSystem):
         hol = self.pickupHolder(holder, force=True, slack=slack)
         hol.doSamples()
 
-    def runHolders(
-        self, startHolder=None, endHolder=None, gotoSafeForce=False, slack=False
-    ):
+    def runHolders(self, startHolder=None, endHolder=None, gotoSafeForce=False, slack=False):
         """run a single holder with multiple samples."""
         if startHolder == None:
             startHolder = min(self._sequence.items())[-1]
@@ -1715,12 +1643,8 @@ que = Queue()
 ###############slack communication##############
 import requests
 
-slack_channel_xf11bm = (
-    "https://hooks.slack.com/services/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"
-)
-slack_channel_CMSstatus = (
-    "https://hooks.slack.com/services/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"
-)
+slack_channel_xf11bm = "https://hooks.slack.com/services/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"
+slack_channel_CMSstatus = "https://hooks.slack.com/services/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"
 slack_channel_rp = None
 
 # json_data = {"text":"test"}

@@ -46,8 +46,8 @@ elif beamline_stage == "default":
     Pilatus800_2_on = False
 
 # Pilatus800_on = True
-# # Pilatus800_2_on = False
-# Pilatus800_2_on = True
+# Pilatus800_2_on = False
+Pilatus800_2_on = True
 
 
 class TIFFPluginWithFileStore(TIFFPlugin, FileStoreTIFFIterativeWrite):
@@ -431,7 +431,7 @@ fs3 = StandardProsilicaV33("XF:11BMB-BI{FS:3-Cam:1}", name="fs3")
 time.sleep(1)
 fs4 = StandardProsilicaV33("XF:11BMB-BI{FS:4-Cam:1}", name="fs4")
 time.sleep(1)
-# fs5 = StandardProsilicaV33('XF:11BMB-BI{FS:Test-Cam:1}', name='fs5')
+fs5 = StandardProsilicaV33("XF:11BMB-BI{FS:Test-Cam:1}", name="fs5")
 
 
 # class StandardsimDetectorV33(SingleTriggerV33, ProsilicaDetector):
@@ -460,19 +460,19 @@ time.sleep(1)
 all_standard_pros = [fs2, fs3, fs4]
 
 
-for camera in all_standard_pros:
-    camera.read_attrs = ["stats1", "stats2", "stats3", "stats4", "stats5"]
-    # camera.tiff.read_attrs = []  # leaving just the 'image'
-    for stats_name in ["stats1", "stats2", "stats3", "stats4", "stats5"]:
-        stats_plugin = getattr(camera, stats_name)
-        stats_plugin.read_attrs = ["total"]
-        # camera.stage_sigs[stats_plugin.blocking_callbacks] = 1
+# for camera in all_standard_pros:
+#     camera.read_attrs = ['stats1', 'stats2','stats3','stats4','stats5']
+#     # camera.tiff.read_attrs = []  # leaving just the 'image'
+#     for stats_name in ['stats1', 'stats2','stats3','stats4','stats5']:
+#         stats_plugin = getattr(camera, stats_name)
+#         stats_plugin.read_attrs = ['total']
+#         #camera.stage_sigs[stats_plugin.blocking_callbacks] = 1
 
-    # camera.stage_sigs[camera.roi1.blocking_callbacks] = 1
-    # camera.stage_sigs[camera.trans1.blocking_callbacks] = 1
-    # camera.cam.ensure_nonblocking()
+# camera.stage_sigs[camera.roi1.blocking_callbacks] = 1
+# camera.stage_sigs[camera.trans1.blocking_callbacks] = 1
+# camera.cam.ensure_nonblocking()
 
-    # camera.stage_sigs[camera.cam.trigger_mode] = 'Fixed Rate'
+# camera.stage_sigs[camera.cam.trigger_mode] = 'Fixed Rate'
 
 
 # for camera in [xray_eye1_writing, xray_eye2_writing, xray_eye3_writing]:
@@ -550,9 +550,7 @@ else:
 # if True:
 if Pilatus800_2_on == True:
     # TODO:
-    pilatus8002 = Pilatus8002V33(
-        "XF:11BMB-ES{Det:PIL800K2}:", name="pilatus8002"
-    )  # change PV
+    pilatus8002 = Pilatus8002V33("XF:11BMB-ES{Det:PIL800K2}:", name="pilatus8002")  # change PV
     pilatus8002.tiff.read_attrs = []
     pilatus8002.stats3.total.kind = "hinted"
     pilatus8002.stats4.total.kind = "hinted"

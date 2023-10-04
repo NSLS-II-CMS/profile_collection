@@ -129,9 +129,7 @@ class CoordinateSystem(object):
     def comment(self, text, logbooks=None, tags=None, append_md=True, **md):
         """Add a comment related to this CoordinateSystem."""
 
-        text += "\n\n[comment for CoordinateSystem: {} ({})].".format(
-            self.name, self.__class__.__name__
-        )
+        text += "\n\n[comment for CoordinateSystem: {} ({})].".format(self.name, self.__class__.__name__)
 
         if append_md:
             md_current = {k: v for k, v in RE.md.items()}  # Global md
@@ -174,10 +172,7 @@ class CoordinateSystem(object):
         # Note inclusion of r'\b' sequences forces the regex-match to occur at word-boundaries.
 
         if word_boundaries:
-            replacements = dict(
-                (r"\b" + re.escape(k.lower()) + r"\b", v)
-                for k, v in replacements.items()
-            )
+            replacements = dict((r"\b" + re.escape(k.lower()) + r"\b", v) for k, v in replacements.items())
             pattern = re.compile("|".join(replacements.keys()), re.IGNORECASE)
             text = pattern.sub(
                 lambda m: replacements[r"\b" + re.escape(m.group(0).lower()) + r"\b"],
@@ -185,9 +180,7 @@ class CoordinateSystem(object):
             )
 
         else:
-            replacements = dict(
-                (re.escape(k.lower()), v) for k, v in replacements.items()
-            )
+            replacements = dict((re.escape(k.lower()), v) for k, v in replacements.items())
             pattern = re.compile("|".join(replacements.keys()), re.IGNORECfdeASE)
             text = pattern.sub(lambda m: rep[re.escape(m.group(0))], text)
 
@@ -200,27 +193,17 @@ class CoordinateSystem(object):
         replacements = dict((v, k) for k, v in self.hint_replacements.items())
         replacements.update(self.hint_replacements)
 
-        return self.multiple_string_replacements(
-            text, replacements, word_boundaries=True
-        )
+        return self.multiple_string_replacements(text, replacements, word_boundaries=True)
 
     # Control methods
     ########################################
     def setTemperature(self, temperature, verbosity=3):
         if verbosity >= 1:
-            print(
-                "Temperature functions not implemented in {}".format(
-                    self.__class__.__name__
-                )
-            )
+            print("Temperature functions not implemented in {}".format(self.__class__.__name__))
 
     def temperature(self, verbosity=3):
         if verbosity >= 1:
-            print(
-                "Temperature functions not implemented in {}".format(
-                    self.__class__.__name__
-                )
-            )
+            print("Temperature functions not implemented in {}".format(self.__class__.__name__))
 
         return 0.0
 
@@ -254,11 +237,7 @@ class CoordinateSystem(object):
         for axis_name, axis_object in sorted(self._axes.items()):
             origin = axis_object.get_origin()
             if verbosity >= 2:
-                print(
-                    "{:s} origin = {:.3f} {:s}".format(
-                        axis_name, origin, axis_object.get_units()
-                    )
-                )
+                print("{:s} origin = {:.3f} {:s}".format(axis_name, origin, axis_object.get_units()))
             out[axis_name] = origin
 
         return out
@@ -362,21 +341,13 @@ class CoordinateSystem(object):
         of sample information (metadata)."""
 
         if verbosity >= 3:
-            print(
-                "Marks for {:s} (class {:s}):".format(
-                    self.name, self.__class__.__name__
-                )
-            )
+            print("Marks for {:s} (class {:s}):".format(self.name, self.__class__.__name__))
 
         if verbosity >= 2:
             for label, positions in self._marks.items():
                 print(label)
                 for axis_name, position in sorted(positions.items()):
-                    print(
-                        "  {:s} = {:.4f} {:s}".format(
-                            axis_name, position, self._axes[axis_name].get_units()
-                        )
-                    )
+                    print("  {:s} = {:.4f} {:s}".format(axis_name, position, self._axes[axis_name].get_units()))
 
         return self._marks
 
@@ -392,9 +363,7 @@ class CoordinateSystem(object):
         if label not in self._marks:
             if verbosity >= 1:
                 print(
-                    "Label '{:s}' not recognized. Use '.marks()' for the list of marked positions.".format(
-                        label
-                    )
+                    "Label '{:s}' not recognized. Use '.marks()' for the list of marked positions.".format(label)
                 )
             return
 
@@ -411,9 +380,7 @@ class CoordinateSystem(object):
             else:
                 relative = 0.0
 
-            self._axes[axis_name].move_absolute(
-                position + relative, verbosity=verbosity
-            )
+            self._axes[axis_name].move_absolute(position + relative, verbosity=verbosity)
 
         # Handle any optional motions not already covered
         for command, amount in additional.items():
@@ -422,11 +389,7 @@ class CoordinateSystem(object):
             elif command[-3:] == "abs":
                 getattr(self, command)(amount, verbosity=verbosity)
             else:
-                print(
-                    "Keyword argument '{}' not understood (should be 'r' or 'abs').".format(
-                        command
-                    )
-                )
+                print("Keyword argument '{}' not understood (should be 'r' or 'abs').".format(command))
 
     # State methods
     ########################################
@@ -458,9 +421,7 @@ class Axis(object):
     Meant to be used within a CoordinateSystem() or Stage() object.
     """
 
-    def __init__(
-        self, name, motor, enabled, scaling, units, hint, base, stage=None, origin=0.0
-    ):
+    def __init__(self, name, motor, enabled, scaling, units, hint, base, stage=None, origin=0.0):
         self.name = name
         self.motor = motor
         self.enabled = enabled
@@ -511,9 +472,7 @@ class Axis(object):
             return self.base_to_cur(motor_position)
 
         else:
-            base_position = self.base_stage._axes[self.name].motor_to_cur(
-                motor_position
-            )
+            base_position = self.base_stage._axes[self.name].motor_to_cur(motor_position)
             return self.base_to_cur(base_position)
 
     # Programmatically-defined methods
@@ -532,9 +491,7 @@ class Axis(object):
 
         else:
             verbosity_c = verbosity if verbosity >= 4 else 0
-            base_position = getattr(self.base_stage, self.name + "pos")(
-                verbosity=verbosity_c
-            )
+            base_position = getattr(self.base_stage, self.name + "pos")(verbosity=verbosity_c)
 
         position = self.base_to_cur(base_position)
 
@@ -545,11 +502,7 @@ class Axis(object):
                 stg = "?"
 
             if verbosity >= 5 and self.motor is not None:
-                print(
-                    "{:s} = {:.3f} {:s}".format(
-                        self.motor.name, base_position, self.get_units()
-                    )
-                )
+                print("{:s} = {:.3f} {:s}".format(self.motor.name, base_position, self.get_units()))
 
             print(
                 "{:s}.{:s} = {:.3f} {:s} (origin = {:.3f})".format(
@@ -640,9 +593,7 @@ class Axis(object):
 
         else:
             verbosity_c = verbosity if verbosity >= 4 else 0
-            base_position = getattr(self.base_stage, self.name + "pos")(
-                verbosity=verbosity_c
-            )
+            base_position = getattr(self.base_stage, self.name + "pos")(verbosity=verbosity_c)
 
         position = self.base_to_cur(base_position)
 
@@ -653,11 +604,7 @@ class Axis(object):
                 stg = "?"
 
             if verbosity >= 5 and self.motor is not None:
-                print(
-                    "{:s} = {:.3f} {:s}".format(
-                        self.motor.name, base_position, self.get_units()
-                    )
-                )
+                print("{:s} = {:.3f} {:s}".format(self.motor.name, base_position, self.get_units()))
 
             print(
                 "{:s}.{:s} = {:.3f} {:s} (origin = {:.3f})".format(
@@ -743,9 +690,7 @@ class Axis(object):
                         % (self.__class__.__name__, self.name)
                     )
                 else:
-                    self.origin = getattr(self.base_stage, self.name + "pos")(
-                        verbosity=0
-                    )
+                    self.origin = getattr(self.base_stage, self.name + "pos")(verbosity=0)
 
         else:
             # Use supplied value (in the current coordinate system)
@@ -755,9 +700,7 @@ class Axis(object):
     def set_current_position(self, new_position):
         """Redefines the position value of the current position."""
         current_position = self.get_position(verbosity=0)
-        self.origin = (
-            self.get_origin() + (current_position - new_position) * self.scaling
-        )
+        self.origin = self.get_origin() + (current_position - new_position) * self.scaling
 
     def search(
         self,
@@ -812,9 +755,7 @@ class Axis(object):
 
         if target == "max":
             if verbosity >= 5:
-                print(
-                    "Performing search on axis '{}' target is 'max'".format(self.name)
-                )
+                print("Performing search on axis '{}' target is 'max'".format(self.name))
 
             max_value = value
             max_position = self.get_position(verbosity=0)
@@ -823,14 +764,8 @@ class Axis(object):
 
             while step_size >= min_step:
                 if verbosity >= 4:
-                    print(
-                        "        move {} by {} × {}".format(
-                            self.name, direction, step_size
-                        )
-                    )
-                self.move_relative(
-                    move_amount=direction * step_size, verbosity=verbosity - 2
-                )
+                    print("        move {} by {} × {}".format(self.name, direction, step_size))
+                self.move_relative(move_amount=direction * step_size, verbosity=verbosity - 2)
 
                 prev_value = value
                 RE(count([detector]))
@@ -857,22 +792,14 @@ class Axis(object):
 
         elif target == "min":
             if verbosity >= 5:
-                print(
-                    "Performing search on axis '{}' target is 'min'".format(self.name)
-                )
+                print("Performing search on axis '{}' target is 'min'".format(self.name))
 
             direction = +1 * polarity
 
             while step_size >= min_step:
                 if verbosity >= 4:
-                    print(
-                        "        move {} by {} × {}".format(
-                            self.name, direction, step_size
-                        )
-                    )
-                self.move_relative(
-                    move_amount=direction * step_size, verbosity=verbosity - 2
-                )
+                    print("        move {} by {} × {}".format(self.name, direction, step_size))
+                self.move_relative(move_amount=direction * step_size, verbosity=verbosity - 2)
 
                 prev_value = value
                 RE(count([detector]))
@@ -903,11 +830,7 @@ class Axis(object):
                     )
                 )
             if verbosity >= 4:
-                print(
-                    "      value : {} ({:.1f}%)".format(
-                        value, 100.0 * value / intensity
-                    )
-                )
+                print("      value : {} ({:.1f}%)".format(value, 100.0 * value / intensity))
 
             # Determine initial motion direction
             if value > target:
@@ -917,14 +840,8 @@ class Axis(object):
 
             while step_size >= min_step:
                 if verbosity >= 4:
-                    print(
-                        "        move {} by {} × {}".format(
-                            self.name, direction, step_size
-                        )
-                    )
-                self.move_relative(
-                    move_amount=direction * step_size, verbosity=verbosity - 2
-                )
+                    print("        move {} by {} × {}".format(self.name, direction, step_size))
+                self.move_relative(move_amount=direction * step_size, verbosity=verbosity - 2)
 
                 RE(count([detector]))
                 value = detector.read()[value_name]["value"]
@@ -955,6 +872,211 @@ class Axis(object):
                     step_size *= 0.5
 
         bec.enable_table()
+
+    def search_plan(
+        self,
+        motor=smy,
+        step_size=1.0,
+        min_step=0.05,
+        intensity=None,
+        target=0.5,
+        detector=None,
+        detector_suffix=None,
+        polarity=+1,
+        fastsearch=False,
+        verbosity=3,
+    ):
+        """Moves this axis, searching for a target value.
+
+        Parameters
+        ----------
+        step_size : float
+            The initial step size when moving the axis
+        min_step : float
+            The final (minimum) step size to try
+        intensity : float
+            The expected full-beam intensity readout
+        target : 0.0 to 1.0
+            The target ratio of full-beam intensity; 0.5 searches for half-max.
+            The target can also be 'max' to find a local maximum.
+        detector, detector_suffix
+            The beamline detector (and suffix, such as '_stats4_total') to trigger to measure intensity
+        polarity : +1 or -1
+            Positive motion assumes, e.g. a step-height 'up' (as the axis goes more positive)
+        """
+
+        @stage_decorator([detector])
+        def inner_search():
+            if not get_beamline().beam.is_on():
+                print("WARNING: Experimental shutter is not open.")
+
+            if intensity is None:
+                intensity = RE.md["beam_intensity_expected"]
+
+            if detector is None:
+                # detector = gs.DETS[0]
+                detector = get_beamline().detector[0]
+            if detector_suffix is None:
+                # value_name = gs.TABLE_COLS[0]
+                value_name = get_beamline().TABLE_COLS[0]
+            else:
+                value_name = detector.name + detector_suffix
+
+            bec.disable_table()
+
+            # Check current value
+            yield from bps.trigger_and_read([detector])
+            # RE(count([detector]))
+            value = detector.read()[value_name]["value"]
+
+            if fastsearch == True:
+                intenisty_threshold = 10
+                if (
+                    abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20
+                    and detector.stats2.max_value.get() > intenisty_threshold
+                ):
+                    # continue the fast alignment
+                    print("The reflective beam is found! Continue the fast alignment")
+                    return
+
+            if target == "max":
+                if verbosity >= 5:
+                    print("Performing search on axis '{}' target is 'max'".format(self.name))
+
+                max_value = value
+                max_position = self.get_position(verbosity=0)
+
+                direction = +1 * polarity
+
+                while step_size >= min_step:
+                    if verbosity >= 4:
+                        print("        move {} by {} × {}".format(self.name, direction, step_size))
+
+                    pos = yield from bps.rd(motor)
+                    yield from bps.mv(motor, pos + direction * step_size)
+                    # self.move_relative(move_amount=direction*step_size, verbosity=verbosity-2)
+
+                    prev_value = value
+                    yield from bps.trigger_and_read([detector])
+                    # RE(count([detector]))
+
+                    value = detector.read()[value_name]["value"]
+                    if verbosity >= 3:
+                        print(
+                            "      {} = {:.3f} {}; value : {}".format(
+                                self.name,
+                                self.get_position(verbosity=0),
+                                self.units,
+                                value,
+                            )
+                        )
+
+                    if value > max_value:
+                        max_value = value
+                        # max_position = self.get_position(verbosity=0)
+
+                    if value > prev_value:
+                        # Keep going in this direction...
+                        pass
+                    else:
+                        # Switch directions!
+                        direction *= -1
+                        step_size *= 0.5
+
+            elif target == "min":
+                if verbosity >= 5:
+                    print("Performing search on axis '{}' target is 'min'".format(self.name))
+
+                direction = +1 * polarity
+
+                while step_size >= min_step:
+                    if verbosity >= 4:
+                        print("        move {} by {} × {}".format(self.name, direction, step_size))
+
+                    pos = yield from bps.rd(motor)
+                    yield from bps.mv(motor, pos + direction * step_size)
+                    # self.move_relative(move_amount=direction*step_size, verbosity=verbosity-2)
+
+                    prev_value = value
+                    RE(count([detector]))
+                    value = detector.read()[value_name]["value"]
+                    if verbosity >= 3:
+                        print(
+                            "      {} = {:.3f} {}; value : {}".format(
+                                self.name,
+                                self.get_position(verbosity=0),
+                                self.units,
+                                value,
+                            )
+                        )
+
+                    if value < prev_value:
+                        # Keep going in this direction...
+                        pass
+                    else:
+                        # Switch directions!
+                        direction *= -1
+                        step_size *= 0.5
+
+            else:
+                target_rel = target
+                target = target_rel * intensity
+
+                if verbosity >= 5:
+                    print(
+                        "Performing search on axis '{}' target {} × {} = {}".format(
+                            self.name, target_rel, intensity, target
+                        )
+                    )
+                if verbosity >= 4:
+                    print("      value : {} ({:.1f}%)".format(value, 100.0 * value / intensity))
+
+                # Determine initial motion direction
+                if value > target:
+                    direction = -1 * polarity
+                else:
+                    direction = +1 * polarity
+
+                while step_size >= min_step:
+                    if verbosity >= 4:
+                        print("        move {} by {} × {}".format(self.name, direction, step_size))
+
+                    pos = yield from bps.rd(motor)
+                    yield from bps.mv(motor, pos + direction * step_size)
+                    # self.move_relative(move_amount=direction*step_size, verbosity=verbosity-2)
+
+                    yield from bps.trigger_and_read([detector])
+                    # RE(count([detector]))
+                    value = detector.read()[value_name]["value"]
+                    if verbosity >= 3:
+                        print(
+                            "      {} = {:.3f} {}; value : {} ({:.1f}%)".format(
+                                self.name,
+                                self.get_position(verbosity=0),
+                                self.units,
+                                value,
+                                100.0 * value / intensity,
+                            )
+                        )
+
+                    # Determine direction
+                    if value > target:
+                        new_direction = -1.0 * polarity
+                    else:
+                        new_direction = +1.0 * polarity
+
+                    if abs(direction - new_direction) < 1e-4:
+                        # Same direction as we've been going...
+                        # ...keep moving this way
+                        pass
+                    else:
+                        # Switch directions!
+                        direction *= -1
+                        step_size *= 0.5
+
+            bec.enable_table()
+
+        yield from inner_search()
 
     def _search(
         self,
@@ -1010,9 +1132,7 @@ class Axis(object):
 
         if target == "max":
             if verbosity >= 5:
-                print(
-                    "Performing search on axis '{}' target is 'max'".format(self.name)
-                )
+                print("Performing search on axis '{}' target is 'max'".format(self.name))
 
             max_value = value
             max_position = self.get_position(verbosity=0)
@@ -1021,14 +1141,8 @@ class Axis(object):
 
             while step_size >= min_step:
                 if verbosity >= 4:
-                    print(
-                        "        move {} by {} × {}".format(
-                            self.name, direction, step_size
-                        )
-                    )
-                self.move_relative(
-                    move_amount=direction * step_size, verbosity=verbosity - 2
-                )
+                    print("        move {} by {} × {}".format(self.name, direction, step_size))
+                self.move_relative(move_amount=direction * step_size, verbosity=verbosity - 2)
 
                 prev_value = value
                 RE(count([detector]))
@@ -1061,22 +1175,14 @@ class Axis(object):
 
         elif target == "min":
             if verbosity >= 5:
-                print(
-                    "Performing search on axis '{}' target is 'min'".format(self.name)
-                )
+                print("Performing search on axis '{}' target is 'min'".format(self.name))
 
             direction = +1 * polarity
 
             while step_size >= min_step:
                 if verbosity >= 4:
-                    print(
-                        "        move {} by {} × {}".format(
-                            self.name, direction, step_size
-                        )
-                    )
-                self.move_relative(
-                    move_amount=direction * step_size, verbosity=verbosity - 2
-                )
+                    print("        move {} by {} × {}".format(self.name, direction, step_size))
+                self.move_relative(move_amount=direction * step_size, verbosity=verbosity - 2)
 
                 prev_value = value
                 RE(count([detector]))
@@ -1107,11 +1213,7 @@ class Axis(object):
                     )
                 )
             if verbosity >= 4:
-                print(
-                    "      value : {} ({:.1f}%)".format(
-                        value, 100.0 * value / intensity
-                    )
-                )
+                print("      value : {} ({:.1f}%)".format(value, 100.0 * value / intensity))
 
             # Determine initial motion direction
             if value > target:
@@ -1121,14 +1223,8 @@ class Axis(object):
 
             while step_size >= min_step:
                 if verbosity >= 4:
-                    print(
-                        "        move {} by {} × {}".format(
-                            self.name, direction, step_size
-                        )
-                    )
-                self.move_relative(
-                    move_amount=direction * step_size, verbosity=verbosity - 2
-                )
+                    print("        move {} by {} × {}".format(self.name, direction, step_size))
+                self.move_relative(move_amount=direction * step_size, verbosity=verbosity - 2)
 
                 RE(count([detector]))
                 value = detector.read()[value_name]["value"]
@@ -1219,10 +1315,7 @@ class Axis(object):
 
     def check_base(self):
         if self.base_stage is None:
-            print(
-                "Error: %s %s has 'base_stage' set to 'None'."
-                % (self.__class__.__name__, self.name)
-            )
+            print("Error: %s %s has 'base_stage' set to 'None'." % (self.__class__.__name__, self.name))
 
 
 class Sample_Generic(CoordinateSystem):
@@ -1412,9 +1505,7 @@ class Sample_Generic(CoordinateSystem):
         if attribute == "applied_v":
             return "{0:.3f}V".format(ioL.read(AO[5]))
         if attribute == "TC":
-            temp = (
-                1.0175 * ioL.read(TC[1]) - 4.1286
-            )  # temporary for B. Wild run 10/16/19
+            temp = 1.0175 * ioL.read(TC[1]) - 4.1286  # temporary for B. Wild run 10/16/19
             return "{0:.3f}C".format(temp)
 
         replacements = {
@@ -1469,18 +1560,10 @@ class Sample_Generic(CoordinateSystem):
         # Add md that varies over time
         md_return["clock"] = self.clock()
         md_return["temperature"] = self.temperature(temperature_probe="A", verbosity=0)
-        md_return["temperature_A"] = self.temperature(
-            temperature_probe="A", verbosity=0
-        )
-        md_return["temperature_B"] = self.temperature(
-            temperature_probe="B", verbosity=0
-        )
-        md_return["temperature_C"] = self.temperature(
-            temperature_probe="C", verbosity=0
-        )
-        md_return["temperature_D"] = self.temperature(
-            temperature_probe="D", verbosity=0
-        )
+        md_return["temperature_A"] = self.temperature(temperature_probe="A", verbosity=0)
+        md_return["temperature_B"] = self.temperature(temperature_probe="B", verbosity=0)
+        md_return["temperature_C"] = self.temperature(temperature_probe="C", verbosity=0)
+        md_return["temperature_D"] = self.temperature(temperature_probe="D", verbosity=0)
         # md_return['temperature_E'] = self.temperature(temperature_probe='E', verbosity=0)
         # md_return['humidity'] = self.humidity(verbosity=0)
 
@@ -1488,9 +1571,7 @@ class Sample_Generic(CoordinateSystem):
             md_return[axis_name] = axis.get_position(verbosity=0)
             md_return["motor_" + axis_name] = axis.get_motor_position(verbosity=0)
 
-        md_return[
-            "savename"
-        ] = self.get_savename()  # This should be over-ridden by 'measure'
+        md_return["savename"] = self.get_savename()  # This should be over-ridden by 'measure'
 
         # TODO: save the attributes into metadata --061921 RL
         """
@@ -1504,10 +1585,7 @@ class Sample_Generic(CoordinateSystem):
 
         # Add an optional prefix
         if prefix is not None:
-            md_return = {
-                "{:s}{:s}".format(prefix, key): value
-                for key, value in md_return.items()
-            }
+            md_return = {"{:s}{:s}".format(prefix, key): value for key, value in md_return.items()}
 
         return md_return
 
@@ -1531,9 +1609,7 @@ class Sample_Generic(CoordinateSystem):
         # Handle special cases of formatting the text
 
         if attribute in self._axes:
-            return "{:s}{:.3f}".format(
-                attribute, self._axes[attribute].get_position(verbosity=0)
-            )
+            return "{:s}{:.3f}".format(attribute, self._axes[attribute].get_position(verbosity=0))
 
         if attribute == "clock":
             return "{:.1f}s".format(self.get_attribute(attribute))
@@ -1627,9 +1703,7 @@ class Sample_Generic(CoordinateSystem):
     def comment(self, text, logbooks=None, tags=None, append_md=True, **md):
         """Add a comment related to this sample."""
 
-        text += "\n\n[comment for sample: {} ({})].".format(
-            self.name, self.__class__.__name__
-        )
+        text += "\n\n[comment for sample: {} ({})].".format(self.name, self.__class__.__name__)
 
         if append_md:
             md_current = {k: v for k, v in RE.md.items()}  # Global md
@@ -1673,13 +1747,9 @@ class Sample_Generic(CoordinateSystem):
         # md_current['detector_sequence_ID'] = caget('XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV')
         # md_current['detector_sequence_ID'] = caget('XF:11BMB-ES{}:cam1:FileNumber_RBV'.format(pilatus_Epicsname))
         if get_beamline().detector[0].name is "pilatus300":
-            md_current["detector_sequence_ID"] = caget(
-                "XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV"
-            )
+            md_current["detector_sequence_ID"] = caget("XF:11BMB-ES{Det:SAXS}:cam1:FileNumber_RBV")
         elif get_beamline().detector[0].name is "pilatus2M":
-            md_current["detector_sequence_ID"] = caget(
-                "XF:11BMB-ES{Det:PIL2M}:cam1:FileNumber_RBV"
-            )
+            md_current["detector_sequence_ID"] = caget("XF:11BMB-ES{Det:PIL2M}:cam1:FileNumber_RBV")
 
         md_current.update(get_beamline().get_md())
 
@@ -1687,10 +1757,7 @@ class Sample_Generic(CoordinateSystem):
 
         # Add an optional prefix
         if prefix is not None:
-            md_return = {
-                "{:s}{:s}".format(prefix, key): value
-                for key, value in md_return.items()
-            }
+            md_return = {"{:s}{:s}".format(prefix, key): value for key, value in md_return.items()}
 
         return md_current
 
@@ -1725,37 +1792,24 @@ class Sample_Generic(CoordinateSystem):
 
         if verbosity >= 2:
             start_time = time.time()
-            while caget(
-                "XF:11BMB-ES{}:cam1:Acquire".format(pilatus_Epicsname)
-            ) == 1 and (time.time() - start_time) < (exposure_time + 20):
+            while caget("XF:11BMB-ES{}:cam1:Acquire".format(pilatus_Epicsname)) == 1 and (
+                time.time() - start_time
+            ) < (exposure_time + 20):
                 percentage = 100 * (time.time() - start_time) / exposure_time
                 print(
-                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format(
-                        (time.time() - start_time), percentage
-                    ),
+                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format((time.time() - start_time), percentage),
                     end="",
                 )
                 time.sleep(poling_period)
         else:
             time.sleep(exposure_time)
 
-        if (
-            verbosity >= 3
-            and caget("XF:11BMB-ES{}:cam1:Acquire".format(pilatus_Epicsname)) == 1
-        ):
+        if verbosity >= 3 and caget("XF:11BMB-ES{}:cam1:Acquire".format(pilatus_Epicsname)) == 1:
             print("Warning: Detector still not done acquiring.")
 
         get_beamline().beam.off()
 
-    def expose(
-        self,
-        exposure_time=None,
-        extra=None,
-        handlefile=True,
-        verbosity=3,
-        poling_period=0.1,
-        **md
-    ):
+    def expose(self, exposure_time=None, extra=None, handlefile=True, verbosity=3, poling_period=0.1, **md):
         """Internal function that is called to actually trigger a measurement."""
         """TODO: **md doesnot work in RE(count). """
 
@@ -1834,20 +1888,14 @@ class Sample_Generic(CoordinateSystem):
             # max_exposure_time = max(max_exposure_time, current_exposure_time)
             else:
                 if verbosity >= 1:
-                    print(
-                        "WARNING: Didn't recognize detector '{}'.".format(detector.name)
-                    )
+                    print("WARNING: Didn't recognize detector '{}'.".format(detector.name))
 
         if verbosity >= 2:
             status = 0
-            while (status == 0) and (time.time() - start_time) < (
-                max_exposure_time + 20
-            ):
+            while (status == 0) and (time.time() - start_time) < (max_exposure_time + 20):
                 percentage = 100 * (time.time() - start_time) / max_exposure_time
                 print(
-                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format(
-                        (time.time() - start_time), percentage
-                    ),
+                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format((time.time() - start_time), percentage),
                     end="",
                 )
 
@@ -1868,11 +1916,7 @@ class Sample_Generic(CoordinateSystem):
             print("verbosity = {}.".format(verbosity))
             pct_threshold = 90
             while percentage < pct_threshold:
-                print(
-                    "sth is wrong .... percentage = {} < {}%".format(
-                        percentage, pct_threshold
-                    )
-                )
+                print("sth is wrong .... percentage = {} < {}%".format(percentage, pct_threshold))
                 start_time = time.time()
                 uids = RE(count(get_beamline().detector), **md)
                 # yield from (count(get_beamline().detector), **md)
@@ -1885,21 +1929,13 @@ class Sample_Generic(CoordinateSystem):
                 for detector in get_beamline().detector:
                     if detector.name is "pilatus300":
                         current_exposure_time = detector.cam.acquire_time.get()
-                        max_exposure_time = max(
-                            max_exposure_time, current_exposure_time
-                        )
+                        max_exposure_time = max(max_exposure_time, current_exposure_time)
                     elif detector.name is "pilatus2M":
                         current_exposure_time = detector.cam.acquire_time.get()
-                        max_exposure_time = max(
-                            max_exposure_time, current_exposure_time
-                        )
-                    elif (
-                        detector.name is "pilatus800" or detector.name is "pilatus8002"
-                    ):
+                        max_exposure_time = max(max_exposure_time, current_exposure_time)
+                    elif detector.name is "pilatus800" or detector.name is "pilatus8002":
                         current_exposure_time = detector.cam.acquire_time.get()
-                        max_exposure_time = max(
-                            max_exposure_time, current_exposure_time
-                        )
+                        max_exposure_time = max(max_exposure_time, current_exposure_time)
 
                 percentage = 100 * (time.time() - start_time) / max_exposure_time
                 print("After re-exposing .... percentage = {} ".format(percentage))
@@ -1956,15 +1992,7 @@ class Sample_Generic(CoordinateSystem):
                 self.handle_file(detector, extra=extra, verbosity=verbosity, **md)
                 # self.handle_file(detector, extra=extra, verbosity=verbosity)
 
-    def _expose_test(
-        self,
-        exposure_time=None,
-        extra=None,
-        handlefile=True,
-        verbosity=3,
-        poling_period=0.1,
-        **md
-    ):
+    def _expose_test(self, exposure_time=None, extra=None, handlefile=True, verbosity=3, poling_period=0.1, **md):
         """Internal function that is called to actually trigger a measurement."""
         """TODO: **md doesnot work in RE(count). """
 
@@ -2032,30 +2060,22 @@ class Sample_Generic(CoordinateSystem):
                 current_exposure_time = caget("XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime")
                 max_exposure_time = max(max_exposure_time, current_exposure_time)
             elif detector.name is "pilatus800":
-                current_exposure_time = caget(
-                    "XF:11BMB-ES{Det:PIL800K}:cam1:AcquireTime"
-                )
+                current_exposure_time = caget("XF:11BMB-ES{Det:PIL800K}:cam1:AcquireTime")
                 max_exposure_time = max(max_exposure_time, current_exposure_time)
             # elif detector.name is 'PhotonicSciences_CMS':
             # current_exposure_time = detector.exposure_time
             # max_exposure_time = max(max_exposure_time, current_exposure_time)
             else:
                 if verbosity >= 1:
-                    print(
-                        "WARNING: Didn't recognize detector '{}'.".format(detector.name)
-                    )
+                    print("WARNING: Didn't recognize detector '{}'.".format(detector.name))
 
         print("5", time.time() - start_time)
         if verbosity >= 2:
             status = 0
-            while (status == 0) and (time.time() - start_time) < (
-                max_exposure_time + 20
-            ):
+            while (status == 0) and (time.time() - start_time) < (max_exposure_time + 20):
                 percentage = 100 * (time.time() - start_time) / max_exposure_time
                 print(
-                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format(
-                        (time.time() - start_time), percentage
-                    ),
+                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format((time.time() - start_time), percentage),
                     end="",
                 )
                 time.sleep(poling_period)
@@ -2094,9 +2114,7 @@ class Sample_Generic(CoordinateSystem):
         # self.handle_file(detector, extra=extra, verbosity=verbosity, **md)
         ##self.handle_file(detector, extra=extra, verbosity=verbosity)
 
-    def handle_file(
-        self, detector, extra=None, verbosity=3, subdirs=True, linksave=True, **md
-    ):
+    def handle_file(self, detector, extra=None, verbosity=3, subdirs=True, linksave=True, **md):
         subdir = ""
         if subdirs:
             if detector.name is "pilatus300" or detector.name is "pilatus8002":
@@ -2110,11 +2128,7 @@ class Sample_Generic(CoordinateSystem):
                 detname = "waxs"
             else:
                 if verbosity >= 1:
-                    print(
-                        "WARNING: Can't do file handling for detector '{}'.".format(
-                            detector.name
-                        )
-                    )
+                    print("WARNING: Can't do file handling for detector '{}'.".format(detector.name))
                     return
 
         filename = detector.tiff.full_file_name.get()  # RL, 20210831
@@ -2129,9 +2143,7 @@ class Sample_Generic(CoordinateSystem):
         # if md['measure_type'] is not 'snap':
         if True:
             # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime'))
-            self.set_attribute(
-                "exposure_time", detector.cam.acquire_time.get()
-            )  # RL, 20210831
+            self.set_attribute("exposure_time", detector.cam.acquire_time.get())  # RL, 20210831
 
             # Create symlink
             # link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -2140,9 +2152,7 @@ class Sample_Generic(CoordinateSystem):
             # savename = self.get_savename(savename_extra=extra)
             savename = md["filename"]
             # link_name = '{}/{}{}_{:04d}_maxs.tiff'.format(RE.md['experiment_alias_directory'], subdir, savename, RE.md['scan_id']-1)
-            link_name = "{}/{}{}_{}.tiff".format(
-                RE.md["experiment_alias_directory"], subdir, savename, detname
-            )
+            link_name = "{}/{}{}_{}.tiff".format(RE.md["experiment_alias_directory"], subdir, savename, detname)
 
             if os.path.isfile(link_name):
                 i = 1
@@ -2154,9 +2164,7 @@ class Sample_Generic(CoordinateSystem):
             if verbosity >= 3:
                 print("  Data linked as: {}".format(link_name))
 
-    def _old_handle_file(
-        self, detector, extra=None, verbosity=3, subdirs=True, linksave=True, **md
-    ):
+    def _old_handle_file(self, detector, extra=None, verbosity=3, subdirs=True, linksave=True, **md):
         subdir = ""
 
         if detector.name is "pilatus300" or detector.name is "pilatus8002":
@@ -2178,9 +2186,7 @@ class Sample_Generic(CoordinateSystem):
             # if md['measure_type'] is not 'snap':
             if True:
                 # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime'))
-                self.set_attribute(
-                    "exposure_time", detector.cam.acquire_time.get()
-                )  # RL, 20210831
+                self.set_attribute("exposure_time", detector.cam.acquire_time.get())  # RL, 20210831
 
                 # Create symlink
                 # link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -2189,9 +2195,7 @@ class Sample_Generic(CoordinateSystem):
                 # savename = self.get_savename(savename_extra=extra)
                 savename = md["filename"]
                 # link_name = '{}/{}{}_{:04d}_maxs.tiff'.format(RE.md['experiment_alias_directory'], subdir, savename, RE.md['scan_id']-1)
-                link_name = "{}/{}{}_maxs.tiff".format(
-                    RE.md["experiment_alias_directory"], subdir, savename
-                )
+                link_name = "{}/{}{}_maxs.tiff".format(RE.md["experiment_alias_directory"], subdir, savename)
 
                 if os.path.isfile(link_name):
                     i = 1
@@ -2229,9 +2233,7 @@ class Sample_Generic(CoordinateSystem):
             # if md['measure_type'] is not 'snap':
             if True:
                 # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime'))
-                self.set_attribute(
-                    "exposure_time", detector.cam.acquire_time.get()
-                )  # RL, 20210831
+                self.set_attribute("exposure_time", detector.cam.acquire_time.get())  # RL, 20210831
 
                 # Create symlink
                 # link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -2239,9 +2241,7 @@ class Sample_Generic(CoordinateSystem):
 
                 # savename = self.get_savename(savename_extra=extra)
                 savename = md["filename"]
-                link_name = "{}/{}{}_saxs.tiff".format(
-                    RE.md["experiment_alias_directory"], subdir, savename
-                )
+                link_name = "{}/{}{}_saxs.tiff".format(RE.md["experiment_alias_directory"], subdir, savename)
                 # link_name = '{}/{}{}_{:04d}_saxs.tiff'.format(RE.md['experiment_alias_directory'], subdir, savename, RE.md['scan_id']-1)
 
                 if os.path.isfile(link_name):
@@ -2276,9 +2276,7 @@ class Sample_Generic(CoordinateSystem):
             # if md['measure_type'] is not 'snap':
             if True:
                 # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:PIL800K}:cam1:AcquireTime'))
-                self.set_attribute(
-                    "exposure_time", detector.cam.acquire_time.get()
-                )  # RL, 20210831
+                self.set_attribute("exposure_time", detector.cam.acquire_time.get())  # RL, 20210831
 
                 # Create symlink
                 # link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -2287,9 +2285,7 @@ class Sample_Generic(CoordinateSystem):
                 # savename = self.get_savename(savename_extra=extra)
                 savename = md["filename"]
 
-                link_name = "{}/{}{}_waxs.tiff".format(
-                    RE.md["experiment_alias_directory"], subdir, savename
-                )
+                link_name = "{}/{}{}_waxs.tiff".format(RE.md["experiment_alias_directory"], subdir, savename)
                 # link_name = '{}/{}{}_{:04d}_saxs.tiff'.format(RE.md['experiment_alias_directory'], subdir, savename, RE.md['scan_id']-1)
 
                 if os.path.isfile(link_name):
@@ -2323,16 +2319,10 @@ class Sample_Generic(CoordinateSystem):
 
         else:
             if verbosity >= 1:
-                print(
-                    "WARNING: Can't do file handling for detector '{}'.".format(
-                        detector.name
-                    )
-                )
+                print("WARNING: Can't do file handling for detector '{}'.".format(detector.name))
                 return
 
-    def snap(
-        self, exposure_time=None, extra=None, measure_type="snap", verbosity=3, **md
-    ):
+    def snap(self, exposure_time=None, extra=None, measure_type="snap", verbosity=3, **md):
         """Take a quick exposure (without saving data)."""
 
         self.expose(
@@ -2341,7 +2331,7 @@ class Sample_Generic(CoordinateSystem):
             measure_type=measure_type,
             verbosity=verbosity,
             handlefile=False,
-            **md
+            **md,
         )
         remove_last_Pilatus_series()
 
@@ -2353,7 +2343,7 @@ class Sample_Generic(CoordinateSystem):
         verbosity=3,
         tiling=False,
         stitchback=False,
-        **md
+        **md,
     ):
         """Measure data by triggering the area detectors.
 
@@ -2383,7 +2373,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 # extra x movement is needed for pilatus2M.
@@ -2397,7 +2387,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 # SAXSy.move(SAXSy.user_readback.value + -5.16)
@@ -2410,7 +2400,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 SAXSy.move(SAXSy.user_readback.value + -5.16)
@@ -2422,7 +2412,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 SAXSx.move(SAXSx.user_readback.value + -5.16)
@@ -2443,7 +2433,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 # extra x movement is needed for pilatus2M.
@@ -2457,7 +2447,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 WAXSx.move(WAXSx.user_readback.value - 5.16)
@@ -2469,7 +2459,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 WAXSy.move(WAXSy.user_readback.value + -5.16)
@@ -2481,7 +2471,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 WAXSx.move(WAXSx.user_readback.value + 5.16)
@@ -2504,7 +2494,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 # extra x movement is needed for pilatus2M.
@@ -2519,7 +2509,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 SAXSy.move(SAXSy.user_readback.value - 5.16)
@@ -2540,7 +2530,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 MAXSy.move(MAXSy.user_readback.value + 5.16)
@@ -2552,7 +2542,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 MAXSy.move(MAXSy.user_readback.value + -5.16)
@@ -2571,7 +2561,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 WAXSy.move(WAXSy.user_readback.value + 5.16)
@@ -2583,7 +2573,7 @@ class Sample_Generic(CoordinateSystem):
                     measure_type=measure_type,
                     verbosity=verbosity,
                     stitchback=True,
-                    **md
+                    **md,
                 )
 
                 WAXSy.move(WAXSy.user_readback.value - 5.16)
@@ -2596,11 +2586,7 @@ class Sample_Generic(CoordinateSystem):
         else:
             # Just do a normal measurement
             self.measure_single(
-                exposure_time=exposure_time,
-                extra=extra,
-                measure_type=measure_type,
-                verbosity=verbosity,
-                **md
+                exposure_time=exposure_time, extra=extra, measure_type=measure_type, verbosity=verbosity, **md
             )
 
     def measure(
@@ -2611,7 +2597,7 @@ class Sample_Generic(CoordinateSystem):
         verbosity=3,
         tiling=None,
         stitchback=False,
-        **md
+        **md,
     ):
         """Measure data by triggering the area detectors.
 
@@ -2643,7 +2629,7 @@ class Sample_Generic(CoordinateSystem):
                 measure_type=measure_type,
                 verbosity=verbosity,
                 stitchback=True,
-                **md
+                **md,
             )
 
             # pos2
@@ -2657,11 +2643,7 @@ class Sample_Generic(CoordinateSystem):
             extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
             md["detector_position"] = "upper_left"
             self.measure_single(
-                exposure_time=exposure_time,
-                extra=extra_current,
-                verbosity=verbosity,
-                stitchback=True,
-                **md
+                exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
             )
 
             # pos4
@@ -2674,11 +2656,7 @@ class Sample_Generic(CoordinateSystem):
             extra_current = "pos4" if extra is None else "{}_pos4".format(extra)
             md["detector_position"] = "upper_right"
             self.measure_single(
-                exposure_time=exposure_time,
-                extra=extra_current,
-                verbosity=verbosity,
-                stitchback=True,
-                **md
+                exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
             )
 
             # pos3
@@ -2692,11 +2670,7 @@ class Sample_Generic(CoordinateSystem):
             extra_current = "pos3" if extra is None else "{}_pos3".format(extra)
             md["detector_position"] = "lower_right"
             self.measure_single(
-                exposure_time=exposure_time,
-                extra=extra_current,
-                verbosity=verbosity,
-                stitchback=True,
-                **md
+                exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
             )
 
             if WAXSx.user_readback.value != WAXSx_o:
@@ -2724,7 +2698,7 @@ class Sample_Generic(CoordinateSystem):
                 measure_type=measure_type,
                 verbosity=verbosity,
                 stitchback=True,
-                **md
+                **md,
             )
 
             if pilatus2M in cms.detector:
@@ -2743,7 +2717,7 @@ class Sample_Generic(CoordinateSystem):
                 measure_type=measure_type,
                 verbosity=verbosity,
                 stitchback=True,
-                **md
+                **md,
             )
 
             if SAXSy.user_readback.value != SAXSy_o:
@@ -2756,11 +2730,7 @@ class Sample_Generic(CoordinateSystem):
         else:
             # Just do a normal measurement
             self.measure_single(
-                exposure_time=exposure_time,
-                extra=extra,
-                measure_type=measure_type,
-                verbosity=verbosity,
-                **md
+                exposure_time=exposure_time, extra=extra, measure_type=measure_type, verbosity=verbosity, **md
             )
 
     def measureRock(
@@ -2774,7 +2744,7 @@ class Sample_Generic(CoordinateSystem):
         verbosity=3,
         stitchback=False,
         poling_period=0.2,
-        **md
+        **md,
     ):
         """Measure data when swing the rock_motor.
 
@@ -2804,9 +2774,7 @@ class Sample_Generic(CoordinateSystem):
 
         if verbosity >= 2 and (get_beamline().current_mode != "measurement"):
             print(
-                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(
-                    get_beamline().current_mode
-                )
+                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(get_beamline().current_mode)
             )
 
         if verbosity >= 1 and len(get_beamline().detector) < 1:
@@ -2874,12 +2842,7 @@ class Sample_Generic(CoordinateSystem):
         # Wait for detectors to be ready
         max_exposure_time = 0
         for detector in get_beamline().detector:
-            if (
-                detector.name is "pilatus300"
-                or "pilatus800"
-                or "pilatus2M"
-                or "pilatus8002"
-            ):
+            if detector.name is "pilatus300" or "pilatus800" or "pilatus2M" or "pilatus8002":
                 max_exposure_time = detector.cam.acquire_time.get()
 
             # if detector.name is 'pilatus300':
@@ -2896,20 +2859,14 @@ class Sample_Generic(CoordinateSystem):
             # max_exposure_time = max(max_exposure_time, current_exposure_time)
             else:
                 if verbosity >= 1:
-                    print(
-                        "WARNING: Didn't recognize detector '{}'.".format(detector.name)
-                    )
+                    print("WARNING: Didn't recognize detector '{}'.".format(detector.name))
 
         if verbosity >= 2:
             status = 0
-            while (status == 0) and (time.time() - start_time) < (
-                max_exposure_time + 20
-            ):
+            while (status == 0) and (time.time() - start_time) < (max_exposure_time + 20):
                 percentage = 100 * (time.time() - start_time) / max_exposure_time
                 print(
-                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format(
-                        (time.time() - start_time), percentage
-                    ),
+                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format((time.time() - start_time), percentage),
                     end="",
                 )
                 time.sleep(poling_period)
@@ -2950,9 +2907,7 @@ class Sample_Generic(CoordinateSystem):
             # self.handle_file(detector, extra=extra, verbosity=verbosity)
         self.md["measurement_ID"] += 1
 
-    def measure_single(
-        self, exposure_time=None, extra=None, measure_type="measure", verbosity=3, **md
-    ):
+    def measure_single(self, exposure_time=None, extra=None, measure_type="measure", verbosity=3, **md):
         """Measure data by triggering the area detectors.
 
         Parameters
@@ -2973,9 +2928,7 @@ class Sample_Generic(CoordinateSystem):
 
         if verbosity >= 2 and (get_beamline().current_mode != "measurement"):
             print(
-                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(
-                    get_beamline().current_mode
-                )
+                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(get_beamline().current_mode)
             )
 
         if verbosity >= 1 and len(get_beamline().detector) < 1:
@@ -3001,13 +2954,7 @@ class Sample_Generic(CoordinateSystem):
         time.time()
 
     def _test_measure_single(
-        self,
-        exposure_time=None,
-        extra=None,
-        shutteronoff=True,
-        measure_type="measure",
-        verbosity=3,
-        **md
+        self, exposure_time=None, extra=None, shutteronoff=True, measure_type="measure", verbosity=3, **md
     ):
         """Measure data by triggering the area detectors.
 
@@ -3034,9 +2981,7 @@ class Sample_Generic(CoordinateSystem):
 
         if verbosity >= 2 and (get_beamline().current_mode != "measurement"):
             print(
-                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(
-                    get_beamline().current_mode
-                )
+                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(get_beamline().current_mode)
             )
 
         if verbosity >= 1 and len(get_beamline().detector) < 1:
@@ -3058,13 +3003,7 @@ class Sample_Generic(CoordinateSystem):
         # print('3') #0.032s
         # print(time.time())
 
-        self._test_expose(
-            exposure_time,
-            shutteronoff=shutteronoff,
-            extra=extra,
-            verbosity=verbosity,
-            **md_current
-        )
+        self._test_expose(exposure_time, shutteronoff=shutteronoff, extra=extra, verbosity=verbosity, **md_current)
 
         # print('4') #5.04s
         # print(time.time())
@@ -3075,13 +3014,7 @@ class Sample_Generic(CoordinateSystem):
         # print(time.time())
 
     def _test_expose(
-        self,
-        exposure_time=None,
-        extra=None,
-        verbosity=3,
-        poling_period=0.1,
-        shutteronoff=True,
-        **md
+        self, exposure_time=None, extra=None, verbosity=3, poling_period=0.1, shutteronoff=True, **md
     ):
         """Internal function that is called to actually trigger a measurement."""
 
@@ -3125,18 +3058,14 @@ class Sample_Generic(CoordinateSystem):
         max_exposure_time = 0
         for detector in get_beamline().detector:
             if detector.name is "pilatus300" or "pilatus2M":
-                current_exposure_time = caget(
-                    "XF:11BMB-ES{}:cam1:AcquireTime".format(pilatus_Epicsname)
-                )
+                current_exposure_time = caget("XF:11BMB-ES{}:cam1:AcquireTime".format(pilatus_Epicsname))
                 max_exposure_time = max(max_exposure_time, current_exposure_time)
             elif detector.name is "PhotonicSciences_CMS":
                 current_exposure_time = detector.exposure_time
                 max_exposure_time = max(max_exposure_time, current_exposure_time)
             else:
                 if verbosity >= 1:
-                    print(
-                        "WARNING: Didn't recognize detector '{}'.".format(detector.name)
-                    )
+                    print("WARNING: Didn't recognize detector '{}'.".format(detector.name))
 
         print("4")  # 4.3193
         print(self.clock())
@@ -3145,14 +3074,10 @@ class Sample_Generic(CoordinateSystem):
             status = 0
             print("status1 = ", status)
 
-            while (status == 0) and (time.time() - start_time) < (
-                max_exposure_time + 20
-            ):
+            while (status == 0) and (time.time() - start_time) < (max_exposure_time + 20):
                 percentage = 100 * (time.time() - start_time) / max_exposure_time
                 print(
-                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format(
-                        (time.time() - start_time), percentage
-                    ),
+                    "Exposing {:6.2f} s  ({:3.0f}%)      \r".format((time.time() - start_time), percentage),
                     end="",
                 )
                 print("status2 = ", status)
@@ -3163,12 +3088,7 @@ class Sample_Generic(CoordinateSystem):
                 for detector in get_beamline().detector:
                     if detector.name is "pilatus300" or "pilatus2M":
                         print("status2.5 = ", status)
-                        if (
-                            caget(
-                                "XF:11BMB-ES{}:cam1:Acquire".format(pilatus_Epicsname)
-                            )
-                            == 1
-                        ):
+                        if caget("XF:11BMB-ES{}:cam1:Acquire".format(pilatus_Epicsname)) == 1:
                             status = 0
                             print("status3 = ", status)
                         print("status3.5 = ", status)
@@ -3187,10 +3107,7 @@ class Sample_Generic(CoordinateSystem):
         # print('5') #4.4193
         # print(self.clock())
 
-        if (
-            verbosity >= 3
-            and caget("XF:11BMB-ES{}:cam1:Acquire".format(pilatus_Epicsname)) == 1
-        ):
+        if verbosity >= 3 and caget("XF:11BMB-ES{}:cam1:Acquire".format(pilatus_Epicsname)) == 1:
             print("Warning: Detector still not done acquiring.")
 
         if shutteronoff == True:
@@ -3217,7 +3134,7 @@ class Sample_Generic(CoordinateSystem):
         shutteronoff=True,
         measure_type="measureSpots",
         tiling=False,
-        **md
+        **md,
     ):
         """Measure multiple spots on the sample."""
 
@@ -3233,7 +3150,7 @@ class Sample_Generic(CoordinateSystem):
                 measure_type=measure_type,
                 shutteronoff=shutteronoff,
                 tiling=tiling,
-                **md
+                **md,
             )
 
             print(spot_num + 1)
@@ -3252,7 +3169,7 @@ class Sample_Generic(CoordinateSystem):
         extra=None,
         measure_type="measureSpots",
         tiling=False,
-        **md
+        **md,
     ):
         """Measure multiple spots on the sample."""
 
@@ -3260,13 +3177,7 @@ class Sample_Generic(CoordinateSystem):
             self.md["spot_number"] = 1
 
         for spot_num in range(num_spots):
-            self.measure(
-                exposure_time=exposure_time,
-                extra=extra,
-                measure_type=measure_type,
-                tiling=tiling,
-                **md
-            )
+            self.measure(exposure_time=exposure_time, extra=extra, measure_type=measure_type, tiling=tiling, **md)
 
             getattr(self, axis + "r")(translation_amount)
             self.md["spot_number"] += 1
@@ -3282,7 +3193,7 @@ class Sample_Generic(CoordinateSystem):
         verbosity=3,
         tiling=False,
         fix_name=True,
-        **md
+        **md,
     ):
         if fix_name and ("clock" not in self.naming_scheme):
             self.naming_scheme_hold = self.naming_scheme
@@ -3306,7 +3217,7 @@ class Sample_Generic(CoordinateSystem):
                 measure_type=measure_type,
                 verbosity=verbosity,
                 tiling=tiling,
-                **md
+                **md,
             )
             if wait_time is not None:
                 time.sleep(wait_time)
@@ -3346,7 +3257,7 @@ class Sample_Generic(CoordinateSystem):
         verbosity=3,
         tiling=False,
         fix_name=True,
-        **md
+        **md,
     ):
         if fix_name and ("clock" not in self.naming_scheme):
             self.naming_scheme_hold = self.naming_scheme
@@ -3382,26 +3293,20 @@ class Sample_Generic(CoordinateSystem):
         tiling=False,
         poling_period=1.0,
         fix_name=True,
-        **md
+        **md,
     ):
         # Set new temperature
-        self.setTemperature(
-            temperature, temperature_probe=temperature_probe, verbosity=verbosity
-        )
+        self.setTemperature(temperature, temperature_probe=temperature_probe, verbosity=verbosity)
 
         # Wait until we reach the temperature
         while (
-            abs(
-                self.temperature(temperature_probe=temperature_probe, verbosity=0)
-                - temperature
-            )
+            abs(self.temperature(temperature_probe=temperature_probe, verbosity=0) - temperature)
             > temperature_tolerance
         ):
             if verbosity >= 3:
                 print(
                     "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
-                        self.temperature_setpoint(temperature_probe=temperature_probe)
-                        - 273.15,
+                        self.temperature_setpoint(temperature_probe=temperature_probe) - 273.15,
                         self.temperature(verbosity=0),
                     ),
                     end="",
@@ -3424,7 +3329,7 @@ class Sample_Generic(CoordinateSystem):
             measure_type=measure_type,
             verbosity=verbosity,
             tiling=tiling,
-            **md
+            **md,
         )
 
         # self.naming_scheme = self.naming_scheme_hold
@@ -3442,7 +3347,7 @@ class Sample_Generic(CoordinateSystem):
         tiling=False,
         poling_period=1.0,
         fix_name=True,
-        **md
+        **md,
     ):
         for temperature in temperatures:
             self.measureTemperature(
@@ -3456,7 +3361,7 @@ class Sample_Generic(CoordinateSystem):
                 tiling=tiling,
                 poling_period=poling_period,
                 fix_name=fix_name,
-                **md
+                **md,
             )
 
     def do(self, step=0, verbosity=3, **md):
@@ -3498,7 +3403,7 @@ class Sample_Generic(CoordinateSystem):
         measure_type="Scan_measure",
         verbosity=3,
         fill_gaps=False,
-        **md
+        **md,
     ):
         """
         Scans the specified motor and record the detectors with shutter open during the scan.
@@ -3531,9 +3436,7 @@ class Sample_Generic(CoordinateSystem):
         savename = self.get_savename(savename_extra=extra)
         if verbosity >= 2 and (get_beamline().current_mode != "measurement"):
             print(
-                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(
-                    get_beamline().current_mode
-                )
+                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(get_beamline().current_mode)
             )
         if verbosity >= 1 and len(cms.detector) < 1:
             print("ERROR: No detectors defined in cms.detector")
@@ -3580,11 +3483,7 @@ class Sample_Generic(CoordinateSystem):
             if detector.cam.acquire.get() == 1:
                 # if verbosity>=3 and caget('XF:11BMB-ES{Det:SAXS}:cam1:Acquire')==1:
 
-                print(
-                    "Warning: Detector {} still not done acquiring.".format(
-                        detector.name
-                    )
-                )
+                print("Warning: Detector {} still not done acquiring.".format(detector.name))
         # elif verbosity>=3 and caget('XF:11BMB-ES{Det:PIL2M}:cam1:Acquire')==1:
         #     print('Warning: Detector Pilatus2M still not done acquiring.')
         # get_beamline().beam._test_off(wait_time=0.1)
@@ -3594,9 +3493,7 @@ class Sample_Generic(CoordinateSystem):
         # data collected, link uid to file name
         for detector in cms.detector:
             # print(detector.name)
-            self.handle_fileseries(
-                detector, num_frames=num_frames, extra=extra, verbosity=verbosity, **md
-            )
+            self.handle_fileseries(detector, num_frames=num_frames, extra=extra, verbosity=verbosity, **md)
 
     def series_measure(
         self,
@@ -3610,7 +3507,7 @@ class Sample_Generic(CoordinateSystem):
         measure_type="Series_measure",
         verbosity=3,
         fill_gaps=False,
-        **md
+        **md,
     ):
         """
         Continueous shots with internal trigger of detectors. (burst mode)
@@ -3651,9 +3548,7 @@ class Sample_Generic(CoordinateSystem):
         savename = self.get_savename(savename_extra=extra)
         if verbosity >= 2 and (get_beamline().current_mode != "measurement"):
             print(
-                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(
-                    get_beamline().current_mode
-                )
+                "WARNING: Beamline is not in measurement mode (mode is '{}')".format(get_beamline().current_mode)
             )
 
         if verbosity >= 1 and len(get_beamline().detector) < 1:
@@ -3693,9 +3588,7 @@ class Sample_Generic(CoordinateSystem):
         # data collected, link uid to file name
         for detector in cms.detector:
             print("handling the file names")
-            self.handle_fileseries(
-                detector, num_frames=num_frames, extra=extra, verbosity=verbosity, **md
-            )
+            self.handle_fileseries(detector, num_frames=num_frames, extra=extra, verbosity=verbosity, **md)
 
             # if detector.name is 'pilatus2M':
             #     caput('XF:11BMB-ES{Det:PIL2M}:cam1:NumImages', 1)
@@ -3715,9 +3608,7 @@ class Sample_Generic(CoordinateSystem):
             # if detector.name is 'pilatus800' :
             #     caput('XF:11BMB-ES{Det:PIL800K}:cam1:NumImages', 1)
 
-    def _old_handle_fileseries(
-        self, detector, num_frames=None, extra=None, verbosity=3, subdirs=True, **md
-    ):
+    def _old_handle_fileseries(self, detector, num_frames=None, extra=None, verbosity=3, subdirs=True, **md):
         subdir = ""
 
         if detector.name == "pilatus300" or detector.name == "pilatus8002":
@@ -3740,9 +3631,7 @@ class Sample_Generic(CoordinateSystem):
             # if md['measure_type'] is not 'snap':
             if True:
                 # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime'))
-                self.set_attribute(
-                    "exposure_time", detector.cam.acquire_time.get()
-                )  # RL, 20210831
+                self.set_attribute("exposure_time", detector.cam.acquire_time.get())  # RL, 20210831
                 # Create symlink
                 # link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
                 # savename = md['filename'][:-5]
@@ -3769,17 +3658,11 @@ class Sample_Generic(CoordinateSystem):
 
                 for num_frame in range(num_frames):
                     filename_new = "{}_{:06d}.tiff".format(filename_part1, num_frame)
-                    link_name_new = "{}_{:06d}_maxs.tiff".format(
-                        link_name_part1, num_frame
-                    )
+                    link_name_new = "{}_{:06d}_maxs.tiff".format(link_name_part1, num_frame)
                     os.symlink(filename_new, link_name_new)
                     if verbosity >= 3:
                         if num_frame == 0 or num_frame == np.max(num_frames):
-                            print(
-                                "  Data {} linked as: {}".format(
-                                    filename_new, link_name_new
-                                )
-                            )
+                            print("  Data {} linked as: {}".format(filename_new, link_name_new))
 
         elif detector.name == "pilatus2M":
             # chars = caget('XF:11BMB-ES{Det:PIL2M}:TIFF1:FullFileName_RBV')
@@ -3787,9 +3670,7 @@ class Sample_Generic(CoordinateSystem):
             # filename_part1 = ''.join(chr(char) for char in chars)[:-13]
 
             filename = detector.tiff.full_file_name.get()  # RL, 20210831
-            filename_part1 = (
-                detector.tiff.file_path.get() + detector.tiff.file_name.get()
-            )
+            filename_part1 = detector.tiff.file_path.get() + detector.tiff.file_name.get()
 
             print("pilatus2M data handling")
 
@@ -3806,9 +3687,7 @@ class Sample_Generic(CoordinateSystem):
             # if md['measure_type'] is not 'snap':
             if True:
                 # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime'))
-                self.set_attribute(
-                    "exposure_time", detector.cam.acquire_time.get()
-                )  # RL, 20210831
+                self.set_attribute("exposure_time", detector.cam.acquire_time.get())  # RL, 20210831
 
                 # Create symlink
                 # link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -3836,17 +3715,11 @@ class Sample_Generic(CoordinateSystem):
 
                 for num_frame in range(num_frames):
                     filename_new = "{}_{:06d}.tiff".format(filename_part1, num_frame)
-                    link_name_new = "{}_{:06d}_saxs.tiff".format(
-                        link_name_part1, num_frame
-                    )
+                    link_name_new = "{}_{:06d}_saxs.tiff".format(link_name_part1, num_frame)
                     os.symlink(filename_new, link_name_new)
                     if verbosity >= 3:
                         if num_frame == 0 or num_frame == np.max(num_frames):
-                            print(
-                                "  Data {} linked as: {}".format(
-                                    filename_new, link_name_new
-                                )
-                            )
+                            print("  Data {} linked as: {}".format(filename_new, link_name_new))
 
         # elif detector.name is  'pilatus800':
         # chars = caget('XF:11BMB-ES{Det:PIL800K}:TIFF1:FullFileName_RBV')
@@ -3862,9 +3735,7 @@ class Sample_Generic(CoordinateSystem):
             # filename_part1 = foldername + ''.join(chr(char) for char in chars)[:-13]
 
             filename = pilatus800.tiff.full_file_name.get()  # RL, 20210831
-            filename_part1 = (
-                pilatus800.tiff.file_path.get() + pilatus800.tiff.file_name.get()
-            )
+            filename_part1 = pilatus800.tiff.file_path.get() + pilatus800.tiff.file_name.get()
 
             print("pilatus800 data handling")
 
@@ -3880,9 +3751,7 @@ class Sample_Generic(CoordinateSystem):
             # if md['measure_type'] is not 'snap':
             if True:
                 # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:PIL800K}:cam1:AcquireTime'))
-                self.set_attribute(
-                    "exposure_time", pilatus800.cam.acquire_time.get()
-                )  # RL, 20210831
+                self.set_attribute("exposure_time", pilatus800.cam.acquire_time.get())  # RL, 20210831
 
                 # Create symlink
                 # link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
@@ -3910,30 +3779,18 @@ class Sample_Generic(CoordinateSystem):
 
                 for num_frame in range(num_frames):
                     filename_new = "{}_{:06d}.tiff".format(filename_part1, num_frame)
-                    link_name_new = "{}_{:06d}_waxs.tiff".format(
-                        link_name_part1, num_frame
-                    )
+                    link_name_new = "{}_{:06d}_waxs.tiff".format(link_name_part1, num_frame)
                     os.symlink(filename_new, link_name_new)
                     if verbosity >= 3:
                         if num_frame == 0 or num_frame == np.max(num_frames):
-                            print(
-                                "  Data {} linked as: {}".format(
-                                    filename_new, link_name_new
-                                )
-                            )
+                            print("  Data {} linked as: {}".format(filename_new, link_name_new))
 
         else:
             if verbosity >= 1:
-                print(
-                    "WARNING: Can't do file handling for detector '{}'.".format(
-                        detector.name
-                    )
-                )
+                print("WARNING: Can't do file handling for detector '{}'.".format(detector.name))
                 return
 
-    def handle_fileseries(
-        self, detector, num_frames=None, extra=None, verbosity=3, subdirs=True, **md
-    ):
+    def handle_fileseries(self, detector, num_frames=None, extra=None, verbosity=3, subdirs=True, **md):
         subdir = ""
         if subdirs:
             if detector.name == "pilatus300" or detector.name == "pilatus8002":
@@ -3950,17 +3807,11 @@ class Sample_Generic(CoordinateSystem):
                 print("pilatus800k data handling")
             else:
                 if verbosity >= 1:
-                    print(
-                        "WARNING: Can't do file handling for detector '{}'.".format(
-                            detector.name
-                        )
-                    )
+                    print("WARNING: Can't do file handling for detector '{}'.".format(detector.name))
                     return
 
         filename = detector.tiff.full_file_name.get()  # RL, 20210831
-        filename_part1 = "{:s}/{:s}".format(
-            detector.tiff.file_path.get(), detector.tiff.file_name.get()
-        )
+        filename_part1 = "{:s}/{:s}".format(detector.tiff.file_path.get(), detector.tiff.file_name.get())
 
         # Alternate method to get the last filename
         # filename = '{:s}/{:s}.tiff'.format( detector.tiff.file_path.get(), detector.tiff.file_name.get()  )
@@ -3971,9 +3822,7 @@ class Sample_Generic(CoordinateSystem):
         # if md['measure_type'] is not 'snap':
         if True:
             # self.set_attribute('exposure_time', caget('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime'))
-            self.set_attribute(
-                "exposure_time", detector.cam.acquire_time.get()
-            )  # RL, 20210831
+            self.set_attribute("exposure_time", detector.cam.acquire_time.get())  # RL, 20210831
             # Create symlink
             # link_name = '{}/{}{}'.format(RE.md['experiment_alias_directory'], subdir, md['filename'])
             # savename = md['filename'][:-5]
@@ -4006,23 +3855,15 @@ class Sample_Generic(CoordinateSystem):
                 if os.path.isfile(filename_new) == False:
                     return print("File number {} does not exist.".format(num_frame))
 
-                link_name_new = "{}_{:06d}_{}.tiff".format(
-                    link_name_part1, num_frame, detname
-                )
+                link_name_new = "{}_{:06d}_{}.tiff".format(link_name_part1, num_frame, detname)
                 os.symlink(filename_new, link_name_new)
                 if verbosity >= 3:
                     if num_frame == 0 or num_frame == np.max(num_frames):
-                        print(
-                            "  Data {} linked as: {}".format(
-                                filename_new, link_name_new
-                            )
-                        )
+                        print("  Data {} linked as: {}".format(filename_new, link_name_new))
             savename = self.get_savename(savename_extra=extra)
             # savename = md['filename']
             # link_name = '{}/{}{}_{:04d}_maxs.tiff'.format(RE.md['experiment_alias_directory'], subdir, savename, RE.md['scan_id']-1)
-            link_name = "{}/{}{}_{}.tiff".format(
-                RE.md["experiment_alias_directory"], subdir, savename, detname
-            )
+            link_name = "{}/{}{}_{}.tiff".format(RE.md["experiment_alias_directory"], subdir, savename, detname)
 
     # Control methods
     ########################################
@@ -4065,9 +3906,7 @@ class Sample_Generic(CoordinateSystem):
                 )
             caput("XF:11BM-ES{Env:01-Out:4}T-SP", temperature + 273.15)
 
-    def temperature(
-        self, temperature_probe="A", output_channel="1", RTDchan=2, verbosity=3
-    ):
+    def temperature(self, temperature_probe="A", output_channel="1", RTDchan=2, verbosity=3):
         # if verbosity>=1:
         # print('Temperature functions not implemented in {}'.format(self.__class__.__name__))
 
@@ -4077,8 +3916,7 @@ class Sample_Generic(CoordinateSystem):
                 print(
                     "  Temperature = {:.3f}°C (setpoint = {:.3f}°C)".format(
                         current_temperature,
-                        self.temperature_setpoint(output_channel=output_channel)
-                        - 273.15,
+                        self.temperature_setpoint(output_channel=output_channel) - 273.15,
                     )
                 )
         if temperature_probe == "B":
@@ -4087,8 +3925,7 @@ class Sample_Generic(CoordinateSystem):
                 print(
                     "  Temperature = {:.3f}°C (setpoint = {:.3f}°C)".format(
                         current_temperature,
-                        self.temperature_setpoint(output_channel=output_channel)
-                        - 273.15,
+                        self.temperature_setpoint(output_channel=output_channel) - 273.15,
                     )
                 )
         if temperature_probe == "C":
@@ -4097,8 +3934,7 @@ class Sample_Generic(CoordinateSystem):
                 print(
                     "  Temperature = {:.3f}°C (setpoint = {:.3f}°C)".format(
                         current_temperature,
-                        self.temperature_setpoint(output_channel=output_channel)
-                        - 273.15,
+                        self.temperature_setpoint(output_channel=output_channel) - 273.15,
                     )
                 )
         if temperature_probe == "D":
@@ -4107,8 +3943,7 @@ class Sample_Generic(CoordinateSystem):
                 print(
                     "  Temperature = {:.3f}°C (setpoint = {:.3f}°C)".format(
                         current_temperature,
-                        self.temperature_setpoint(output_channel=output_channel)
-                        - 273.15,
+                        self.temperature_setpoint(output_channel=output_channel) - 273.15,
                     )
                 )
         if temperature_probe == "E":
@@ -4452,11 +4287,7 @@ class Holder(Stage):
 
             if matches == 1:
                 if verbosity >= 3:
-                    print(
-                        "Beginning-name match: {}: {:s}".format(
-                            sample_i_match, sample_match.name
-                        )
-                    )
+                    print("Beginning-name match: {}: {:s}".format(sample_i_match, sample_match.name))
                 return sample_match
 
             elif matches > 1:
@@ -4478,11 +4309,7 @@ class Holder(Stage):
 
             if matches == 1:
                 if verbosity >= 3:
-                    print(
-                        "Substring match: {}: {:s}".format(
-                            sample_i_match, sample_match.name
-                        )
-                    )
+                    print("Substring match: {}: {:s}".format(sample_i_match, sample_match.name))
                 return sample_match
 
             elif matches > 1:
@@ -4499,9 +4326,7 @@ class Holder(Stage):
             return None
 
         else:
-            print(
-                'Error: Sample designation "{}" not understood.'.format(sample_number)
-            )
+            print('Error: Sample designation "{}" not understood.'.format(sample_number))
             return None
 
     import string
@@ -4617,8 +4442,7 @@ class Holder(Stage):
                 print(
                     "  Temperature = {:.3f}°C (setpoint = {:.3f}°C)".format(
                         current_temperature,
-                        self.temperature_setpoint(output_channel=output_channel)
-                        - 273.15,
+                        self.temperature_setpoint(output_channel=output_channel) - 273.15,
                     )
                 )
 
@@ -4628,8 +4452,7 @@ class Holder(Stage):
                 print(
                     "  Temperature = {:.3f}°C (setpoint = {:.3f}°C)".format(
                         current_temperature,
-                        self.temperature_setpoint(output_channel=output_channel)
-                        - 273.15,
+                        self.temperature_setpoint(output_channel=output_channel) - 273.15,
                     )
                 )
 
@@ -4639,8 +4462,7 @@ class Holder(Stage):
                 print(
                     "  Temperature = {:.3f}°C (setpoint = {:.3f}°C)".format(
                         current_temperature,
-                        self.temperature_setpoint(output_channel=output_channel)
-                        - 273.15,
+                        self.temperature_setpoint(output_channel=output_channel) - 273.15,
                     )
                 )
 
@@ -4650,8 +4472,7 @@ class Holder(Stage):
                 print(
                     "  Temperature = {:.3f}°C (setpoint = {:.3f}°C)".format(
                         current_temperature,
-                        self.temperature_setpoint(output_channel=output_channel)
-                        - 273.15,
+                        self.temperature_setpoint(output_channel=output_channel) - 273.15,
                     )
                 )
 
@@ -4700,20 +4521,15 @@ class Holder(Stage):
         range=None,
         verbosity=3,
         poling_period=2.0,
-        **md
+        **md,
     ):
         # Set new temperature
-        self.setTemperature(
-            temperature, output_channel=output_channel, verbosity=verbosity
-        )
+        self.setTemperature(temperature, output_channel=output_channel, verbosity=verbosity)
 
         # Wait until we reach the temperature
         # while abs(self.temperature(verbosity=0) - temperature)>temperature_tolerance:
         while (
-            abs(
-                self.temperature(temperature_probe=temperature_probe, verbosity=0)
-                - temperature
-            )
+            abs(self.temperature(temperature_probe=temperature_probe, verbosity=0) - temperature)
             > temperature_tolerance
         ):
             if verbosity >= 3:
@@ -4741,7 +4557,7 @@ class Holder(Stage):
         temperature_tolerance=0.4,
         range=None,
         verbosity=3,
-        **md
+        **md,
     ):
         for temperature in temperatures:
             self.doTemperature(
@@ -4752,7 +4568,7 @@ class Holder(Stage):
                 temperature_tolerance=temperature_tolerance,
                 range=range,
                 verbosity=verbosity,
-                **md
+                **md,
             )
 
 
@@ -4770,6 +4586,14 @@ class PositionalHolder(Holder):
 
         self._positional_axis = "x"
         self.GaragePosition = []
+        self.setPosition()
+
+    def setPosition(self):
+        # add by RL 060823
+        self.position = {}
+        for axis in self._positional_axis:
+            self.position[axis] = self._axes[axis].origin
+        # self.position _axes['x'].origin
 
     # Sample management
     ########################################
@@ -4777,9 +4601,7 @@ class PositionalHolder(Holder):
     def slot(self, sample_number):
         """Moves to the selected slot in the holder."""
 
-        getattr(self, self._positional_axis + "abs")(
-            self.get_slot_position(sample_number)
-        )
+        getattr(self, self._positional_axis + "abs")(self.get_slot_position(sample_number))
 
     def get_slot_position(self, slot):
         """Return the motor position for the requested slot number."""
@@ -4835,10 +4657,7 @@ class PositionalHolder(Holder):
         for sample_number, sample in self._samples.items():
             # pos = getattr(sample, self._positional_axis+'pos')(verbosity=0)
             pos = sample.origin(verbosity=0)[self._positional_axis]
-            print(
-                "%s: %s (%s = %.3f)"
-                % (str(sample_number), sample.name, self._positional_axis, pos)
-            )
+            print("%s: %s (%s = %.3f)" % (str(sample_number), sample.name, self._positional_axis, pos))
 
     def listSamplesDetails(self):
         """Print a list of the current samples associated with this holder/
@@ -4865,10 +4684,10 @@ class PositionalHolder(Holder):
 
         self.GaragePosition = [shelf_num, spot_num]
 
-    def intMeasure(self, output_file, exposure_time):
+    def intMeasure(self, output_file, exposure_time=1):
         for sample in self.getSamples():
             sample.gotoOrigin()
-            sample.intMeasure(output_file, exposure_time)
+            sample.intMeasure(output_file, exposure_time=1)
 
     def saveSampleStates(self, output_file=None):
         """Print a list of the current samples associated with this holder/bar.

@@ -201,21 +201,13 @@ def wh_motors(motor=None, verbosity=3):
     # print('motor: {} -- position: {} -- limits: {} -- offset: -- {} direction: {}'.format(motor.name, motor.position, motor.limits, motor.user_offset.value, sth.direction_of_travel.value))
 
     if verbosity >= 1:
-        print(
-            "|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|".format(
-                "*", "*", "*", "*", "*", "*"
-            )
-        )
+        print("|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|".format("*", "*", "*", "*", "*", "*"))
         print(
             "|{:12}|{:12}|{:12}|{:12}|{:12}|{:12}|".format(
                 "motor", "position", "low_limit", "high_limit", "offset", "direction"
             )
         )
-        print(
-            "|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|".format(
-                "*", "*", "*", "*", "*", "*"
-            )
-        )
+        print("|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|".format("*", "*", "*", "*", "*", "*"))
         # print('|{:12}|{:12.4}|{:8.4}|{:8.4}|{:12}|{:5}|'
 
     last_z = -100
@@ -240,8 +232,4 @@ def wh_motors(motor=None, verbosity=3):
             )
         )
     if verbosity >= 1:
-        print(
-            "|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|".format(
-                "*", "*", "*", "*", "*", "*"
-            )
-        )
+        print("|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|{:*^12}|".format("*", "*", "*", "*", "*", "*"))

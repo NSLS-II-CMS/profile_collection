@@ -167,9 +167,7 @@ class LiveStat(CallbackBase):
         class Result(object):
             pass
 
-        self.result = (
-            Result()
-        )  # Dummy object to replicate the hiearchy expected for LiveFit
+        self.result = Result()  # Dummy object to replicate the hiearchy expected for LiveFit
         self.result.values = {}
 
     def event(self, doc):
@@ -589,9 +587,7 @@ class LiveFitPlot_Custom(LiveFitPlot):
 
             x_start, x_stop, span = self.get_scan_range(overscan=0.25)
 
-            self.x_data = np.linspace(
-                x_start, x_stop, num=200, endpoint=True, retstep=False
-            )
+            self.x_data = np.linspace(x_start, x_stop, num=200, endpoint=True, retstep=False)
             self.y_data = self.livefit.result.eval(x=self.x_data)
 
             self.update_plot()
@@ -785,9 +781,7 @@ class LiveFit_Custom(LiveFit):
                 max=self.x_stop + self.x_span * 0.1,
             ),
             "prefactor": lmfit.Parameter("prefactor", 1000, min=0),
-            "sigma": lmfit.Parameter(
-                "sigma", self.x_span * 0.25, min=0, max=self.x_span * 4
-            ),
+            "sigma": lmfit.Parameter("sigma", self.x_span * 0.25, min=0, max=self.x_span * 4),
         }
         return init_guess
 
@@ -800,9 +794,7 @@ class LiveFit_Custom(LiveFit):
                 max=self.x_stop + self.x_span * 0.1,
             ),
             "prefactor": lmfit.Parameter("prefactor", 1, min=0),
-            "gamma": lmfit.Parameter(
-                "gamma", self.x_span * 0.25, min=0, max=self.x_span * 4
-            ),
+            "gamma": lmfit.Parameter("gamma", self.x_span * 0.25, min=0, max=self.x_span * 4),
         }
         return init_guess
 
@@ -815,9 +807,7 @@ class LiveFit_Custom(LiveFit):
                 max=self.x_stop + self.x_span * 0.1,
             ),
             "prefactor": lmfit.Parameter("prefactor", 100, min=0),
-            "sigma": lmfit.Parameter(
-                "sigma", self.x_span * 0.25, min=0, max=self.x_span
-            ),
+            "sigma": lmfit.Parameter("sigma", self.x_span * 0.25, min=0, max=self.x_span),
             "fwhm": lmfit.Parameter("fwhm", self.x_span * 0.25, min=0, max=self.x_span),
         }
         return init_guess
@@ -844,9 +834,7 @@ class LiveFit_Custom(LiveFit):
                 max=self.x_stop + self.x_span * 0.1,
             ),
             "prefactor": lmfit.Parameter("prefactor", 100, min=0),
-            "sigma": lmfit.Parameter(
-                "sigma", self.x_span * 0.25, min=0, max=self.x_span * 4
-            ),
+            "sigma": lmfit.Parameter("sigma", self.x_span * 0.25, min=0, max=self.x_span * 4),
         }
         return init_guess
 
@@ -862,9 +850,7 @@ class LiveFit_Custom(LiveFit):
                 max=self.x_stop + self.x_span * 0.1,
             ),
             "prefactor": lmfit.Parameter("prefactor", 100, min=0),
-            "sigma": lmfit.Parameter(
-                "sigma", self.x_span * 0.002, min=0, max=self.x_span * 0.005
-            ),
+            "sigma": lmfit.Parameter("sigma", self.x_span * 0.002, min=0, max=self.x_span * 0.005),
         }
         return init_guess
 
@@ -987,7 +973,7 @@ def fit_scan(
         fig = plt.figure(figsize=(11, 7), facecolor="white")
         fig.canvas.manager.toolbar.pan()
 
-    fig.canvas.set_window_title(title)
+    fig.canvas.manager.set_window_title(title)
     ax = fig.gca()
 
     subs = []
@@ -1054,9 +1040,7 @@ def fit_scan(
     if save_flg == 1:
         header = db[-1]
         dtable = header.table()
-        filename = "{}/{}".format(
-            RE.md["experiment_alias_directory"], header.start["scan_id"]
-        )
+        filename = "{}/{}".format(RE.md["experiment_alias_directory"], header.start["scan_id"])
         dtable.to_csv(filename)
 
     if toggle_beam:
@@ -1152,7 +1136,7 @@ def fit_edge(
             fig = plt.figure(figsize=(11, 7), facecolor="white")
             fig.canvas.manager.toolbar.pan()
 
-        fig.canvas.set_window_title(title)
+        fig.canvas.manager.set_window_title(title)
         ax = fig.gca()
 
         liveplot = LivePlot_Custom(plot_y, motor.name, ax=ax)
@@ -1214,9 +1198,7 @@ def fit_edge(
 
         params = lmfit.Parameters()
         if y_max > 0:
-            params.add(
-                "prefactor", value=y_max * 0.95, min=y_max * 0.90, max=y_max * 1.02
-            )
+            params.add("prefactor", value=y_max * 0.95, min=y_max * 0.90, max=y_max * 1.02)
         else:
             params.add("prefactor", value=y_max * 0.95, min=0, max=1)
         params.add(
@@ -1230,17 +1212,13 @@ def fit_edge(
         # 1st fit: only vary x0
         params["prefactor"].set(vary=False)
         params["sigma"].set(vary=False)
-        lm_result = lmfit.minimize(
-            func2minimize, params, args=(livetable.xdata, livetable.ydata)
-        )
+        lm_result = lmfit.minimize(func2minimize, params, args=(livetable.xdata, livetable.ydata))
         # lmfit.report_fit(lm_result.params)
 
         # 2nd fit: vary everything
         params["prefactor"].set(vary=True)
         params["sigma"].set(vary=True)
-        lm_result = lmfit.minimize(
-            func2minimize, params, args=(livetable.xdata, livetable.ydata)
-        )
+        lm_result = lmfit.minimize(func2minimize, params, args=(livetable.xdata, livetable.ydata))
         # lmfit.report_fit(lm_result.params)
 
         if plot:
@@ -1254,9 +1232,7 @@ def fit_edge(
             # liveplot.add_line(fit_x, fit_y, color='b', linewidth=2.5)
 
         # Detect bad fits
-        avg_deviation = np.sum(np.abs(lm_result.residual / y_max)) / len(
-            livetable.ydata
-        )
+        avg_deviation = np.sum(np.abs(lm_result.residual / y_max)) / len(livetable.ydata)
         print("  avg deviation {:.1f}%".format(avg_deviation * 100))
         # avg_deviation of <1% is good.
         # avg_deviation of 1-4% is normal.
@@ -1360,7 +1336,7 @@ def _test_fit_scan(
         fig = plt.figure(figsize=(11, 7), facecolor="white")
         fig.canvas.manager.toolbar.pan()
 
-    fig.canvas.set_window_title(title)
+    fig.canvas.manager.set_window_title(title)
     ax = fig.gca()
 
     subs = []
@@ -1405,9 +1381,7 @@ def _test_fit_scan(
 
     # Perform the scan
     def _fit_scan():
-        yield from scan(
-            list(detectors), motor, start, stop, num, per_step=per_step, md=md
-        )
+        yield from scan(list(detectors), motor, start, stop, num, per_step=per_step, md=md)
         yield from read(list(detectors))
         # threshold=1
         # print(reading)

@@ -161,7 +161,7 @@ class Sample(SampleGISAXS):
         extra=None,
         measure_type="measureTimeSeries",
         verbosity=3,
-        **md
+        **md,
     ):
         self.naming_scheme_hold = self.naming_scheme
         self.naming_scheme = ["name", "extra", "clock", "exposure_time"]
@@ -172,7 +172,7 @@ class Sample(SampleGISAXS):
             extra=extra,
             measure_type=measure_type,
             verbosity=verbosity,
-            **md
+            **md,
         )
         self.naming_scheme = self.naming_scheme_hold
 
@@ -253,9 +253,7 @@ class Sample(SampleGISAXS):
             ##self._test2_measureIncidentAngles(incident_angles, exposure_time=self.SAXS_time, tiling='ygaps', **md)
             # self.measureIncidentAngles(incident_angles, exposure_time=self.SAXS_time, **md)
             swaxs_on()
-            self._test2_measureIncidentAngles(
-                incident_angles, exposure_time=self.WAXS_time, tiling="ygaps", **md
-            )
+            self._test2_measureIncidentAngles(incident_angles, exposure_time=self.WAXS_time, tiling="ygaps", **md)
             # self.measureIncidentAngles(incident_angles, exposure_time=self.WAXS_time, **md)
             # waxs_on()
             # self._test2_measureIncidentAngles(self.incident_angles_default, exposure_time=self.WAXS_time, tiling='ygaps', **md)
@@ -296,9 +294,7 @@ class Sample(SampleGISAXS):
             ##self._test2_measureIncidentAngles(incident_angles, exposure_time=self.SAXS_time, tiling='ygaps', **md)
             # self.measureIncidentAngles(incident_angles, exposure_time=self.SAXS_time, **md)
             saxs_on()
-            self._test2_measureIncidentAngles(
-                incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md
-            )
+            self._test2_measureIncidentAngles(incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md)
             # self.measureIncidentAngles(incident_angles, exposure_time=self.WAXS_time, **md)
             # waxs_on()
             # self._test2_measureIncidentAngles(self.incident_angles_default, exposure_time=self.WAXS_time, tiling='ygaps', **md)
@@ -312,10 +308,7 @@ class Sample(SampleGISAXS):
         ion_chamber_readout4 = caget("XF:11BMB-BI{IM:3}:IC4_MON")
 
         ion_chamber_readout = (
-            ion_chamber_readout1
-            + ion_chamber_readout2
-            + ion_chamber_readout3
-            + ion_chamber_readout4
+            ion_chamber_readout1 + ion_chamber_readout2 + ion_chamber_readout3 + ion_chamber_readout4
         )
 
         return ion_chamber_readout > 1 * 5e-08
@@ -365,11 +358,7 @@ class Sample(SampleGISAXS):
             if get_beamline().current_mode != "alignment":
                 # if verbosity>=2:
                 # print("WARNING: Beamline is not in alignment mode (mode is '{}')".format(get_beamline().current_mode))
-                print(
-                    "Switching to alignment mode (current mode is '{}')".format(
-                        get_beamline().current_mode
-                    )
-                )
+                print("Switching to alignment mode (current mode is '{}')".format(get_beamline().current_mode))
                 get_beamline().modeAlignment()
 
             get_beamline().setDirectBeamROI()
@@ -408,14 +397,10 @@ class Sample(SampleGISAXS):
             waxs_on()
             # for detector in get_beamline().detector:
             # detector.setExposureTime(self.MAXS_time)
-            self._test2_measureIncidentAngles(
-                incident_angles, exposure_time=self.WAXS_time, tiling="ygaps", **md
-            )
+            self._test2_measureIncidentAngles(incident_angles, exposure_time=self.WAXS_time, tiling="ygaps", **md)
 
             self.yr(-1)
-            self.measure(
-                exposure_time=self.WAXS_time, tiling="ygaps", extra="BKG", **md
-            )
+            self.measure(exposure_time=self.WAXS_time, tiling="ygaps", extra="BKG", **md)
 
             # if self.exposure_time_MAXS==None:
             # self.measureIncidentAngles(incident_angles, exposure_time=self.MAXS_time, tiling=self.tiling, **md)
@@ -456,9 +441,7 @@ class Sample(SampleGISAXS):
             waxs_on()  # edited from waxs_on 3/25/19 through a saxs_on error
             # for detector in get_beamline().detector:
             # detector.setExposureTime(self.MAXS_time)
-            self._test2_measureIncidentAngles(
-                incident_angles, exposure_time=self.WAXS_time, tiling="ygaps", **md
-            )
+            self._test2_measureIncidentAngles(incident_angles, exposure_time=self.WAXS_time, tiling="ygaps", **md)
 
             # if self.exposure_time_MAXS==None:
             # self.measureIncidentAngles(incident_angles, exposure_time=self.MAXS_time, tiling=self.tiling, **md)
@@ -576,9 +559,7 @@ class HumidityStageCumstom(HumidityStage):
 
             sample.gotoOrigin()
             sample.yr(-1)
-            sample.measure(
-                exposure_time=sample.WAXS_time, extra="TWAXS", tiling="ygaps", **md
-            )
+            sample.measure(exposure_time=sample.WAXS_time, extra="TWAXS", tiling="ygaps", **md)
             sample.gotoOrigin()
 
     def do_WAXS_only(self, step=0, align_step=0, **md):
@@ -601,9 +582,7 @@ class HumidityStageCumstom(HumidityStage):
             )
 
             self.yr(-1)
-            self.measure(
-                exposure_time=self.WAXS_time, tiling="ygaps", extra="BKG", **md
-            )
+            self.measure(exposure_time=self.WAXS_time, tiling="ygaps", extra="BKG", **md)
 
             # if self.exposure_time_MAXS==None:
             # self.measureIncidentAngles(incident_angles, exposure_time=self.MAXS_time, tiling=self.tiling, **md)
@@ -774,21 +753,11 @@ if True:
     hol1 = HumidityStageCumstom(base=stg)
     # compacted.addGaragePosition(-1,-1)
     oe = -34
-    hol1.addSampleSlotPosition(
-        Sample("QF_Bulk-M1-1", **md), 1, 13, "BOTH", incident_angles=[0.1, 0.12, 0.15]
-    )
-    hol1.addSampleSlotPosition(
-        Sample("QF_Bulk-0p25-1", **md), 2, 28, "BOTH", incident_angles=[0.1, 0.12, 0.15]
-    )
-    hol1.addSampleSlotPosition(
-        Sample("QF_Bulk-0p5-1", **md), 3, 43, "BOTH", incident_angles=[0.1, 0.12, 0.15]
-    )
-    hol1.addSampleSlotPosition(
-        Sample("QF_Bulk-M2-1", **md), 4, 56, "BOTH", incident_angles=[0.1, 0.12, 0.15]
-    )
-    hol1.addSampleSlotPosition(
-        Sample("QF_Bulk-M4-2", **md), 5, 69, "BOTH", incident_angles=[0.1, 0.12, 0.15]
-    )
+    hol1.addSampleSlotPosition(Sample("QF_Bulk-M1-1", **md), 1, 13, "BOTH", incident_angles=[0.1, 0.12, 0.15])
+    hol1.addSampleSlotPosition(Sample("QF_Bulk-0p25-1", **md), 2, 28, "BOTH", incident_angles=[0.1, 0.12, 0.15])
+    hol1.addSampleSlotPosition(Sample("QF_Bulk-0p5-1", **md), 3, 43, "BOTH", incident_angles=[0.1, 0.12, 0.15])
+    hol1.addSampleSlotPosition(Sample("QF_Bulk-M2-1", **md), 4, 56, "BOTH", incident_angles=[0.1, 0.12, 0.15])
+    hol1.addSampleSlotPosition(Sample("QF_Bulk-M4-2", **md), 5, 69, "BOTH", incident_angles=[0.1, 0.12, 0.15])
 
     hol2 = HumidityStageCumstom(base=stg)
     # compacted.addGaragePosition(-1,-1)

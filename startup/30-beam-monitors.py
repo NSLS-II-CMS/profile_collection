@@ -78,9 +78,7 @@ def get_bim4(q=0):
         print("Raw count rate: %.3e ph/s" % bim4_cps)
         print("Beam flux: %.3e ph/s" % bim4_flux)
         if bim4_flux == -1:
-            print(
-                "Counting time seems to be set to zero. Check settigs on FMB Oxford C400."
-            )
+            print("Counting time seems to be set to zero. Check settigs on FMB Oxford C400.")
 
     return bim4_flux
 

@@ -63,7 +63,8 @@ class SampleTSAXS_Generic(Sample_Generic):
 
         if os.path.isfile(INT_FILENAME):
             output_data = pds.read_csv(INT_FILENAME, index_col=0)
-            output_data = output_data.append(temp_data, ignore_index=True)
+            # output_data = output_data.append(temp_data, ignore_index=True)
+            output_data = pds.concat([output_data, temp_data], ignore_index=True)
             output_data.to_csv(INT_FILENAME)
         else:
             temp_data.to_csv(INT_FILENAME)
@@ -113,7 +114,7 @@ class SampleGISAXS_Generic(Sample_Generic):
         exposure_time=None,
         extra=None,
         measure_type="measureSpots",
-        **md
+        **md,
     ):
         super().measureSpots(
             num_spots=num_spots,
@@ -122,45 +123,31 @@ class SampleGISAXS_Generic(Sample_Generic):
             exposure_time=exposure_time,
             extra=extra,
             measure_type=measure_type,
-            **md
+            **md,
         )
 
-    def measureIncidentAngle(
-        self, angle, exposure_time=None, extra=None, tiling=None, **md
-    ):
+    def measureIncidentAngle(self, angle, exposure_time=None, extra=None, tiling=None, **md):
         self.thabs(angle)
         while sth.moving == True:
             time.sleep(0.1)
         self.measure(exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
 
-    def measureIncidentAngles(
-        self, angles=None, exposure_time=None, extra=None, tiling=None, **md
-    ):
+    def measureIncidentAngles(self, angles=None, exposure_time=None, extra=None, tiling=None, **md):
         # measure the incident angles first and then change the tiling features.
         if angles is None:
             angles = self.incident_angles_default
         for angle in angles:
-            self.measureIncidentAngle(
-                angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md
-            )
+            self.measureIncidentAngle(angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
 
     def measureIncidentAngles_Stitch(
-        self,
-        angles=None,
-        exposure_time=None,
-        extra=None,
-        tiling=None,
-        verbosity=3,
-        **md
+        self, angles=None, exposure_time=None, extra=None, tiling=None, verbosity=3, **md
     ):
         # measure the incident angles first and then change the tiling features.
         if tiling == None:
             if angles is None:
                 angles = self.incident_angles_default
             for angle in angles:
-                self.measureIncidentAngle(
-                    angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md
-                )
+                self.measureIncidentAngle(angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
 
         elif tiling == "ygaps":
             if angles is None:
@@ -174,11 +161,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower"
                 self.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             # pos2
@@ -203,11 +186,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper"
                 self.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             if SAXSy.user_readback.value != SAXSy_o:
@@ -227,11 +206,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower_left"
                 self.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             # pos2
@@ -254,11 +229,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper"
                 self.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             # pos4  #comment out to save time
@@ -275,11 +246,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                 extra_current = "pos4" if extra is None else "{}_pos4".format(extra)
                 md["detector_position"] = "upper_right"
                 self.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             # pos3
@@ -297,11 +264,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                 extra_current = "pos3" if extra is None else "{}_pos3".format(extra)
                 md["detector_position"] = "lower_right"
                 self.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             if WAXSx.user_readback.value != WAXSx_o:
@@ -346,7 +309,8 @@ class SampleGISAXS_Generic(Sample_Generic):
 
         if os.path.isfile(INT_FILENAME):
             output_data = pds.read_csv(INT_FILENAME, index_col=0)
-            output_data = output_data.append(temp_data, ignore_index=True)
+            # output_data = output_data.append(temp_data, ignore_index=True)
+            output_data = pds.concat([output_data, temp_data], ignore_index=True)
             output_data.to_csv(INT_FILENAME)
         else:
             temp_data.to_csv(INT_FILENAME)
@@ -442,11 +406,7 @@ class SampleGISAXS_Generic(Sample_Generic):
             if get_beamline().current_mode != "alignment":
                 # if verbosity>=2:
                 # print("WARNING: Beamline is not in alignment mode (mode is '{}')".format(get_beamline().current_mode))
-                print(
-                    "Switching to alignment mode (current mode is '{}')".format(
-                        get_beamline().current_mode
-                    )
-                )
+                print("Switching to alignment mode (current mode is '{}')".format(get_beamline().current_mode))
                 get_beamline().modeAlignment()
 
             get_beamline().setDirectBeamROI()
@@ -488,9 +448,7 @@ class SampleGISAXS_Generic(Sample_Generic):
             )
 
             # Find the peak
-            self.thsearch(
-                step_size=0.4, min_step=0.01, target="max", verbosity=verbosity
-            )
+            self.thsearch(step_size=0.4, min_step=0.01, target="max", verbosity=verbosity)
 
         if step <= 4:
             if verbosity >= 4:
@@ -561,11 +519,7 @@ class SampleGISAXS_Generic(Sample_Generic):
             if get_beamline().current_mode != "alignment":
                 # if verbosity>=2:
                 # print("WARNING: Beamline is not in alignment mode (mode is '{}')".format(get_beamline().current_mode))
-                print(
-                    "Switching to alignment mode (current mode is '{}')".format(
-                        get_beamline().current_mode
-                    )
-                )
+                print("Switching to alignment mode (current mode is '{}')".format(get_beamline().current_mode))
                 get_beamline().modeAlignment()
             get_beamline().setDirectBeamROI()
         # if step<=2:
@@ -634,9 +588,7 @@ class SampleGISAXS_Generic(Sample_Generic):
         # self.yo()
         self.tho()
         beam.on()
-        self.align(
-            step=align_step, reflection_angle=reflection_angle, verbosity=verbosity
-        )
+        self.align(step=align_step, reflection_angle=reflection_angle, verbosity=verbosity)
 
     def level(self, step=0, pos_x_left=-5, pos_x_right=5):
         # TODO: Move this code. (This should be a property of the GIBar object.)
@@ -650,59 +602,45 @@ class SampleGISAXS_Generic(Sample_Generic):
 
         self.xabs(pos_x_left)
         # beam.on()
-        fit_edge(
-            smy, 0.6, 17
-        )  # it's better not to move smy after scan but only the center position
+        fit_edge(smy, 0.6, 17)  # it's better not to move smy after scan but only the center position
         time.sleep(1)
         pos_y_left = smy.position
         # pos_y_left=smy.user_readback.value
         print("BEFORE LEVEL: pos_y_left = {}".format(pos_y_left))
 
         self.xabs(pos_x_right)
-        fit_edge(
-            smy, 0.6, 17
-        )  # it's better not to move smy after scan but only the center position
+        fit_edge(smy, 0.6, 17)  # it's better not to move smy after scan but only the center position
         time.sleep(1)
         pos_y_right = smy.position
         print("BEFORE LEVEL: pos_y_right = {}".format(pos_y_right))
 
-        offset_schi = (
-            (pos_y_right - pos_y_left) / (pos_x_right - pos_x_left) * 180 / np.pi
-        )
+        offset_schi = (pos_y_right - pos_y_left) / (pos_x_right - pos_x_left) * 180 / np.pi
         print("The schi offset is {} degrees".format(offset_schi))
         schi.move(schi.position - offset_schi)
 
         # double-check the chi offset
         self.xabs(pos_x_left)
-        fit_edge(
-            smy, 0.6, 17
-        )  # it's better not to move smy after scan but only the center position
+        fit_edge(smy, 0.6, 17)  # it's better not to move smy after scan but only the center position
         time.sleep(1)
         pos_y_left = smy.position
         print("AFTER LEVEL: pos_y_left = {}".format(pos_y_left))
 
         self.xabs(pos_x_right)
-        fit_edge(
-            smy, 0.6, 17
-        )  # it's better not to move smy after scan but only the center position
+        fit_edge(smy, 0.6, 17)  # it's better not to move smy after scan but only the center position
         time.sleep(1)
         pos_y_right = smy.position
         print("AFTER LEVEL: pos_y_right = {}".format(pos_y_right))
         # beam.off()
 
         self.xo()
-        offset_schi = (
-            (pos_y_right - pos_y_left) / (pos_x_right - pos_x_left) * 180 / np.pi
-        )
+        offset_schi = (pos_y_right - pos_y_left) / (pos_x_right - pos_x_left) * 180 / np.pi
 
         if offset_schi <= 0.1:
             print("schi offset is aligned successfully!")
 
         else:
             print("schi offset is WRONG. Please redo the level command")
-        fit_edge(
-            smy, 0.6, 17
-        )  # it's better not to move smy after scan but only the center position
+        fit_edge(smy, 0.6, 17)  # it's better not to move smy after scan but only the center position
         self.setOrigin(["y"])
 
     def do(self, step=0, align_step=0, **md):
@@ -769,9 +707,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                 incident_angles = self.incident_angles_default
             else:
                 incident_angles = self.incident_angles
-            self.measureIncidentAngles_Stitch(
-                incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md
-            )
+            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md)
 
     def do_SAXS(self, step=0, align_step=0, measure_setting=None, **md):
         if step <= 1:
@@ -810,9 +746,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                     exposure_time = self.measure_setting["exposure_time"]
             tiling = self.measure_setting["tiling"]
 
-            self.measureIncidentAngles_Stitch(
-                incident_angles, exposure_time=exposure_time, tiling=tiling, **md
-            )
+            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=exposure_time, tiling=tiling, **md)
 
     def do_WAXS_only(self, step=0, align_step=0, **md):
         if step < 5:
@@ -834,9 +768,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                     exposure_time = self.measure_setting["exposure_time"]
             tiling = self.measure_setting["tiling"]
             waxs_on()
-            self.measureIncidentAngles_Stitch(
-                incident_angles, exposure_time=exposure_time, tiling=tiling, **md
-            )
+            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=exposure_time, tiling=tiling, **md)
             self.thabs(0.0)
 
     def _backup_do_WAXS(self, step=0, align_step=0, **md):
@@ -870,9 +802,7 @@ class SampleGISAXS_Generic(Sample_Generic):
             waxs_on()  # edited from waxs_on 3/25/19 through a saxs_on error
             # for detector in get_beamline().detector:
             # detector.setExposureTime(self.MAXS_time)
-            self._test2_measureIncidentAngles(
-                incident_angles, exposure_time=self.WAXS_time, tiling="ygaps", **md
-            )
+            self._test2_measureIncidentAngles(incident_angles, exposure_time=self.WAXS_time, tiling="ygaps", **md)
 
             # if self.exposure_time_MAXS==None:
             # self.measureIncidentAngles(incident_angles, exposure_time=self.MAXS_time, tiling=self.tiling, **md)
@@ -916,9 +846,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                     exposure_time = self.measure_setting["exposure_time"]
             tiling = self.measure_setting["tiling"]
             waxs_on()
-            self.measureIncidentAngles_Stitch(
-                incident_angles, exposure_time=exposure_time, tiling=tiling, **md
-            )
+            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=exposure_time, tiling=tiling, **md)
             self.thabs(0.0)
 
 
@@ -945,32 +873,15 @@ class SampleCDSAXS_Generic(Sample_Generic):
             }
         )
 
-    def measureAngle(
-        self, angle, exposure_time=None, extra=None, measure_type="measure", **md
-    ):
+    def measureAngle(self, angle, exposure_time=None, extra=None, measure_type="measure", **md):
         self.phiabs(angle)
-        self.measure(
-            exposure_time=exposure_time, extra=extra, measure_type=measure_type, **md
-        )
+        self.measure(exposure_time=exposure_time, extra=extra, measure_type=measure_type, **md)
 
-    def measureAngles(
-        self,
-        angles=None,
-        exposure_time=None,
-        extra=None,
-        measure_type="measureAngles",
-        **md
-    ):
+    def measureAngles(self, angles=None, exposure_time=None, extra=None, measure_type="measureAngles", **md):
         if angles is None:
             angles = self.rot_angles_default
         for angle in angles:
-            self.measureAngle(
-                angle,
-                exposure_time=exposure_time,
-                extra=extra,
-                measure_type=measure_type,
-                **md
-            )
+            self.measureAngle(angle, exposure_time=exposure_time, extra=extra, measure_type=measure_type, **md)
 
 
 class SampleXR_WAXS(SampleGISAXS_Generic):
@@ -989,7 +900,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
         max_exposure_time=10,
         extra="XR_scan",
         output_file=None,
-        **md
+        **md,
     ):
         """Run x-ray reflectivity measurement for thin film samples on WAXS pilatus800k.
         There will be two WAXSy positions for XR.
@@ -1045,7 +956,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
         # default_WAXSy = WAXSy.position
 
         # move in absorber and move out the beamstop
-        slot_pos = 4
+        slot_pos = 5
         beam.setAbsorber(slot_pos)
         if beam.absorber()[0] >= 4:
             bsx.move(bsx.position + 6)
@@ -1064,7 +975,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
 
         # Energy = 17kev
         if abs(beam.energy(verbosity=1) - 10) < 0.1:
-            direct_beam_slot = 3
+            direct_beam_slot = 5
 
         beam.setAbsorber(direct_beam_slot)
         # TODO:move detector to the 1st position and setROI
@@ -1087,9 +998,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
             )
             print("FILENAME= {}".format(XR_FILENAME))
         else:
-            XR_FILENAME = "{}/data/{}.csv".format(
-                header.start["experiment_alias_directory"], output_file
-            )
+            XR_FILENAME = "{}/data/{}.csv".format(header.start["experiment_alias_directory"], output_file)
 
         # load theta positions in scan
         if scan_type == "theta_scan":
@@ -1123,11 +1032,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 qz_list = qz_list
             else:
                 qz_list = self.qz_list_default
-            theta_list = np.rad2deg(
-                np.arcsin(
-                    qz_list * header.start["calibration_wavelength_A"] / 4 / np.pi
-                )
-            )
+            theta_list = np.rad2deg(np.arcsin(qz_list * header.start["calibration_wavelength_A"] / 4 / np.pi))
 
         pos_flag = 0
         for theta in theta_list:
@@ -1156,10 +1061,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
             N = 1
             N_last = 1
             if threshold is not None and type(threshold) == int:
-                while (
-                    temp_data["e_I1"][temp_data.index[-1]] < threshold
-                    and N < max_exposure_time
-                ):
+                while temp_data["e_I1"][temp_data.index[-1]] < threshold and N < max_exposure_time:
                     if slot_pos > 0:
                         if (
                             temp_data["e_I1"][temp_data.index[-1]] < threshold
@@ -1172,10 +1074,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                                 / temp_data["e_I1"][temp_data.index[-1]]
                             )
                             for slot_no in np.arange(5, 0, -1):
-                                if (
-                                    slot_current
-                                    > beam.absorber_transmission_list[slot_no]
-                                ):
+                                if slot_current > beam.absorber_transmission_list[slot_no]:
                                     slot_pos = slot_no - 1
 
                         beam.setAbsorber(slot_pos)
@@ -1185,20 +1084,11 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                         temp_data = self.XR_data_output(slot_pos, exposure_time)
                     else:
                         if (
-                            threshold / float(temp_data["e_I1"][temp_data.index[-1]])
-                            < max_exposure_time
+                            threshold / float(temp_data["e_I1"][temp_data.index[-1]]) < max_exposure_time
                             and N_last < max_exposure_time
                         ):
-                            N = np.ceil(
-                                N_last
-                                * threshold
-                                / float(temp_data["e_I1"][temp_data.index[-1]])
-                            )
-                            print(
-                                "e_I1={}".format(
-                                    float(temp_data["e_I1"][temp_data.index[-1]])
-                                )
-                            )
+                            N = np.ceil(N_last * threshold / float(temp_data["e_I1"][temp_data.index[-1]]))
+                            print("e_I1={}".format(float(temp_data["e_I1"][temp_data.index[-1]])))
                             print("N={}".format(N))
                             print("exposure time  = {}".format(N * exposure_time))
                         else:
@@ -1211,10 +1101,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                         temp_data = self.XR_data_output(slot_pos, N * exposure_time)
                         N_last = N
 
-            elif (
-                len(threshold) > 1
-                and temp_data["e_I1"][temp_data.index[-1]] > threshold[-1]
-            ):
+            elif len(threshold) > 1 and temp_data["e_I1"][temp_data.index[-1]] > threshold[-1]:
                 slot_pos = slot_pos + 1
                 print("The absorber is slot {}\n".format(slot_pos))
                 print("The theta is {}\n".format(theta))
@@ -1222,7 +1109,8 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 self.measure(exposure_time, extra=extra)
                 temp_data = self.XR_data_output(slot_pos, exposure_time)
 
-            output_data = output_data.append(temp_data, ignore_index=True)
+            # output_data = output_data.append(temp_data, ignore_index=True)
+            output_data = pds.concat([output_data, temp_data], ignore_index=True)
             # save to file
             output_data.to_csv(XR_FILENAME)
 
@@ -1247,9 +1135,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
 
         bec.enable_plots()
         bec.enable_table()
-        pilatus_name.hints = {
-            "fields": ["pilatus800_stats3_total", "pilatus800_stats4_total"]
-        }
+        pilatus_name.hints = {"fields": ["pilatus800_stats3_total", "pilatus800_stats4_total"]}
 
     def XR_data_output(self, slot_pos, exposure_time):
         """XRR data output in DataFrame format, including:
@@ -1279,17 +1165,12 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
             beam.absorber_transmission_list = beam.absorber_transmission_list_17kev
 
         elif abs(beam.energy(verbosity=1) - 10) < 0.1:
-            beam.absorber_transmission_list = beam.absorber_transmission_list_10kev
+            beam.absorber_transmission_list = beam.absorber_transmission_list
         else:
             print("The absorber has not been calibrated under current Energy!!!")
 
         sth_pos = h.start["sample_th"]
-        qz = (
-            4
-            * np.pi
-            * np.sin(np.deg2rad(sth_pos))
-            / h.start["calibration_wavelength_A"]
-        )
+        qz = 4 * np.pi * np.sin(np.deg2rad(sth_pos)) / h.start["calibration_wavelength_A"]
         scan_id = h.start["scan_id"]
         I0 = h.start["beam_int_bim5"]  # beam intensity from bim5
         I1 = dtable.pilatus800_stats1_total
@@ -1363,10 +1244,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 value = detector.read()[value_name]["value"]
                 self.yr(+2)
 
-            if (
-                "beam_intensity_expected" in RE.md
-                and value < RE.md["beam_intensity_expected"] * 0.75
-            ):
+            if "beam_intensity_expected" in RE.md and value < RE.md["beam_intensity_expected"] * 0.75:
                 print(
                     "WARNING: Direct beam intensity ({}) lower than it should be ({})".format(
                         value, RE.md["beam_intensity_expected"]
@@ -1384,9 +1262,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
             )
 
             # Find the peak
-            self.thsearch(
-                step_size=0.4, min_step=0.01, target="max", verbosity=verbosity
-            )
+            self.thsearch(step_size=0.4, min_step=0.01, target="max", verbosity=verbosity)
 
         if step <= 4:
             if verbosity >= 4:
@@ -1454,9 +1330,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
             )
         )
         print("======Please check the ROI whether at the reflected position. =======")
-        print(
-            "========If not, modify sam.th or schi to meet the reflected beam. ==========="
-        )
+        print("========If not, modify sam.th or schi to meet the reflected beam. ===========")
 
     # define a theta-2theta scan by rotating sample by sth and accordingly changing roi1 and roi2 at 2theta position
 
@@ -1572,9 +1446,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 header.get("start").get("scan_id") + 1,
             )
         else:
-            th2th_FILENAME = "{}/data/{}.csv".format(
-                header.start["experiment_alias_directory"], output_file
-            )
+            th2th_FILENAME = "{}/data/{}.csv".format(header.start["experiment_alias_directory"], output_file)
 
         # load theta positions in scan
         if scan_type == "theta_scan":
@@ -1585,11 +1457,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 qz_list = qz_list
             else:
                 qz_list = self.qz_list_default
-            theta_list = np.rad2deg(
-                np.arcsin(
-                    qz_list * header.start["calibration_wavelength_A"] / 4 / np.pi
-                )
-            )
+            theta_list = np.rad2deg(np.arcsin(qz_list * header.start["calibration_wavelength_A"] / 4 / np.pi))
 
         pos_flag = 0
         for theta in theta_list:
@@ -1626,10 +1494,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 ##self.measure(exposure_time, extra=extra)
                 # temp_data = self.XR_data_output(slot_pos, exposure_time)
 
-            elif (
-                len(threshold) > 1
-                and temp_data["e_I1"][temp_data.index[-1]] > threshold[-1]
-            ):
+            elif len(threshold) > 1 and temp_data["e_I1"][temp_data.index[-1]] > threshold[-1]:
                 slot_pos = slot_pos + 1
                 print("The absorber is slot {}\n".format(slot_pos))
                 print("The theta is {}\n".format(theta))
@@ -1637,7 +1502,8 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 self.measure(exposure_time, extra=extra)
                 temp_data = self.XR_data_output(slot_pos, exposure_time)
 
-            output_data = output_data.append(temp_data, ignore_index=True)
+            # output_data = output_data.append(temp_data, ignore_index=True)
+            output_data = pds.concat([output_data, temp_data], ignore_index=True)
             # save to file
             output_data.to_csv(th2th_FILENAME)
 
@@ -1833,9 +1699,7 @@ class GIBar(PositionalHolder):
 
         return self.measure_setting
 
-    def alignSamples(
-        self, range=None, step=0, align_step=0, x_offset=0, verbosity=3, **md
-    ):
+    def alignSamples(self, range=None, step=0, align_step=0, x_offset=0, verbosity=3, **md):
         """Iterates through the samples on the holder, aligning each one."""
 
         if step <= 0:
@@ -1889,9 +1753,7 @@ class GIBar(PositionalHolder):
                 sample.gotoOrigin(["x", "y", "th"])
                 sample.gotoOrigin(["x"])
                 sample.xr(x_offset)
-                sample.alignVeryQuick(
-                    intensity=INTENSITY_EXPECTED_025, mode_control=False
-                )
+                sample.alignVeryQuick(intensity=INTENSITY_EXPECTED_025, mode_control=False)
 
         if step <= 8:
             beam.off()
@@ -1903,16 +1765,7 @@ class GIBar(PositionalHolder):
                     print("Sample {} ({})".format(i + 1, sample.name))
                     print(sample.save_state())
 
-    def measureSamples(
-        self,
-        range=None,
-        step=0,
-        angles=None,
-        exposure_time=15,
-        x_offset=0,
-        verbosity=3,
-        **md
-    ):
+    def measureSamples(self, range=None, step=0, angles=None, exposure_time=15, x_offset=0, verbosity=3, **md):
         """Measures all the samples.
 
         If the optional range argument is provided (2-tuple), then only sample
@@ -1930,12 +1783,7 @@ class GIBar(PositionalHolder):
                 sample.gotoOrigin(["x", "y", "th"])
                 sample.gotoOrigin(["x"])
                 sample.xr(x_offset)
-                sample.measureIncidentAngles(
-                    angles=angles,
-                    verbosity=verbosity,
-                    exposure_time=exposure_time,
-                    **md
-                )
+                sample.measureIncidentAngles(angles=angles, verbosity=verbosity, exposure_time=exposure_time, **md)
 
     def printSaveStates(self, range=None, verbosity=3, **md):
         if range is None:
@@ -1948,9 +1796,7 @@ class GIBar(PositionalHolder):
         for i, sample in enumerate(self.getSamples(range=range)):
             sample_id = range_start + i + 1
 
-            save_string += "    {} , # Sample {}\n".format(
-                sample.save_state(), sample_id
-            )
+            save_string += "    {} , # Sample {}\n".format(sample.save_state(), sample_id)
             # save_string += '    {} , # Sample {} ({})\n'.format(sample.save_state(), sample_id, sample.name)
 
         save_string += "    ]\n"
@@ -2001,15 +1847,7 @@ class GIBar(PositionalHolder):
             if sample.detector == "WAXS":
                 sample.do_WAXS()
 
-    def doSamples_Stitch(
-        self,
-        angles=None,
-        exposure_time=None,
-        extra=None,
-        tiling=None,
-        verbosity=3,
-        **md
-    ):
+    def doSamples_Stitch(self, angles=None, exposure_time=None, extra=None, tiling=None, verbosity=3, **md):
         if exposure_time == None:
             exposure_time = self.exposure_time
 
@@ -2021,9 +1859,7 @@ class GIBar(PositionalHolder):
                 else:
                     incident_angles = self.incident_angles
             for angle in angles:
-                self.measureIncidentAngle(
-                    angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md
-                )
+                self.measureIncidentAngle(angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
 
         elif tiling == "ygaps":
             SAXSy_o = SAXSy.user_readback.value
@@ -2049,7 +1885,7 @@ class GIBar(PositionalHolder):
                         extra=extra_current,
                         verbosity=verbosity,
                         stitchback=True,
-                        **md
+                        **md,
                     )
 
             # pos2
@@ -2078,7 +1914,7 @@ class GIBar(PositionalHolder):
                         extra=extra_current,
                         verbosity=verbosity,
                         stitchback=True,
-                        **md
+                        **md,
                     )
 
             if SAXSy.user_readback.value != SAXSy_o:
@@ -2113,7 +1949,7 @@ class GIBar(PositionalHolder):
                         extra=extra_current,
                         verbosity=verbosity,
                         stitchback=True,
-                        **md
+                        **md,
                     )
 
             # pos2
@@ -2135,7 +1971,7 @@ class GIBar(PositionalHolder):
                         extra=extra_current,
                         verbosity=verbosity,
                         stitchback=True,
-                        **md
+                        **md,
                     )
 
             # pos4  #comment out to save time
@@ -2162,7 +1998,7 @@ class GIBar(PositionalHolder):
                         extra=extra_current,
                         verbosity=verbosity,
                         stitchback=True,
-                        **md
+                        **md,
                     )
 
             # pos3
@@ -2189,7 +2025,7 @@ class GIBar(PositionalHolder):
                         extra=extra_current,
                         verbosity=verbosity,
                         stitchback=True,
-                        **md
+                        **md,
                     )
 
             if WAXSx.user_readback.value != WAXSx_o:
@@ -2238,19 +2074,13 @@ class CapillaryHolder(PositionalHolder):
 
         return +1 * self.x_spacing * (slot - 8)
 
-    def measure_Stitch(
-        self, exposure_time=None, extra=None, tiling=None, verbosity=3, **md
-    ):
+    def measure_Stitch(self, exposure_time=None, extra=None, tiling=None, verbosity=3, **md):
         # measure the incident angles first and then change the tiling features.
         if tiling == None:
             for sample in self.getSamples():
                 sample.gotoOrigin()
                 sample.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
         elif tiling == "ygaps":
@@ -2261,11 +2091,7 @@ class CapillaryHolder(PositionalHolder):
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower"
                 sample.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             # pos2
@@ -2289,11 +2115,7 @@ class CapillaryHolder(PositionalHolder):
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper"
                 sample.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             if SAXSy.user_readback.value != SAXSy_o:
@@ -2311,11 +2133,7 @@ class CapillaryHolder(PositionalHolder):
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower_left"
                 sample.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             # pos2
@@ -2338,11 +2156,7 @@ class CapillaryHolder(PositionalHolder):
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper"
                 sample.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             # pos4  #comment out to save time
@@ -2359,11 +2173,7 @@ class CapillaryHolder(PositionalHolder):
                 extra_current = "pos4" if extra is None else "{}_pos4".format(extra)
                 md["detector_position"] = "upper_right"
                 sample.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             # pos3
@@ -2381,11 +2191,7 @@ class CapillaryHolder(PositionalHolder):
                 extra_current = "pos3" if extra is None else "{}_pos3".format(extra)
                 md["detector_position"] = "lower_right"
                 sample.measure_single(
-                    exposure_time=exposure_time,
-                    extra=extra_current,
-                    verbosity=verbosity,
-                    stitchback=True,
-                    **md
+                    exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
             if WAXSx.user_readback.value != WAXSx_o:
@@ -2398,16 +2204,7 @@ class CapillaryHolder(PositionalHolder):
             if SAXSy.user_readback.value != SAXSy_o:
                 SAXSy.move(SAXSy_o)
 
-    def measureSamples(
-        self,
-        range=None,
-        step=0,
-        angles=None,
-        exposure_time=15,
-        x_offset=0,
-        verbosity=3,
-        **md
-    ):
+    def measureSamples(self, range=None, step=0, angles=None, exposure_time=15, x_offset=0, verbosity=3, **md):
         """Measures all the samples.
 
         If the optional range argument is provided (2-tuple), then only sample
@@ -2425,9 +2222,7 @@ class CapillaryHolder(PositionalHolder):
                 sample.gotoOrigin(["x", "y"])
                 sample.gotoOrigin(["x"])
                 sample.xr(x_offset)
-                sample.measureIncident(
-                    exposure_time=exposure_time, verbosity=verbosity, **md
-                )
+                sample.measureIncident(exposure_time=exposure_time, verbosity=verbosity, **md)
 
 
 class CapillaryHolderThreeRows(CapillaryHolder):
@@ -2472,9 +2267,7 @@ class CapillaryHolderThreeRows(CapillaryHolder):
     def slot(self, sample_number):
         """Moves to the selected slot in the holder."""
 
-        getattr(self, self._positional_axis[0] + "abs")(
-            self.get_slot_position(sample_number)
-        )
+        getattr(self, self._positional_axis[0] + "abs")(self.get_slot_position(sample_number))
 
     def get_slot_position(self, slot):
         """Return the motor position for the requested slot number."""
@@ -2602,9 +2395,7 @@ class GIBar_long_thermal(GIBar):
 
         # locate the sample for alignning the holder
         for sample in self.getSamples():
-            if abs(sample.position - hol_xcenter) < abs(
-                cali_sample.position - hol_xcenter
-            ):
+            if abs(sample.position - hol_xcenter) < abs(cali_sample.position - hol_xcenter):
                 cali_sample = sample
             print("The current calibraion sample is {}".format(cali_sample.name))
 
@@ -2689,10 +2480,7 @@ class GIBar_long_thermal(GIBar):
                     incident_angles = sample.incident_angles
 
                 sample.measureIncidentAngles_Stitch(
-                    incident_angles,
-                    exposure_time=sample.SWAXS_time,
-                    tiling=tiling,
-                    **md
+                    incident_angles, exposure_time=sample.SWAXS_time, tiling=tiling, **md
                 )
 
         elif det == "BOTH":
@@ -2740,7 +2528,7 @@ class GIBar_long_thermal(GIBar):
         range=None,
         verbosity=3,
         poling_period=2.0,
-        **md
+        **md,
     ):
         # cms.modeMeasurement()
         if temperature_list == None:
@@ -2753,19 +2541,14 @@ class GIBar_long_thermal(GIBar):
             # Wait until we reach the temperature
             # while abs(self.temperature(verbosity=0) - temperature)>temperature_tolerance:
             while (
-                abs(
-                    self.temperature(temperature_probe=temperature_probe, verbosity=0)
-                    - temperature
-                )
+                abs(self.temperature(temperature_probe=temperature_probe, verbosity=0) - temperature)
                 > temperature_tolerance
             ):
                 if verbosity >= 3:
                     print(
                         "  setpoint = {:.3f}°C, Temperature = {:.3f}°C          \r".format(
                             self.temperature_setpoint() - 273.15,
-                            self.temperature(
-                                temperature_probe=temperature_probe, verbosity=0
-                            ),
+                            self.temperature(temperature_probe=temperature_probe, verbosity=0),
                         ),
                         end="",
                     )
@@ -2850,9 +2633,7 @@ class WellPlateHolder(PositionalHolder):
     def slot(self, sample_number):
         """Moves to the selected slot in the holder."""
 
-        getattr(self, self._positional_axis[0] + "abs")(
-            self.get_slot_position(sample_number)
-        )
+        getattr(self, self._positional_axis[0] + "abs")(self.get_slot_position(sample_number))
 
     def get_slot_position(self, slot):
         """Return the motor position for the requested slot number."""
@@ -2905,10 +2686,7 @@ class WellPlateHolder(PositionalHolder):
 
         for sample_number, sample in self._samples.items():
             pos = getattr(sample, self._positional_axis + "pos")(verbosity=0)
-            print(
-                "%s: %s (%s = %.3f)"
-                % (str(sample_number), sample.name, self._positional_axis, pos)
-            )
+            print("%s: %s (%s = %.3f)" % (str(sample_number), sample.name, self._positional_axis, pos))
 
     def listSamples(self):
         """Print a list of the current samples associated with this holder/
@@ -3012,9 +2790,7 @@ class PaloniThermalStage(CapillaryHolder):
     def slot(self, sample_number):
         """Moves to the selected slot in the holder."""
 
-        getattr(self, self._positional_axis[0] + "abs")(
-            self.get_slot_position(sample_number)
-        )
+        getattr(self, self._positional_axis[0] + "abs")(self.get_slot_position(sample_number))
 
     def get_slot_position(self, slot):
         """Return the motor position for the requested slot number."""
@@ -3057,9 +2833,7 @@ class DSCStage(CapillaryHolder):
     def slot(self, sample_number):
         """Moves to the selected slot in the holder."""
 
-        getattr(self, self._positional_axis[0] + "abs")(
-            self.get_slot_position(sample_number)
-        )
+        getattr(self, self._positional_axis[0] + "abs")(self.get_slot_position(sample_number))
 
     def get_slot_position(self, slot):
         """Return the motor position for the requested slot number."""
@@ -3102,9 +2876,7 @@ class CapillaryHolderThermal(CapillaryHolder):
     def slot(self, sample_number):
         """Moves to the selected slot in the holder."""
 
-        getattr(self, self._positional_axis[0] + "abs")(
-            self.get_slot_position(sample_number)
-        )
+        getattr(self, self._positional_axis[0] + "abs")(self.get_slot_position(sample_number))
 
     def get_slot_position(self, slot):
         """Return the motor position for the requested slot number."""
@@ -3203,9 +2975,7 @@ class InstecStage60(CapillaryHolder):
         super().__init__(name=name, base=base, **kwargs)
 
         self._axes["y"].origin = 13.4  # smy position for slot 4 of 7-capillary cassette
-        self._axes[
-            "x"
-        ].origin = -15.6  # smx position for slot 4 of 7-capillary cassette
+        self._axes["x"].origin = -15.6  # smx position for slot 4 of 7-capillary cassette
 
         self.y_pos_default = []
 
@@ -3229,32 +2999,20 @@ class InstecStage60(CapillaryHolder):
         temp_update_time=5,
         exposure_time=0,
     ):
-        if (
-            temperature_start == None
-            or temperature_start < 0.0
-            or temperature_start >= 250
-        ):
+        if temperature_start == None or temperature_start < 0.0 or temperature_start >= 250:
             print("temperature_start must be set between 0 and 250 degC.\n")
             return 0
 
-        if (
-            temperature_final == None
-            or temperature_final < 0.0
-            or temperature_final >= 250
-        ):
+        if temperature_final == None or temperature_final < 0.0 or temperature_final >= 250:
             print("temperature_final must be set between 0 and 250 degC.\n")
             return 0
 
         temperature_step = (temperature_final - temperature_start) / abs(num_intervals)
 
         if temperature_final < temperature_start:
-            temperature_series = np.arange(
-                temperature_start, temperature_final - 0.0001, temperature_step
-            )
+            temperature_series = np.arange(temperature_start, temperature_final - 0.0001, temperature_step)
         else:
-            temperature_series = np.arange(
-                temperature_start, temperature_final + 0.0001, temperature_step
-            )
+            temperature_series = np.arange(temperature_start, temperature_final + 0.0001, temperature_step)
 
         tscan_zero_time = time.time()
         self.tscan_seconds = []
@@ -3276,9 +3034,7 @@ class InstecStage60(CapillaryHolder):
             for t_wait in np.arange(0, wait_time, temp_update_time):
                 time.sleep(temp_update_time)
                 current_time = time.time() - tscan_zero_time
-                current_temperature = self.temperature(
-                    temperature_probe="C", output_channel="3", verbosity=2
-                )
+                current_temperature = self.temperature(temperature_probe="C", output_channel="3", verbosity=2)
                 self.tscan_seconds.append(current_time)
                 self.tscan_degC.append(current_temperature)
                 print("{:.3f} {:.3f}".format(current_time, current_temperature))
