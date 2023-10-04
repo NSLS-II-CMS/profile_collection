@@ -868,9 +868,20 @@ class Axis(object):
 
         bec.enable_table()
 
-
-    def search_plan(self, motor=smy, step_size=1.0, min_step=0.05, intensity=None, target=0.5, detector=None, detector_suffix=None, polarity=+1, fastsearch=False, verbosity=3 ):
-        '''Moves this axis, searching for a target value.
+    def search_plan(
+        self,
+        motor=smy,
+        step_size=1.0,
+        min_step=0.05,
+        intensity=None,
+        target=0.5,
+        detector=None,
+        detector_suffix=None,
+        polarity=+1,
+        fastsearch=False,
+        verbosity=3,
+    ):
+        """Moves this axis, searching for a target value.
 
         Parameters
         ----------
@@ -887,76 +898,76 @@ class Axis(object):
             The beamline detector (and suffix, such as '_stats4_total') to trigger to measure intensity
         polarity : +1 or -1
             Positive motion assumes, e.g. a step-height 'up' (as the axis goes more positive)
-        '''
+        """
 
         @stage_decorator([detector])
         def inner_search():
-
             if not get_beamline().beam.is_on():
-                print('WARNING: Experimental shutter is not open.')
-
+                print("WARNING: Experimental shutter is not open.")
 
             if intensity is None:
-                intensity = RE.md['beam_intensity_expected']
-
+                intensity = RE.md["beam_intensity_expected"]
 
             if detector is None:
-                #detector = gs.DETS[0]
+                # detector = gs.DETS[0]
                 detector = get_beamline().detector[0]
             if detector_suffix is None:
-                #value_name = gs.TABLE_COLS[0]
+                # value_name = gs.TABLE_COLS[0]
                 value_name = get_beamline().TABLE_COLS[0]
             else:
                 value_name = detector.name + detector_suffix
 
             bec.disable_table()
 
-
             # Check current value
             yield from bps.trigger_and_read([detector])
             # RE(count([detector]))
-            value = detector.read()[value_name]['value']
+            value = detector.read()[value_name]["value"]
 
-            if fastsearch==True:
+            if fastsearch == True:
                 intenisty_threshold = 10
-                if abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20 and detector.stats2.max_value.get() > intenisty_threshold:
-
-                    #continue the fast alignment
-                    print('The reflective beam is found! Continue the fast alignment')
+                if (
+                    abs(detector.stats2.max_xy.get().y - detector.stats2.centroid.get().y) < 20
+                    and detector.stats2.max_value.get() > intenisty_threshold
+                ):
+                    # continue the fast alignment
+                    print("The reflective beam is found! Continue the fast alignment")
                     return
 
-            if target == 'max':
-
-                if verbosity>=5:
+            if target == "max":
+                if verbosity >= 5:
                     print("Performing search on axis '{}' target is 'max'".format(self.name))
 
                 max_value = value
                 max_position = self.get_position(verbosity=0)
 
+                direction = +1 * polarity
 
-                direction = +1*polarity
-
-                while step_size>=min_step:
-                    if verbosity>=4:
+                while step_size >= min_step:
+                    if verbosity >= 4:
                         print("        move {} by {} × {}".format(self.name, direction, step_size))
 
                     pos = yield from bps.rd(motor)
-                    yield from bps.mv(motor, pos + direction*step_size)
+                    yield from bps.mv(motor, pos + direction * step_size)
                     # self.move_relative(move_amount=direction*step_size, verbosity=verbosity-2)
 
                     prev_value = value
                     yield from bps.trigger_and_read([detector])
                     # RE(count([detector]))
 
-                    value = detector.read()[value_name]['value']
-                    if verbosity>=3:
-                        print("      {} = {:.3f} {}; value : {}".format(self.name, self.get_position(verbosity=0), self.units, value))
+                    value = detector.read()[value_name]["value"]
+                    if verbosity >= 3:
+                        print(
+                            "      {} = {:.3f} {}; value : {}".format(
+                                self.name, self.get_position(verbosity=0), self.units, value
+                            )
+                        )
 
-                    if value>max_value:
+                    if value > max_value:
                         max_value = value
                         # max_position = self.get_position(verbosity=0)
 
-                    if value>prev_value:
+                    if value > prev_value:
                         # Keep going in this direction...
                         pass
                     else:
@@ -964,29 +975,31 @@ class Axis(object):
                         direction *= -1
                         step_size *= 0.5
 
-
-            elif target == 'min':
-
-                if verbosity>=5:
+            elif target == "min":
+                if verbosity >= 5:
                     print("Performing search on axis '{}' target is 'min'".format(self.name))
 
-                direction = +1*polarity
+                direction = +1 * polarity
 
-                while step_size>=min_step:
-                    if verbosity>=4:
+                while step_size >= min_step:
+                    if verbosity >= 4:
                         print("        move {} by {} × {}".format(self.name, direction, step_size))
 
                     pos = yield from bps.rd(motor)
-                    yield from bps.mv(motor, pos + direction*step_size)
+                    yield from bps.mv(motor, pos + direction * step_size)
                     # self.move_relative(move_amount=direction*step_size, verbosity=verbosity-2)
 
                     prev_value = value
                     RE(count([detector]))
-                    value = detector.read()[value_name]['value']
-                    if verbosity>=3:
-                        print("      {} = {:.3f} {}; value : {}".format(self.name, self.get_position(verbosity=0), self.units, value))
+                    value = detector.read()[value_name]["value"]
+                    if verbosity >= 3:
+                        print(
+                            "      {} = {:.3f} {}; value : {}".format(
+                                self.name, self.get_position(verbosity=0), self.units, value
+                            )
+                        )
 
-                    if value<prev_value:
+                    if value < prev_value:
                         # Keep going in this direction...
                         pass
                     else:
@@ -995,44 +1008,53 @@ class Axis(object):
                         step_size *= 0.5
 
             else:
-
                 target_rel = target
-                target = target_rel*intensity
+                target = target_rel * intensity
 
-                if verbosity>=5:
-                    print("Performing search on axis '{}' target {} × {} = {}".format(self.name, target_rel, intensity, target))
-                if verbosity>=4:
-                    print("      value : {} ({:.1f}%)".format(value, 100.0*value/intensity))
-
+                if verbosity >= 5:
+                    print(
+                        "Performing search on axis '{}' target {} × {} = {}".format(
+                            self.name, target_rel, intensity, target
+                        )
+                    )
+                if verbosity >= 4:
+                    print("      value : {} ({:.1f}%)".format(value, 100.0 * value / intensity))
 
                 # Determine initial motion direction
-                if value>target:
-                    direction = -1*polarity
+                if value > target:
+                    direction = -1 * polarity
                 else:
-                    direction = +1*polarity
+                    direction = +1 * polarity
 
-                while step_size>=min_step:
-
-                    if verbosity>=4:
+                while step_size >= min_step:
+                    if verbosity >= 4:
                         print("        move {} by {} × {}".format(self.name, direction, step_size))
 
                     pos = yield from bps.rd(motor)
-                    yield from bps.mv(motor, pos + direction*step_size)
+                    yield from bps.mv(motor, pos + direction * step_size)
                     # self.move_relative(move_amount=direction*step_size, verbosity=verbosity-2)
 
                     yield from bps.trigger_and_read([detector])
                     # RE(count([detector]))
-                    value = detector.read()[value_name]['value']
-                    if verbosity>=3:
-                        print("      {} = {:.3f} {}; value : {} ({:.1f}%)".format(self.name, self.get_position(verbosity=0), self.units, value, 100.0*value/intensity))
+                    value = detector.read()[value_name]["value"]
+                    if verbosity >= 3:
+                        print(
+                            "      {} = {:.3f} {}; value : {} ({:.1f}%)".format(
+                                self.name,
+                                self.get_position(verbosity=0),
+                                self.units,
+                                value,
+                                100.0 * value / intensity,
+                            )
+                        )
 
                     # Determine direction
-                    if value>target:
-                        new_direction = -1.0*polarity
+                    if value > target:
+                        new_direction = -1.0 * polarity
                     else:
-                        new_direction = +1.0*polarity
+                        new_direction = +1.0 * polarity
 
-                    if abs(direction-new_direction)<1e-4:
+                    if abs(direction - new_direction) < 1e-4:
                         # Same direction as we've been going...
                         # ...keep moving this way
                         pass

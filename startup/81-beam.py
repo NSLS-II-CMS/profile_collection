@@ -2252,35 +2252,33 @@ class CMS_Beamline(Beamline):
             time.sleep(0.5)
             self.beam.setTransmission(1e-8)
 
-        #mov(bsx, -10.95)
+        # mov(bsx, -10.95)
         # bsx.move(self.bsx_pos+5)
-        bsx.move(self.bsx_pos+3)
+        bsx.move(self.bsx_pos + 3)
 
-        #detselect(pilatus300, suffix='_stats4_total')
-        #caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime', 0.5)
-        #caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquirePeriod', 0.6)
+        # detselect(pilatus300, suffix='_stats4_total')
+        # caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime', 0.5)
+        # caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquirePeriod', 0.6)
 
-        detselect(pilatus_name, suffix='_stats4_total')
+        detselect(pilatus_name, suffix="_stats4_total")
         RE(pilatus_name.setExposureTime(0.5))
-        #Comment out by RL, 071617
-        #caput('XF:11BMB-ES{}:cam1:AcquireTime'.format(pilatus_Epicsname), 0.5)
-        #caput('XF:11BMB-ES{}:cam1:AcquirePeriod'.format(pilatus_Epicsname), 0.6)
-        #caput('XF:11BMB-ES{Det:PIL2M}:cam1:AcquirePeriod', 0.6)
+        # Comment out by RL, 071617
+        # caput('XF:11BMB-ES{}:cam1:AcquireTime'.format(pilatus_Epicsname), 0.5)
+        # caput('XF:11BMB-ES{}:cam1:AcquirePeriod'.format(pilatus_Epicsname), 0.6)
+        # caput('XF:11BMB-ES{Det:PIL2M}:cam1:AcquirePeriod', 0.6)
 
-        #TODO: Update ROI based on current SAXSx, SAXSy and the md in cms ob'XF:11BMB-VA{Chm:Smpl-VV:1_Soft}'ject
+        # TODO: Update ROI based on current SAXSx, SAXSy and the md in cms ob'XF:11BMB-VA{Chm:Smpl-VV:1_Soft}'ject
 
-        self.current_mode = 'alignment'
+        self.current_mode = "alignment"
 
-        #self.beam.bim6.reading()
-
+        # self.beam.bim6.reading()
 
     def modeMeasurement(self, verbosity=3):
-
-        self.current_mode = 'undefined'
+        self.current_mode = "undefined"
 
         self.beam.off()
 
-        #mov(bsx, -15.95)
+        # mov(bsx, -15.95)
         bsx.move(self.bsx_pos)
 
         # mov(bsx, -10.95)
