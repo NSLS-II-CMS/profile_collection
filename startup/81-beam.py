@@ -1106,7 +1106,7 @@ class CMSBeam(object):
         monochromator angle.
         """
 
-        # Bragg_deg_initial = caget(self.mono_bragg_pv)
+        Bragg_deg_initial = caget(self.mono_bragg_pv)
         Bragg_deg = mono_bragg.position
         wavelength_m = wavelength_A * 1.0e-10
         Bragg_rad = np.arcsin(wavelength_A / (2.0 * self.dmm_dsp))

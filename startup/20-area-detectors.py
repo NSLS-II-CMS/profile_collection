@@ -50,9 +50,9 @@ elif beamline_stage == "testing":
     Pilatus800_on = True
     Pilatus800_2_on = False
 
-# Pilatus800_on = True
-# # Pilatus800_2_on = False
-# Pilatus800_2_on = True
+#Pilatus800_on = True
+#Pilatus800_2_on = False
+#Pilatus800_2_on = True
 
 
 class TIFFPluginWithFileStore(TIFFPlugin, FileStoreTIFFIterativeWrite):
