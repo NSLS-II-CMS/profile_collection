@@ -15,7 +15,8 @@ from bluesky.callbacks.broker import verify_files_saved
 # Added this variable temporarily to bypass some code that doesn't run without the beamline.
 # This can be set when starting bsui like this: `BS_MODE=test bsui`
 
-testing = os.environ.get("BS_MODE", False) == "test"
+testing = os.environ.get("BS_TESTING", False) == "True"
+PTA_MODE = os.environ.get("BS_PTA", False) == "True"
 
 if testing:
     nslsii.configure_base(get_ipython().user_ns, "temp", publish_documents_with_kafka=False)

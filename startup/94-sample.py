@@ -1806,7 +1806,7 @@ class Sample_Generic(CoordinateSystem):
         get_beamline().beam.off()
 
     @bpp.finalize_decorator(final_plan=shutter_off)
-    def expose(self, exposure_time=None, extra=None, handlefile=True, verbosity=3, poling_period=0.1, **md):
+    def expose(self, exposure_time=None, extra=None, handlefile=True, verbosity=3, poling_period=0.1, pta_mode=PTA_MODE,**md):
         """Internal function that is called to actually trigger a measurement."""
         """TODO: **md doesnot work in RE(count). """
         if "measure_type" not in md:
@@ -1837,8 +1837,10 @@ class Sample_Generic(CoordinateSystem):
 
         # uids = RE(count(get_beamline().detector, 1), **md)
         # uids = yield from count(get_beamline().detector + [core_laser, laser, laserx, lasery, smy, smx, sth, schi], md=md)
-        uids = yield from count(get_beamline().detector + [laserx, lasery, smy, smx, sth, schi], md=md)
-        # yield from (count(get_beamline().detector), **md)
+        if pta_mode:
+            uids = yield from count(get_beamline().detector + [laserx, lasery, smy, smx, sth, schi], md=md)
+        else:
+            uids = yield from count(get_beamline().detector, md=md)
 
         # get_beamline().beam.off()
         # print('shutter is off')
