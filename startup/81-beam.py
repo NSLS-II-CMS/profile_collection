@@ -1443,22 +1443,24 @@ class CMSBeam(object):
 
     def is_on(self, verbosity=3):
         """Returns 1 if the beam is on (experimental shutter open)."""
-        if verbosity >= 3:
-            shutter_state(verbosity=verbosity)
-        return shutter_state(verbosity=0)
+        verbosity = 0 if verbosity < 3 else verbosity
+        result = yield from shutter_state(verbosity=verbosity)
+        return result
 
     def on(self, verbosity=3, wait_time=0.1, poling_period=0.10, retry_time=2.0, max_retries=5):
         """Turn on the beam (open experimental shutter).
         update: 090517, RL: change the wait_time from 0.005 to 0.1, change sleep to time.sleep"""
 
-        if self.is_on(verbosity=0):
+        _is_on = yield from self.is_on(verbosity=0)
+        if _is_on:
             if verbosity >= 4:
                 print("Beam on (shutter already open.)")
 
         else:
             yield from shutter_on(verbosity=0)
             if verbosity >= 4:
-                if self.is_on(verbosity=0):
+                _is_on = yield from self.is_on(verbosity=0)
+                if _is_on:
                     print("Beam on (shutter opened).")
                 else:
                     print("Beam off (shutter didn't open).")
@@ -1484,11 +1486,13 @@ class CMSBeam(object):
         """Turn off the beam (close experimental shutter).
         update: 090517, RL: change the wait_time from 0.005 to 0.1, change sleep to time.sleep"""
 
-        if self.is_on(verbosity=0):
+        _is_on = yield from self.is_on(verbosity=0)
+        if _is_on:
             yield from shutter_off(verbosity=0)
 
+            _is_on = yield from self.is_on(verbosity=0)
             if verbosity >= 4:
-                if self.is_on(verbosity=0):
+                if _is_on:
                     print("Beam on (shutter didn't close).")
                 else:
                     print("Beam off (shutter closed).")

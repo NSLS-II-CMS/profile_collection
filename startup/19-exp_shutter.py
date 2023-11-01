@@ -44,4 +44,6 @@ def shutter_state(verbosity=3):
     result = yield from bps.read(two_blade_shutter)
     if result is None:
         return 1
+    if verbosity > 3:
+        print(f"{result}")
     return int(all(sig["value"] == "OPEN" for sig in result.values()))
