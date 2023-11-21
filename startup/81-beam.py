@@ -2280,10 +2280,10 @@ class CMS_Beamline(Beamline):
     def modeMeasurement(self, verbosity=3):
         self.current_mode = "undefined"
 
-        self.beam.off()
+        yield from self.beam.off()
 
         # mov(bsx, -15.95)
-        bsx.move(self.bsx_pos)
+        yield from bps.mv(bsx, self.bsx_pos)
 
         # mov(bsx, -10.95)
         yield from bps.mv(bsx, self.bsx_pos + 5)
@@ -2301,7 +2301,7 @@ class CMS_Beamline(Beamline):
 
         # TODO: Update ROI based on current SAXSx, SAXSy and the md in cms ob'XF:11BMB-VA{Chm:Smpl-VV:1_Soft}'ject
 
-        self.current_mode = "alignment"
+        self.current_mode = "measurement"
 
         # self.beam.bim6.reading()
 
@@ -2371,10 +2371,10 @@ class CMS_Beamline(Beamline):
     def modeMeasurement(self, verbosity=3):
         self.current_mode = "undefined"
 
-        self.beam.off()
+        yield from self.beam.off()
 
         # mov(bsx, -15.95)
-        bsx.move(self.bsx_pos)
+        yield from bps.mv(bsx, self.bsx_pos)
 
         if abs(bsx.user_readback.value - self.bsx_pos) > 0.1:
             print("WARNING: Beamstop did not return to correct position!")
@@ -3372,12 +3372,9 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         # self.beam.bim6.reading()
 
     def modeMeasurement(self, verbosity=3):
-        if RE.state != "idle":
-            RE.abort()
-
         self.current_mode = "undefined"
 
-        self.beam.off()
+        yield from self.beam.off()
 
         # pilatus_name = pilatus2M
         # pilatus_Epicsname = '{Det:PIL2M}'
@@ -3396,7 +3393,7 @@ class CMS_Beamline_GISAXS(CMS_Beamline):
         # mov(bsx, -16.74) # 08/02/17, TOMO GISAXS, 5m, LRichter Beam time
         # mov(bsx, self.bsx_pos)
 
-        bsx.move(self.bsx_pos)
+        yield from bps.mv(bsx, self.bsx_pos)
 
         # if abs(bsx.user_readback.value - -16.74)>0.1:
         if abs(bsx.user_readback.value - self.bsx_pos) > 0.1:
@@ -4484,8 +4481,8 @@ class CMS_Beamline_XR(CMS_Beamline_GISAXS):
 
 
 # cms = CMS_Beamline()
-cms = CMS_Beamline_XR()
-# cms = CMS_Beamline_GISAXS()
+# cms = CMS_Beamline_XR()
+cms = CMS_Beamline_GISAXS()
 
 # cms_ventSample = cms.vent_sample()
 
