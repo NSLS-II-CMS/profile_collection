@@ -2069,7 +2069,7 @@ class Sample_Generic(CoordinateSystem):
 
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower_left"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2083,7 +2083,7 @@ class Sample_Generic(CoordinateSystem):
                 SAXSy.move(SAXSy.user_readback.value + 5.16)
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper_left"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2096,7 +2096,7 @@ class Sample_Generic(CoordinateSystem):
                 SAXSx.move(SAXSx.user_readback.value + 5.16)
                 extra_current = "pos4" if extra is None else "{}_pos4".format(extra)
                 md["detector_position"] = "upper_right"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2108,7 +2108,7 @@ class Sample_Generic(CoordinateSystem):
                 SAXSy.move(SAXSy.user_readback.value + -5.16)
                 extra_current = "pos3" if extra is None else "{}_pos3".format(extra)
                 md["detector_position"] = "lower_right"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2129,7 +2129,7 @@ class Sample_Generic(CoordinateSystem):
 
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower_left"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2143,7 +2143,7 @@ class Sample_Generic(CoordinateSystem):
                 WAXSy.move(WAXSy.user_readback.value + 5.16)
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper_left"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2155,7 +2155,7 @@ class Sample_Generic(CoordinateSystem):
                 WAXSx.move(WAXSx.user_readback.value - 5.16)
                 extra_current = "pos4" if extra is None else "{}_pos4".format(extra)
                 md["detector_position"] = "upper_right"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2167,7 +2167,7 @@ class Sample_Generic(CoordinateSystem):
                 WAXSy.move(WAXSy.user_readback.value + -5.16)
                 extra_current = "pos3" if extra is None else "{}_pos3".format(extra)
                 md["detector_position"] = "lower_right"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2190,7 +2190,7 @@ class Sample_Generic(CoordinateSystem):
 
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2205,7 +2205,7 @@ class Sample_Generic(CoordinateSystem):
                 md["detector_position"] = "upper"
                 SAXSy.move(SAXSy.user_readback.value + 5.16)
                 time.sleep(5)
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2226,7 +2226,7 @@ class Sample_Generic(CoordinateSystem):
 
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2238,7 +2238,7 @@ class Sample_Generic(CoordinateSystem):
                 MAXSy.move(MAXSy.user_readback.value + 5.16)
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2257,7 +2257,7 @@ class Sample_Generic(CoordinateSystem):
 
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2269,7 +2269,7 @@ class Sample_Generic(CoordinateSystem):
                 WAXSy.move(WAXSy.user_readback.value + 5.16)
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time,
                     extra=extra_current,
                     measure_type=measure_type,
@@ -2287,7 +2287,7 @@ class Sample_Generic(CoordinateSystem):
 
         else:
             # Just do a normal measurement
-            self.measure_single(
+            yield from self.measure_single(
                 exposure_time=exposure_time, extra=extra, measure_type=measure_type, verbosity=verbosity, **md
             )
 
@@ -2325,7 +2325,7 @@ class Sample_Generic(CoordinateSystem):
 
             extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
             md["detector_position"] = "lower_left"
-            self.measure_single(
+            yield from self.measure_single(
                 exposure_time=exposure_time,
                 extra=extra_current,
                 measure_type=measure_type,
@@ -2344,7 +2344,7 @@ class Sample_Generic(CoordinateSystem):
 
             extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
             md["detector_position"] = "upper_left"
-            self.measure_single(
+            yield from self.measure_single(
                 exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
             )
 
@@ -2357,7 +2357,7 @@ class Sample_Generic(CoordinateSystem):
                 WAXSy.move(WAXSy_o + 5.16)
             extra_current = "pos4" if extra is None else "{}_pos4".format(extra)
             md["detector_position"] = "upper_right"
-            self.measure_single(
+            yield from self.measure_single(
                 exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
             )
 
@@ -2371,7 +2371,7 @@ class Sample_Generic(CoordinateSystem):
 
             extra_current = "pos3" if extra is None else "{}_pos3".format(extra)
             md["detector_position"] = "lower_right"
-            self.measure_single(
+            yield from self.measure_single(
                 exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
             )
 
@@ -2394,7 +2394,7 @@ class Sample_Generic(CoordinateSystem):
 
             extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
             md["detector_position"] = "lower"
-            self.measure_single(
+            yield from self.measure_single(
                 exposure_time=exposure_time,
                 extra=extra_current,
                 measure_type=measure_type,
@@ -2413,7 +2413,7 @@ class Sample_Generic(CoordinateSystem):
             # extra x movement is needed for pilatus2M.
             extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
             md["detector_position"] = "upper"
-            self.measure_single(
+            yield from self.measure_single(
                 exposure_time=exposure_time,
                 extra=extra_current,
                 measure_type=measure_type,
@@ -2751,7 +2751,7 @@ class Sample_Generic(CoordinateSystem):
             self.md["spot_number"] = 1
 
         for spot_num in range(num_spots):
-            self.measure(exposure_time=exposure_time, extra=extra, measure_type=measure_type, tiling=tiling, **md)
+            yield from self.measure(exposure_time=exposure_time, extra=extra, measure_type=measure_type, tiling=tiling, **md)
 
             getattr(self, axis + "r")(translation_amount)
             self.md["spot_number"] += 1
@@ -2785,7 +2785,7 @@ class Sample_Generic(CoordinateSystem):
                 )
 
             md["measure_series_current_frame"] = i + 1
-            self.measure(
+            yield from self.measure(
                 exposure_time=exposure_time,
                 extra=extra,
                 measure_type=measure_type,
@@ -2850,7 +2850,7 @@ class Sample_Generic(CoordinateSystem):
 
             md["measure_series_current_frame"] = i + 1
             print("Angles in measure include: {}".format(sam.incident_angles_default))
-            self.measureIncidentAngles(exposure_time=exposure_time, extra=extra, **md)
+            yield from self.measureIncidentAngles(exposure_time=exposure_time, extra=extra, **md)
             if wait_time is not None:
                 time.sleep(wait_time)
 
@@ -2897,7 +2897,7 @@ class Sample_Generic(CoordinateSystem):
         #    self.naming_scheme = self.naming_scheme_hold.copy()
         #    self.naming_scheme.insert(-1, 'temperature')
 
-        self.measure(
+        yield from self.measure(
             exposure_time=exposure_time,
             extra=extra,
             measure_type=measure_type,
@@ -2924,7 +2924,7 @@ class Sample_Generic(CoordinateSystem):
         **md,
     ):
         for temperature in temperatures:
-            self.measureTemperature(
+            yield from self.measureTemperature(
                 temperature,
                 exposure_time=exposure_time,
                 wait_time=wait_time,
@@ -2961,7 +2961,7 @@ class Sample_Generic(CoordinateSystem):
         if step <= 10:
             if verbosity >= 5:
                 print("    step 10: measuring")
-            self.measure(**md)
+            yield from self.measure(**md)
 
     def scan_measure(
         self,
@@ -3436,7 +3436,7 @@ class Sample_Generic(CoordinateSystem):
         beam.setTransmission(1)
         cms.setDirectBeamROI(size=[10, 10])
 
-        self.measure(exposure_time)
+        yield from self.measure(exposure_time)
 
         temp_data = self.transmission_data_output(4)
 

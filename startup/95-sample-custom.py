@@ -50,7 +50,7 @@ class SampleTSAXS_Generic(Sample_Generic):
             bsx.move(bsx.position + 6)
             beam.setTransmission(1)
 
-        self.measure(exposure_time)
+        yield from self.measure(exposure_time)
 
         temp_data = self.transmission_data_output(beam.absorber()[0])
 
@@ -131,14 +131,14 @@ class SampleGISAXS_Generic(Sample_Generic):
         self.thabs(angle)
         while sth.moving == True:
             time.sleep(0.1)
-        self.measure(exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
+        yield from self.measure(exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
 
     def measureIncidentAngles(self, angles=None, exposure_time=None, extra=None, tiling=None, **md):
         # measure the incident angles first and then change the tiling features.
         if angles is None:
             angles = self.incident_angles_default
         for angle in angles:
-            self.measureIncidentAngle(angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
+            yield from self.measureIncidentAngle(angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
 
     def measureIncidentAngles_Stitch(
         self, angles=None, exposure_time=None, extra=None, tiling=None, verbosity=3, **md
@@ -148,7 +148,7 @@ class SampleGISAXS_Generic(Sample_Generic):
             if angles is None:
                 angles = self.incident_angles_default
             for angle in angles:
-                self.measureIncidentAngle(angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
+                yield from self.measureIncidentAngle(angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
 
         elif tiling == "ygaps":
             if angles is None:
@@ -161,7 +161,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                 time.sleep(0.5)
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -186,7 +186,7 @@ class SampleGISAXS_Generic(Sample_Generic):
 
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -206,7 +206,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                 time.sleep(0.5)
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower_left"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -229,7 +229,7 @@ class SampleGISAXS_Generic(Sample_Generic):
 
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -246,7 +246,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                     WAXSy.move(WAXSy_o + 5.16)
                 extra_current = "pos4" if extra is None else "{}_pos4".format(extra)
                 md["detector_position"] = "upper_right"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -264,7 +264,7 @@ class SampleGISAXS_Generic(Sample_Generic):
 
                 extra_current = "pos3" if extra is None else "{}_pos3".format(extra)
                 md["detector_position"] = "lower_right"
-                self.measure_single(
+                yield from self.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -295,7 +295,7 @@ class SampleGISAXS_Generic(Sample_Generic):
             bsx.move(bsx.position + 6)
             beam.setTransmission(1)
 
-        self.measure(exposure_time)
+        yield from self.measure(exposure_time)
 
         temp_data = self.transmission_data_output(beam.absorber()[0])
 
@@ -669,7 +669,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                     RE(detector.setExposureTime(self.md["exposure_time"]))
                 else:
                     detector.setExposureTime(self.md["exposure_time"])
-            self.measureIncidentAngles(self.incident_angles_default, **md)
+            yield from self.measureIncidentAngles(self.incident_angles_default, **md)
             self.thabs(0.0)
 
     def backup_do_SAXS(self, step=0, align_step=0, measure_setting=None, **md):
@@ -702,7 +702,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                 incident_angles = self.incident_angles_default
             else:
                 incident_angles = self.incident_angles
-            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md)
+            yield from self.measureIncidentAngles_Stitch(incident_angles, exposure_time=self.SAXS_time, tiling="ygaps", **md)
 
     def do_SAXS(self, step=0, align_step=0, measure_setting=None, **md):
         if step <= 1:
@@ -741,7 +741,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                     exposure_time = self.measure_setting["exposure_time"]
             tiling = self.measure_setting["tiling"]
 
-            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=exposure_time, tiling=tiling, **md)
+            yield from self.measureIncidentAngles_Stitch(incident_angles, exposure_time=exposure_time, tiling=tiling, **md)
 
     def do_WAXS_only(self, step=0, align_step=0, **md):
         if step < 5:
@@ -763,7 +763,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                     exposure_time = self.measure_setting["exposure_time"]
             tiling = self.measure_setting["tiling"]
             waxs_on()
-            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=exposure_time, tiling=tiling, **md)
+            yield from self.measureIncidentAngles_Stitch(incident_angles, exposure_time=exposure_time, tiling=tiling, **md)
             self.thabs(0.0)
 
     def _backup_do_WAXS(self, step=0, align_step=0, **md):
@@ -841,7 +841,7 @@ class SampleGISAXS_Generic(Sample_Generic):
                     exposure_time = self.measure_setting["exposure_time"]
             tiling = self.measure_setting["tiling"]
             waxs_on()
-            self.measureIncidentAngles_Stitch(incident_angles, exposure_time=exposure_time, tiling=tiling, **md)
+            yield from self.measureIncidentAngles_Stitch(incident_angles, exposure_time=exposure_time, tiling=tiling, **md)
             self.thabs(0.0)
 
 
@@ -870,13 +870,13 @@ class SampleCDSAXS_Generic(Sample_Generic):
 
     def measureAngle(self, angle, exposure_time=None, extra=None, measure_type="measure", **md):
         self.phiabs(angle)
-        self.measure(exposure_time=exposure_time, extra=extra, measure_type=measure_type, **md)
+        yield from self.measure(exposure_time=exposure_time, extra=extra, measure_type=measure_type, **md)
 
     def measureAngles(self, angles=None, exposure_time=None, extra=None, measure_type="measureAngles", **md):
         if angles is None:
             angles = self.rot_angles_default
         for angle in angles:
-            self.measureAngle(angle, exposure_time=exposure_time, extra=extra, measure_type=measure_type, **md)
+            yield from self.measureAngle(angle, exposure_time=exposure_time, extra=extra, measure_type=measure_type, **md)
 
 
 class SampleXR_WAXS(SampleGISAXS_Generic):
@@ -976,7 +976,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
         # TODO:move detector to the 1st position and setROI
         get_beamline().setWAXSpos(total_angle=0, roi=cms.XR_pos1)
         get_beamline().setXRROI(total_angle=0, size=roi_size, default_WAXSy=None)
-        self.measure(exposure_time, extra="direct_beam")
+        yield from self.measure(exposure_time, extra="direct_beam")
         self.yo()
 
         output_data = self.XR_data_output(direct_beam_slot, exposure_time)
@@ -1049,7 +1049,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 print("WAXS in POS2 for XR")
                 pos_flag = 1
 
-            self.measure(exposure_time, extra=extra)
+            yield from self.measure(exposure_time, extra=extra)
             temp_data = self.XR_data_output(slot_pos, exposure_time)
             print("data = {}".format(temp_data))
             # initial exposure period
@@ -1075,7 +1075,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                         beam.setAbsorber(slot_pos)
                         print("The absorber is slot {}\n".format(slot_pos))
                         print("The theta is {}\n".format(theta))
-                        self.measure(exposure_time, extra=extra)
+                        yield from self.measure(exposure_time, extra=extra)
                         temp_data = self.XR_data_output(slot_pos, exposure_time)
                     else:
                         if (
@@ -1092,7 +1092,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                         print("The absorber is slot {}\n".format(slot_pos))
                         print("The theta is {}\n".format(theta))
 
-                        self.measure(N * exposure_time, extra=extra)
+                        yield from self.measure(N * exposure_time, extra=extra)
                         temp_data = self.XR_data_output(slot_pos, N * exposure_time)
                         N_last = N
 
@@ -1101,7 +1101,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 print("The absorber is slot {}\n".format(slot_pos))
                 print("The theta is {}\n".format(theta))
                 beam.setAbsorber(slot_pos)
-                self.measure(exposure_time, extra=extra)
+                yield from self.measure(exposure_time, extra=extra)
                 temp_data = self.XR_data_output(slot_pos, exposure_time)
 
             output_data = output_data.append(temp_data, ignore_index=True)
@@ -1416,7 +1416,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
         # move detector to the 1st position and setROI
         get_beamline().setWAXSpos(total_angle=0, roi=cms.XR_pos1)
         get_beamline().setXRROI(total_angle=0, size=roi_size, default_WAXSy=None)
-        self.measure(exposure_time, extra="direct_beam")
+        yield from self.measure(exposure_time, extra="direct_beam")
         self.yo()
         # move detector to POS2 and start the th2th scan
         get_beamline().setWAXSpos(total_angle=0, roi=cms.XR_pos2)
@@ -1454,7 +1454,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
             # th2th scan starts with POS2 directly
             get_beamline().setXRROI_update(total_angle=theta * 2, size=roi_size)
 
-            self.measure(exposure_time, extra=extra)
+            yield from self.measure(exposure_time, extra=extra)
             temp_data = self.XR_data_output(slot_pos, exposure_time)
 
             # initial exposure period
@@ -1477,7 +1477,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                     beam.setAbsorber(slot_pos)
                     print("The absorber is slot {}\n".format(slot_pos))
                     print("The theta is {}\n".format(theta))
-                    self.measure(exposure_time, extra=extra)
+                    yield from self.measure(exposure_time, extra=extra)
                     temp_data = self.XR_data_output(slot_pos, exposure_time)
                 # else:
                 ##self.measure(exposure_time, extra=extra)
@@ -1488,7 +1488,7 @@ class SampleXR_WAXS(SampleGISAXS_Generic):
                 print("The absorber is slot {}\n".format(slot_pos))
                 print("The theta is {}\n".format(theta))
                 beam.setAbsorber(slot_pos)
-                self.measure(exposure_time, extra=extra)
+                yield from self.measure(exposure_time, extra=extra)
                 temp_data = self.XR_data_output(slot_pos, exposure_time)
 
             output_data = output_data.append(temp_data, ignore_index=True)
@@ -1763,7 +1763,7 @@ class GIBar(PositionalHolder):
                 sample.gotoOrigin(["x", "y", "th"])
                 sample.gotoOrigin(["x"])
                 sample.xr(x_offset)
-                sample.measureIncidentAngles(angles=angles, verbosity=verbosity, exposure_time=exposure_time, **md)
+                yield from sample.measureIncidentAngles(angles=angles, verbosity=verbosity, exposure_time=exposure_time, **md)
 
     def printSaveStates(self, range=None, verbosity=3, **md):
         if range is None:
@@ -1839,7 +1839,7 @@ class GIBar(PositionalHolder):
                 else:
                     incident_angles = self.incident_angles
             for angle in angles:
-                self.measureIncidentAngle(angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
+                yield from self.measureIncidentAngle(angle, exposure_time=exposure_time, extra=extra, tiling=tiling, **md)
 
         elif tiling == "ygaps":
             SAXSy_o = SAXSy.user_readback.value
@@ -1860,7 +1860,7 @@ class GIBar(PositionalHolder):
                     time.sleep(0.5)
                     extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                     md["detector_position"] = "lower"
-                    sample.measure_single(
+                    yield from sample.measure_single(
                         exposure_time=exposure_time,
                         extra=extra_current,
                         verbosity=verbosity,
@@ -1889,7 +1889,7 @@ class GIBar(PositionalHolder):
                     time.sleep(0.5)
                     extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                     md["detector_position"] = "upper"
-                    sample.measure_single(
+                    yield from sample.measure_single(
                         exposure_time=exposure_time,
                         extra=extra_current,
                         verbosity=verbosity,
@@ -1924,7 +1924,7 @@ class GIBar(PositionalHolder):
                     time.sleep(0.5)
                     extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                     md["detector_position"] = "lower_left"
-                    sample.measure_single(
+                    yield from sample.measure_single(
                         exposure_time=exposure_time,
                         extra=extra_current,
                         verbosity=verbosity,
@@ -1946,7 +1946,7 @@ class GIBar(PositionalHolder):
                     time.sleep(0.2)
                     extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                     md["detector_position"] = "upper"
-                    sample.measure_single(
+                    yield from sample.measure_single(
                         exposure_time=exposure_time,
                         extra=extra_current,
                         verbosity=verbosity,
@@ -1973,7 +1973,7 @@ class GIBar(PositionalHolder):
                     time.sleep(0.2)
                     extra_current = "pos4" if extra is None else "{}_pos4".format(extra)
                     md["detector_position"] = "upper_right"
-                    sample.measure_single(
+                    yield from sample.measure_single(
                         exposure_time=exposure_time,
                         extra=extra_current,
                         verbosity=verbosity,
@@ -2000,7 +2000,7 @@ class GIBar(PositionalHolder):
                     time.sleep(0.2)
                     extra_current = "pos3" if extra is None else "{}_pos3".format(extra)
                     md["detector_position"] = "lower_right"
-                    sample.measure_single(
+                    yield from sample.measure_single(
                         exposure_time=exposure_time,
                         extra=extra_current,
                         verbosity=verbosity,
@@ -2059,7 +2059,7 @@ class CapillaryHolder(PositionalHolder):
         if tiling == None:
             for sample in self.getSamples():
                 sample.gotoOrigin()
-                sample.measure_single(
+                yield from sample.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -2070,7 +2070,7 @@ class CapillaryHolder(PositionalHolder):
                 time.sleep(0.2)
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower"
-                sample.measure_single(
+                yield from sample.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -2094,7 +2094,7 @@ class CapillaryHolder(PositionalHolder):
 
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper"
-                sample.measure_single(
+                yield from sample.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -2112,7 +2112,7 @@ class CapillaryHolder(PositionalHolder):
                 time.sleep(0.2)
                 extra_current = "pos1" if extra is None else "{}_pos1".format(extra)
                 md["detector_position"] = "lower_left"
-                sample.measure_single(
+                yield from sample.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -2135,7 +2135,7 @@ class CapillaryHolder(PositionalHolder):
 
                 extra_current = "pos2" if extra is None else "{}_pos2".format(extra)
                 md["detector_position"] = "upper"
-                sample.measure_single(
+                yield from sample.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -2152,7 +2152,7 @@ class CapillaryHolder(PositionalHolder):
                     WAXSy.move(WAXSy_o + 5.16)
                 extra_current = "pos4" if extra is None else "{}_pos4".format(extra)
                 md["detector_position"] = "upper_right"
-                sample.measure_single(
+                yield from sample.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -2170,7 +2170,7 @@ class CapillaryHolder(PositionalHolder):
 
                 extra_current = "pos3" if extra is None else "{}_pos3".format(extra)
                 md["detector_position"] = "lower_right"
-                sample.measure_single(
+                yield from sample.measure_single(
                     exposure_time=exposure_time, extra=extra_current, verbosity=verbosity, stitchback=True, **md
                 )
 
@@ -2202,7 +2202,7 @@ class CapillaryHolder(PositionalHolder):
                 sample.gotoOrigin(["x", "y"])
                 sample.gotoOrigin(["x"])
                 sample.xr(x_offset)
-                sample.measureIncident(exposure_time=exposure_time, verbosity=verbosity, **md)
+                yield from sample.measureIncident(exposure_time=exposure_time, verbosity=verbosity, **md)
 
 
 class CapillaryHolderThreeRows(CapillaryHolder):
@@ -2290,7 +2290,7 @@ class CapillaryHolderHeated(CapillaryHolder):
                     for sample in self.getSamples():
                         sample.gotoOrigin()
                         sample.xr(-0.05)
-                        sample.measure(exposure_time)
+                        yield from sample.measure(exposure_time)
 
                 except HTTPError:
                     pass
@@ -2309,7 +2309,7 @@ class CapillaryHolderHeated(CapillaryHolder):
                     for sample in self.getSamples():
                         sample.gotoOrigin()
                         sample.xr(0.1)
-                        sample.measure(exposure_time)
+                        yield from sample.measure(exposure_time)
 
                 except HTTPError:
                     pass
@@ -2422,7 +2422,7 @@ class GIBar_long_thermal(GIBar):
                 else:
                     incident_angles = sample.incident_angles
 
-                sample.measureIncidentAngles_Stitch(
+                yield from sample.measureIncidentAngles_Stitch(
                     incident_angles, exposure_time=sample.SAXS_time, tiling=tiling, **md
                 )
 
@@ -2437,7 +2437,7 @@ class GIBar_long_thermal(GIBar):
                     incident_angles = sample.incident_angles
                 # for detector in get_beamline().detector:
                 # detector.setExposureTime(self.MAXS_time)
-                sample.measureIncidentAngles_Stitch(
+                yield from sample.measureIncidentAngles_Stitch(
                     incident_angles, exposure_time=sample.WAXS_time, tiling=tiling, **md
                 )
 
@@ -2453,7 +2453,7 @@ class GIBar_long_thermal(GIBar):
                 else:
                     incident_angles = sample.incident_angles
 
-                sample.measureIncidentAngles_Stitch(
+                yield from sample.measureIncidentAngles_Stitch(
                     incident_angles, exposure_time=sample.SWAXS_time, tiling=tiling, **md
                 )
 
@@ -2467,7 +2467,7 @@ class GIBar_long_thermal(GIBar):
                 else:
                     incident_angles = sample.incident_angles
 
-                sample.measureIncidentAngles_Stitch(
+                yield from sample.measureIncidentAngles_Stitch(
                     incident_angles, exposure_time=sample.SAXS_time, tiling=tiling, **md
                 )
             waxs_on()  # edited from waxs_on 3/25/19 through a saxs_on error
@@ -2480,7 +2480,7 @@ class GIBar_long_thermal(GIBar):
                     incident_angles = sample.incident_angles
                 # for detector in get_beamline().detector:
                 # detector.setExposureTime(self.MAXS_time)
-                sample.measureIncidentAngles_Stitch(
+                yield from sample.measureIncidentAngles_Stitch(
                     incident_angles, exposure_time=sample.WAXS_time, tiling=tiling, **md
                 )
 
@@ -2537,7 +2537,7 @@ class GIBar_long_thermal(GIBar):
                 time.sleep(wait_time)
 
             post_to_slack("set to Temperature {}".format(temperature))
-            self.measureSamples()
+            yield from self.measureSamples()
             # self.doSamples(SAXS_expo_time=SAXS_expo_time, verbosity=verbosity, **md)
             if int_measure:
                 self.intMeasure(output_file=output_file)
@@ -3017,7 +3017,7 @@ class InstecStage60(CapillaryHolder):
             # sleep(120)
 
             if exposure_time > 0:
-                self.measure(exposure_time)
+                yield from self.measure(exposure_time)
 
         self.tscan_data.to_csv(self.tscan_filename)
         # f.close()
@@ -3532,7 +3532,7 @@ class SampleXR_test(SampleGISAXS_Generic):
             slot_pos = 5
         beam.setAbsorber(direct_beam_slot)
         get_beamline().setSpecularReflectivityROI(total_angle=0,size=roi_size,default_SAXSy=-73)
-        self.measure(exposure_time, extra='direct_beam')
+        yield from self.measure(exposure_time, extra='direct_beam')
         self.yo()
         
         output_data = self.XR_data_output(direct_beam_slot, exposure_time)
@@ -3596,7 +3596,7 @@ class SampleXR_test(SampleGISAXS_Generic):
                 cms.modeXRMeasurement()       
                 print('=========The beamstop is inserted to block the direct beam.=============')
             
-            self.measure(exposure_time, extra=extra)
+            yield from self.measure(exposure_time, extra=extra)
             temp_data = self.XR_data_output(slot_pos, exposure_time)
             
             #initial exposure period
@@ -3618,7 +3618,7 @@ class SampleXR_test(SampleGISAXS_Generic):
                         beam.setAbsorber(slot_pos)
                         print('The absorber is slot {}\n'.format(slot_pos))
                         print('The theta is {}\n'.format(theta))
-                        self.measure(exposure_time, extra=extra)
+                        yield from self.measure(exposure_time, extra=extra)
                         temp_data = self.XR_data_output(slot_pos, exposure_time)
                     else:
                         if threshold/float(temp_data['e_I1'][temp_data.index[-1]]) < max_exposure_time and N_last < max_exposure_time:
@@ -3633,7 +3633,7 @@ class SampleXR_test(SampleGISAXS_Generic):
                         print('The theta is {}\n'.format(theta))
 
 
-                        self.measure(N*exposure_time, extra=extra)                        
+                        yield from self.measure(N*exposure_time, extra=extra)                        
                         temp_data = self.XR_data_output(slot_pos, N*exposure_time)
                         N_last = N
                         
@@ -3642,7 +3642,7 @@ class SampleXR_test(SampleGISAXS_Generic):
                 print('The absorber is slot {}\n'.format(slot_pos))
                 print('The theta is {}\n'.format(theta))
                 beam.setAbsorber(slot_pos)
-                self.measure(exposure_time, extra=extra)
+                yield from self.measure(exposure_time, extra=extra)
                 temp_data = self.XR_data_output(slot_pos, exposure_time)
 
 
@@ -3844,7 +3844,7 @@ class SampleXR_test(SampleGISAXS_Generic):
         #cms.setXRROI(total_angle=int_angle*2, size=roi_size, default_WAXSy=-73)                    
         self.yo()
         self.thabs(int_angle)
-        self.measure(exposure_time)
+        yield from self.measure(exposure_time)
         print('===========sam.th moves to {}deg and ROI1 is set at {}deg. ============'.format(int_angle, int_angle*2))
         print('======Please check the ROI whether at the reflected position. =======')
         print('========If not, modify sam.th or schi to meet the reflected beam. ===========')
