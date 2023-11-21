@@ -2801,7 +2801,7 @@ class DSCStage(CapillaryHolder):
         super().__init__(name=name, base=base, **kwargs)
         # TODO: search the origin position and check the spacing
         self._axes["y"].origin = -2.2
-        self.x_spacing = 9.2  # 0.325 *25.4 # 0.375 seperation in x
+        self.x_spacing = 8.9  # 0.325 *25.4 # 0.375 seperation in x
         self.y_spacing = 12.7  # 1/2 inch seperation in y
 
     def slot(self, sample_number):

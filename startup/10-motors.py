@@ -136,9 +136,13 @@ elif beamline_stage == "BigHuber":
     schi = EpicsMotor("XF:11BMB-ES{Chm:Smpl3-Ax:chi}Mtr", name="schi")
 
     # Newports
-    smx = EpicsMotor("XF:11BMB-ES{PTA:Sample-Ax:X}Mtr", name="smx")
-    laserx = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:X}Mtr", name="laserx")
-    lasery = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:Y}Mtr", name="lasery")
+    #smx = EpicsMotor("XF:11BMB-ES{PTA:Sample-Ax:X}Mtr", name="smx")
+    #laserx = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:X}Mtr", name="laserx")
+    #lasery = EpicsMotor("XF:11BMB-ES{PTA:Laser-Ax:Y}Mtr", name="lasery")
+
+    # # GDoerk's spray coater
+    #smx = EpicsMotor("XF:11BMB-ES{Chm:Smpl2-Ax:X}Mtr", name="smx")
+    smx = EpicsMotor('XF:11BMB-ES{ESP:3-Ax:C1}Mtr', name='smx')
 
 elif beamline_stage == "testing":
     # Huber

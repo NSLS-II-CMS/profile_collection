@@ -443,6 +443,7 @@ time.sleep(1)
 # all_standard_pros = [fs1, fs2, fs3, fs4, fs5, simDetector]
 # all_standard_pros = [fs1, fs2, fs3, fs4]
 all_standard_pros = [fs2, fs3, fs4]
+# all_standard_pros = [fs2, fs4]
 
 
 for camera in all_standard_pros:

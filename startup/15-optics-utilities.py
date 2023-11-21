@@ -67,7 +67,7 @@ def movr_mir_pitch(del_mrad):
     # movr(mir_dsyo,del_mm)
     mir_usy.move(mir_usy.user_readback.value + -del_mm)
     mir_dsyi.move(mir_dsyi.user_readback.value + del_mm)
-    mir_dsyo.move(mir_usyo.user_readback.value + del_mm)
+    mir_dsyo.move(mir_dsyo.user_readback.value + del_mm)
 
 
 def movr_mir_roll(del_mrad):
@@ -76,7 +76,7 @@ def movr_mir_roll(del_mrad):
     # movr(mir_dsyi,-del_mm)
     # movr(mir_dsyo,del_mm)
     mir_dsyi.move(mir_dsyi.user_readback.value + -del_mm)
-    mir_dsyo.move(mir_usyo.user_readback.value + del_mm)
+    mir_dsyo.move(mir_dsyo.user_readback.value + del_mm)
 
 
 def movr_mir_yaw(del_mrad):
@@ -95,7 +95,7 @@ def movr_mir_y(del_mm):
     # movr(mir_dsyo,del_mm)
     mir_usy.move(mir_usy.user_readback.value + del_mm)
     mir_dsyi.move(mir_dsyi.user_readback.value + del_mm)
-    mir_dsyo.move(mir_usyo.user_readback.value + del_mm)
+    mir_dsyo.move(mir_dsyo.user_readback.value + del_mm)
 
 
 def movr_mir_x(del_mm):

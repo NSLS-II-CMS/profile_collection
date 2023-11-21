@@ -30,7 +30,8 @@ def TTL2_on():
     time.sleep(0.01)
     yield from bps.mov(TTL2, 1)
 
-
+def TTL2_off():
+    yield from bps.mov(TTL2, 0)
 # PV list of Moxa ioLogik:: AO, Analog Output
 class AOpv(object):
     def __init__(self, ii):
