@@ -4480,9 +4480,11 @@ class CMS_Beamline_XR(CMS_Beamline_GISAXS):
         return self.XR_pos1, self.XR_pos2
 
 
-# cms = CMS_Beamline()
-# cms = CMS_Beamline_XR()
-cms = CMS_Beamline_GISAXS()
+# Set the cms beamline mode.
+cms_beamline_modes = {"Standard": CMS_Beamline,
+                      "XR": CMS_Beamline_XR,
+                      "GISAXS": CMS_Beamline_GISAXS}
+cms = cms_beamline_modes[CMS_BEAMLINE_MODE]()
 
 # cms_ventSample = cms.vent_sample()
 

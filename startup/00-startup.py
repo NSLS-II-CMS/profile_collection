@@ -18,6 +18,22 @@ from bluesky.callbacks.broker import verify_files_saved
 testing = os.environ.get("BS_TESTING", False) == "True"
 PTA_MODE = os.environ.get("BS_PTA", False) == "True"
 
+
+# This is the definition for cms object.
+CMS_BEAMLINE_MODE = "GISAXS"
+if CMS_BEAMLINE_MODE not in ["Standard", "XR", "GISAXS"]:
+    raise ValueError("CMS_BEAMLINE MODE must be one of the following values: Standard, XR, GISAXS")
+print(f"{CMS_BEAMLINE_MODE =}")
+
+# This is the definition for the sample stage.
+CMS_BEAMLINE_STAGE = "default"
+if CMS_BEAMLINE_STAGE not in ["default", "open_MAXS", "BigHuber", "testing"]:
+    raise ValueError(
+        "CMS_BEAMLINE MODE must be one of the following values: default, open_MAXS, BigHuber, testing"
+    )
+print(f"{CMS_BEAMLINE_STAGE =}")
+
+
 if testing:
     nslsii.configure_base(get_ipython().user_ns, "temp", publish_documents_with_kafka=False)
 else:
