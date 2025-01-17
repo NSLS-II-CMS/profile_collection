@@ -2123,6 +2123,8 @@ class Sample_Generic(CoordinateSystem):
                             status *= 0
                     elif detector.name is "pilatus2M":
                         if caget("XF:11BMB-ES{Det:PIL2M}:cam1:Acquire") == 1:
+                            print('pilatus2M is done')
+                            print(status)
                             status *= 0
                     elif detector.name is "pilatus800":
                         if caget("XF:11BMB-ES{Det:PIL800K}:cam1:Acquire") == 1:
