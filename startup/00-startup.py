@@ -15,7 +15,7 @@ import redis
 
 from redis_json_dict import RedisJSONDict
 
-nslsii.configure_base(get_ipython().user_ns, "cms", publish_documents_with_kafka=True)
+nslsii.configure_base(get_ipython().user_ns, "temp", publish_documents_with_kafka=True)
 
 from bluesky.magics import BlueskyMagics
 from bluesky.preprocessors import pchain
@@ -106,9 +106,9 @@ from ophyd.areadetector import EpicsSignalWithRBV
 
 # Increase the timeout for EpicsSignal.get()
 # This beamline was occasionally getting ReadTimeoutErrors
-# EpicsSignal.set_defaults(timeout=10)
-# EpicsSignalRO.set_defaults(timeout=10)
-ophyd.signal.EpicsSignalBase.set_defaults(timeout=120)
+EpicsSignal.set_defaults(timeout=10, connection_timeout=10)
+EpicsSignalRO.set_defaults(timeout=10, connection_timeout=10)
+ophyd.signal.EpicsSignalBase.set_defaults(timeout=120, connection_timeout=120)
 
 
 # We have commented this because we would like to identify the PVs that are causing problems.

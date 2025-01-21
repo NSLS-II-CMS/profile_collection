@@ -3,7 +3,6 @@
 from ophyd import (
     ProsilicaDetector,
     SingleTrigger,
-    TIFFPlugin,
     ImagePlugin,
     DetectorBase,
     HDF5Plugin,
@@ -19,6 +18,7 @@ from ophyd import (
     StatsPlugin,
 )
 from ophyd.areadetector.cam import AreaDetectorCam
+from ophyd.areadetector.plugins import TIFFPlugin_V33
 from ophyd.areadetector.base import ADComponent, EpicsSignalWithRBV
 from ophyd.areadetector.filestore_mixins import FileStoreTIFFIterativeWrite
 from ophyd import Component as Cpt, Signal
@@ -62,7 +62,7 @@ Pilatus800_2_on = True
 
 
 
-class TIFFPluginWithFileStore(TIFFPlugin, FileStoreTIFFIterativeWrite):
+class TIFFPluginWithFileStore(TIFFPlugin_V33, FileStoreTIFFIterativeWrite):
     pass
 
 class HDF5PluginWithFileStore(HDF5Plugin, FileStoreHDF5IterativeWrite):
@@ -506,16 +506,16 @@ if Camera_on==True:
 
 
     # for cam_number, fs in zip([1,2,3,4], [fs1, fs2, fs3, fs4]):
-    for cam_number, fs in zip([2, 3, 4], [fs2, fs3, fs4]):
-        G, port_dict = fs.get_asyn_digraph()
-        cam = port_dict["cam{:02}".format(cam_number)]
-        for v in port_dict.values():
-            try:
-                if v.nd_array_port.get() == "CAM":
-                    v.nd_array_port.set("cam{:02}".format(cam_number))
-            except AttributeError:
-                pass
-        fs.validate_asyn_ports()
+    # for cam_number, fs in zip([2, 3, 4], [fs2, fs3, fs4]):
+    #     G, port_dict = fs.get_asyn_digraph()
+    #     cam = port_dict["cam{:02}".format(cam_number)]
+    #     for v in port_dict.values():
+    #         try:
+    #             if v.nd_array_port.get() == "CAM":
+    #                 v.nd_array_port.set("cam{:02}".format(cam_number))
+    #         except AttributeError:
+    #             pass
+    #     fs.validate_asyn_ports()
 
 
 
