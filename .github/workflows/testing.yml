@@ -1,0 +1,183 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  run_tests:
+    # pull requests are a duplicate of a branch push if within the same repo.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+
+    name: Test IPython startup files
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        zenodo-deposition:
+          # https://zenodo.org/records/14862443
+          - env-version: "2025-1.0"
+            zenodo-id: "14862443"
+        artifact:
+          - python-version: "3.10"
+            md5-checksum: "d031ed24ad7beebb836f93712d8def2e"
+          - python-version: "3.11"
+            md5-checksum: "3b1074c0827ee3baf0cdcd64917b9afa"
+          - python-version: "3.12"
+            md5-checksum: "624239ed0846ef95d8334ea100581b83"
+      fail-fast: false
+    env:
+      TZ: America/New_York
+
+    defaults:
+      run:
+        shell: bash -leo pipefail {0}
+
+    steps:
+      - name: Set env vars
+        run: |
+          export REPOSITORY_NAME=${GITHUB_REPOSITORY#*/}  # just the repo, as opposed to org/repo
+          echo "REPOSITORY_NAME=${REPOSITORY_NAME}" >> $GITHUB_ENV
+
+          export PYTHONVER=$(echo ${{ matrix.artifact.python-version }} | sed 's/\.//g')
+          echo "PYTHONVER=${PYTHONVER}" >> $GITHUB_ENV
+
+          export CONDA_ENV_NAME="${{ matrix.zenodo-deposition.env-version }}-py${PYTHONVER}-tiled"
+          echo "CONDA_ENV_NAME=${CONDA_ENV_NAME}" >> $GITHUB_ENV
+
+          export BLUESKY_KAFKA_CONFIG_PATH="$HOME/.config/bluesky/kafka.yml"
+          echo "BLUESKY_KAFKA_CONFIG_PATH=${BLUESKY_KAFKA_CONFIG_PATH}" >> $GITHUB_ENV
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xorg openbox
+
+      - name: Check Docker version
+        run: |
+          docker version
+          docker compose --version
+
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.0.0
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.6.0
+
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Configure epics-containers
+        run: |
+          # git clone --depth 1 --branch CMS-IOCs https://github.com/NSLS2/cms-epics-containers.git $HOME/cms-epics-containers
+          git clone --depth 1 --branch ci-gha-profile https://github.com/mrakitin/epics-containers-example-services.git $HOME/cms-epics-containers
+
+          # source $HOME/cms-epics-containers/environment.sh
+          # echo "EPICS_CA_ADDR_LIST=${EPICS_CA_ADDR_LIST}" >> $GITHUB_ENV
+
+      - name: Prepare Tiled and Kafka configs
+        run: |
+          .ci/tiled-config.sh
+          .ci/kafka-config.sh
+
+      - name: Run beamline-specific setup
+        run: |
+          .ci/bl-specific.sh
+
+      - name: Start epics-containers
+        run: |
+          cd $HOME/cms-epics-containers
+          source $HOME/cms-epics-containers/environment.sh
+          docker compose up -d
+          sleep 20
+
+      - name: Check Docker state
+        run: |
+          docker images
+          docker ps -a
+          docker network ls
+          docker volume ls
+
+      - name: Check Docker logs
+        run: |
+          cd $HOME/cms-epics-containers
+          docker compose logs
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: ${{ env.REPOSITORY_NAME }}
+          auto-update-conda: true
+          miniforge-version: latest
+          python-version: "3.10"
+          conda-remove-defaults: true
+
+      - name: Create a conda env from Zenodo
+        run: |
+          url="https://zenodo.org/record/${{ matrix.zenodo-deposition.zenodo-id }}/files/${CONDA_ENV_NAME}.tar.gz?download=1"
+          wget --progress=dot:giga ${url} -O ${CONDA_ENV_NAME}.tar.gz
+          status=$?
+          if [ $status -gt 0 ]; then
+              echo "Cannot download from ${url}. Exit code: ${status}"
+              exit $status
+          fi
+          echo "${{ matrix.artifact.md5-checksum }} ${CONDA_ENV_NAME}.tar.gz" > checksum.txt
+          md5sum --check checksum.txt
+          mkdir -p $HOME/${CONDA_ENV_NAME}
+          echo "Unarchiving the tarball..."
+          tar -xf ${CONDA_ENV_NAME}.tar.gz -C $HOME/${CONDA_ENV_NAME}
+          conda activate $HOME/${CONDA_ENV_NAME}
+          conda-unpack
+
+      - name: Start caproto IOC
+        run: |
+          source $HOME/cms-epics-containers/environment.sh
+          conda activate $HOME/${CONDA_ENV_NAME}
+          echo "\n" | python iocs/spoof_beamline.py --list-pvs &
+          sleep 20
+
+      - name: Apply auto settings
+        run: |
+          echo "::group::Applying auto settings"
+          .ci/apply-autosettings.sh
+          echo "::endgroup::"
+
+      - name: Test the code
+        run: |
+          # Start Xvfb
+          # (from https://developercommunity.visualstudio.com/content/problem/336288/headless-testing-using-xvfb-on-hosted-ubuntu-1604.html)
+          /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
+          export DISPLAY=:99
+
+          # This is what IPython does internally to load the startup files:
+          command="
+          import os
+          import glob
+          ip = get_ipython()
+          startup_files = sorted(glob.glob(os.path.join(os.getcwd(), 'startup/*.py')))
+          if os.path.isfile('.ci/drop-in.py'):
+              startup_files.append('.ci/drop-in.py')
+          if not startup_files:
+              raise SystemExit(f'Cannot find any startup files in {os.getcwd()}')
+          for f in startup_files:
+              if not os.path.isfile(f):
+                  raise FileNotFoundError(f'File {f} cannot be found.')
+              print(f'Executing {f} in CI')
+              ip.parent._exec_file(f)"
+
+          conda activate $HOME/${CONDA_ENV_NAME}
+
+          source $HOME/cms-epics-containers/environment.sh
+          env | grep EPICS
+          ipython --profile=test -c "$command"
+
+      - name: Show bluesky logs
+        if: always()
+        run: |
+          cat $HOME/.cache/bluesky/log/bluesky.log
+
+      - name: Check dir tree
+        if: always()
+        run: |
+          ls -laF /nsls2/
+          tree -a $HOME/cms-epics-containers/pilatus-data/
+          tree -a /nsls2/data/

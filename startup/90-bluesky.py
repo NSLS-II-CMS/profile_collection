@@ -357,7 +357,9 @@ def pump_chm(onoff, q=0):
 
 # PROFILE_ROOT = os.path.dirname(__file__)
 # PROFILE_ROOT = '/nsls2/data/cms/legacy/xf11bm/ipython_profiles/profile_collection/startup'
-PROFILE_ROOT = "/home/xf11bm/.ipython/profile_collection/startup"
+from IPython import get_ipython
+
+PROFILE_ROOT = get_ipython().profile_dir.startup_dir
 CMS_CONFIG_FILENAME = os.path.join(PROFILE_ROOT, ".cms_config")
 
 ## CMS config file

@@ -2169,7 +2169,7 @@ class Sample_Generic(CoordinateSystem):
 
         filename = detector.tiff.full_file_name.get()  # RL, 20210831
         if not os.path.isfile(filename):
-            print("File does not exist")
+            print(f"File does not exist: {filename}")
             return 
         # Alternate method to get the last filename
         # filename = '{:s}/{:s}.tiff'.format( detector.tiff.file_path.get(), detector.tiff.file_name.get()  )

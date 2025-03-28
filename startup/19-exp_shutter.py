@@ -37,7 +37,7 @@ def shutter_off(verbosity=3):
 
 
 def shutter_state(verbosity=3):
-    if shutter_sts1_pv.get() == 1 & shutter_sts2_pv.get() == 1:
+    if shutter_sts1_pv.get() == 1 and shutter_sts2_pv.get() == 1:
         status = 1
         if verbosity >= 3:
             print("Shutter is OPEN.")
