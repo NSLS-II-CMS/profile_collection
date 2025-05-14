@@ -1,4 +1,4 @@
-# BlueskyMagics were imported and registered in 00-startup.py
+from bluesky.magics import BlueskyMagics
 
 BlueskyMagics.detectors = [pilatus2M]
 BlueskyMagics.positioners = [
