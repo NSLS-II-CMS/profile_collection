@@ -255,6 +255,7 @@ class Pilatus800V33(SingleTriggerV33, PilatusDetector):
     tiff = Cpt(
         TIFFPluginWithFileStore,
         suffix="TIFF1:",
+        write_path_template = "",
     )
 
     def stage(self, *args, **kwargs):
@@ -330,6 +331,7 @@ class Pilatus2M(SingleTrigger, PilatusDetector):
     tiff = Cpt(
         TIFFPluginWithFileStore,
         suffix="TIFF1:",
+        write_path_template = "",
     )
 
     def stage(self, *args, **kwargs):
@@ -372,6 +374,7 @@ class Pilatus2MV33(SingleTriggerV33, PilatusDetector):
     tiff = Cpt(
         TIFFPluginWithFileStore,
         suffix="TIFF1:",
+        write_path_template = "",
     )
 
     def stage(self, *args, **kwargs):
@@ -422,6 +425,7 @@ class Pilatus2MV33_h5(SingleTriggerV33, PilatusDetector):
     h5 = Cpt(
         HDF5PluginWithFileStore,
         suffix="HDF1:",
+        write_path_template = "",
     )
 
     def setExposureTime(self, exposure_time, verbosity=3):

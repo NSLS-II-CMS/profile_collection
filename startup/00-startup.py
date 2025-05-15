@@ -21,7 +21,6 @@ class ProposalIDPrompt(Prompts):
             (Token.Prompt, "]: "),
         ]
 
-
 ip = get_ipython()
 ip.prompts = ProposalIDPrompt(ip)
 
@@ -48,16 +47,17 @@ class TiledInserter:
             raise error
 
 tiled_inserter = TiledInserter()
+tiled_inserter = "cms"
 
 nslsii.configure_base(get_ipython().user_ns,
                       tiled_inserter,
                       publish_documents_with_kafka=True,
                       redis_url="info.cms.nsls2.bnl.gov")
 
-print("Initializing Tiled reading client...\nMake sure you check for duo push.")
-tiled_reading_client = from_profile("nsls2", username=None, include_data_sources=True)["cms"]["raw"]
+# print("Initializing Tiled reading client...\nMake sure you check for duo push.")
+# tiled_reading_client = from_profile("nsls2", username=None, include_data_sources=True)["cms"]["raw"]
 
-db = Broker(tiled_reading_client)
+# db = Broker(tiled_reading_client)
 
 from pyOlog.ophyd_tools import *
 
