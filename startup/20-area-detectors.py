@@ -54,7 +54,7 @@ elif beamline_stage == "default":
     Pilatus800_2_on = False
 
 # Pilatus800_on = False
-# Pilatus800_2_on = True
+Pilatus800_2_on = True
 # Pilatus800_2_on = False
 # Pilatus2M_on = False
 
@@ -87,34 +87,10 @@ class ProsilicaDetectorCamV33(ProsilicaDetectorCam):
                 cpt.ensure_nonblocking()
 
 
-# class Pilatus2M(SingleTrigger, PilatusDetector):
-#     image = Cpt(ImagePlugin, 'image1:')
-#     stats1 = Cpt(StatsPlugin, 'Stats1:')
-#     stats2 = Cpt(StatsPlugin, 'Stats2:')
-#     stats3 = Cpt(StatsPlugin, 'Stats3:')
-#     stats4 = Cpt(StatsPlugin, 'Stats4:')
-#     stats5 = Cpt(StatsPlugin, 'Stats5:')
-#     roi1 = Cpt(ROIPlugin, 'ROI1:')
-#     roi2 = Cpt(ROIPlugin, 'ROI2:')
-#     roi3 = Cpt(ROIPlugin, 'ROI3:')
-#     roi4 = Cpt(ROIPlugin, 'ROI4:')
-#     proc1 = Cpt(ProcessPlugin, 'Proc1:')
-
-#     tiff = Cpt(TIFFPluginWithFileStore,
-#                suffix='TIFF1:',
-#             #    write_path_template='/nsls2/data/cms/legacy/xf11bm/Pilatus2M/%Y/%m/%d/',
-#                write_path_template='/nsls2/xf11bm/Pilatus2M/%Y/%m/%d/',
-#                root='/nsls2/xf11bm')
-
-#     def setExposureTime(self, exposure_time, verbosity=3):
-#         caput('XF:11BMB-ES{Det:PIL2M}:cam1:AcquireTime', exposure_time)
-#         caput('XF:11BMB-ES{Det:PIL2M}:cam1:AcquirePeriod', exposure_time+0.1)
-
-
 class StandardProsilica(SingleTrigger, ProsilicaDetector):
-    # tiff = Cpt(TIFFPluginWithFileStore,
-    #           suffix='TIFF1:',
-    #           write_path_template='/XF11ID/data/')
+    tiff = Cpt(TIFFPluginWithFileStore,
+               suffix='TIFF1:',
+               write_path_template='',)
     image = Cpt(ImagePlugin, "image1:")
     stats1 = Cpt(StatsPluginV33, "Stats1:")
     stats2 = Cpt(StatsPluginV33, "Stats2:")
@@ -128,11 +104,17 @@ class StandardProsilica(SingleTrigger, ProsilicaDetector):
     roi4 = Cpt(ROIPlugin, "ROI4:")
     proc1 = Cpt(ProcessPlugin, "Proc1:")
 
+    def stage(self, *args, **kwargs):
+        self.tiff.write_path_template = assets_path() + f'{self.name}/%Y/%m/%d/'
+        self.tiff.read_path_template = assets_path() + f'{self.name}/%Y/%m/%d/'
+        self.tiff.reg_root = assets_path() + f'{self.name}'
+        return super().stage(*args, **kwargs)
+
 
 class StandardProsilicaV33(SingleTriggerV33, ProsilicaDetector):
-    # tiff = Cpt(TIFFPluginWithFileStore,
-    #           suffix='TIFF1:',
-    #           write_path_template='/XF11ID/data/')
+    tiff = Cpt(TIFFPluginWithFileStore,
+               suffix='TIFF1:',
+               write_path_template='',)
     cam = Cpt(ProsilicaDetectorCamV33, "cam1:")
     image = Cpt(ImagePlugin, "image1:")
     stats1 = Cpt(StatsPluginV33, "Stats1:")
@@ -147,16 +129,11 @@ class StandardProsilicaV33(SingleTriggerV33, ProsilicaDetector):
     roi4 = Cpt(ROIPlugin, "ROI4:")
     proc1 = Cpt(ProcessPlugin, "Proc1:")
 
-    # tiff = Cpt(
-    #     TIFFPluginWithFileStore,
-    #     suffix="TIFF1:",
-    #     #    write_path_template='/nsls2/xf11bm/Pilatus2M/%Y/%m/%d/',     # GPFS client
-    #     # write_path_template='/Pilatus2M/%Y/%m/%d/',                 # NSF-mount of GPFS directory
-    #     #    root='/nsls2/xf11bm'
-    #     read_path_template="/nsls2/data/cms/legacy/xf11bm/Pilatus2M/%Y/%m/%d/",
-    #     write_path_template="/nsls2/data/cms/legacy/xf11bm/Pilatus2M/%Y/%m/%d/",
-    #     root="/nsls2/data/cms/legacy/xf11bm",
-    # )
+    def stage(self, *args, **kwargs):
+        self.tiff.write_path_template = assets_path() + f'{self.name}/%Y/%m/%d/'
+        self.tiff.read_path_template = assets_path() + f'{self.name}/%Y/%m/%d/'
+        self.tiff.reg_root = assets_path() + f'{self.name}'
+        return super().stage(*args, **kwargs)
     
 class PilatusDetectorCamV33(PilatusDetectorCam):
     """This is used to update the standard prosilica to AD33."""
@@ -175,29 +152,6 @@ class PilatusDetectorCamV33(PilatusDetectorCam):
                 continue
             if hasattr(cpt, "ensure_nonblocking"):
                 cpt.ensure_nonblocking()
-
-
-# class Pilatus(SingleTrigger, PilatusDetector):
-#     image = Cpt(ImagePlugin, 'image1:')
-#     stats1 = Cpt(StatsPluginV33, 'Stats1:')
-#     stats2 = Cpt(StatsPluginV33, 'Stats2:')
-#     stats3 = Cpt(StatsPluginV33, 'Stats3:')
-#     stats4 = Cpt(StatsPluginV33, 'Stats4:')
-#     stats5 = Cpt(StatsPluginV33, 'Stats5:')
-#     roi1 = Cpt(ROIPlugin, 'ROI1:')
-#     roi2 = Cpt(ROIPlugin, 'ROI2:')
-#     roi3 = Cpt(ROIPlugin, 'ROI3:')
-#     roi4 = Cpt(ROIPlugin, 'ROI4:')
-#     proc1 = Cpt(ProcessPlugin, 'Proc1:')
-
-#     tiff = Cpt(TIFFPluginWithFileStore,
-#                suffix='TIFF1:',
-#                write_path_template='/nsls2/xf11bm/Pilatus300/%Y/%m/%d/',
-#                root='/nsls2/xf11bm')
-
-#     def setExposureTime(self, exposure_time, verbosity=3):
-#         caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquireTime', exposure_time)
-#         caput('XF:11BMB-ES{Det:SAXS}:cam1:AcquirePeriod', exposure_time+0.1)
 
 
 class PilatusV33(SingleTriggerV33, PilatusDetector):
@@ -288,7 +242,7 @@ class Pilatus8002V33(PilatusV33):
     tiff = Cpt(
         TIFFPluginWithFileStore,
         suffix="TIFF1:",
-        # write_path_template="/ramdisk/",
+        write_path_template="", # "/ramdisk/",
         # root="/ramdisk/",
     )
 
@@ -470,28 +424,6 @@ class Pilatus2MV33_h5(SingleTriggerV33, PilatusDetector):
             raise error
         return super().stage(*args, **kwargs)
 
-# print( 'This is the 20-area-dec py.')
-# class StandardProsilicaWithTIFF(StandardProsilica):
-#    tiff = Cpt(TIFFPluginWithFileStore,
-#               suffix='TIFF1:',
-#               write_path_template='/nsls2/xf11bm/data/%Y/%m/%d/',
-#               root='/nsls2/xf11bm/')
-
-
-## This renaming should be reversed: no correspondance between CSS screens, PV names and ophyd....
-# xray_eye1 = StandardProsilica('XF:11IDA-BI{Bpm:1-Cam:1}', name='xray_eye1')
-# xray_eye2 = StandardProsilica('XF:11IDB-BI{Mon:1-Cam:1}', name='xray_eye2')
-# xray_eye3 = StandardProsilica('XF:11IDB-BI{Cam:08}', name='xray_eye3')
-# xray_eye1_writing = StandardProsilicaWithTIFF('XF:11IDA-BI{Bpm:1-Cam:1}', name='xray_eye1')
-# xray_eye2_writing = StandardProsilicaWithTIFF('XF:11IDB-BI{Mon:1-Cam:1}', name='xray_eye2')
-# xray_eye3_writing = StandardProsilicaWithTIFF('XF:11IDB-BI{Cam:08}', name='xray_eye3')
-# fs1 = StandardProsilica('XF:11IDA-BI{FS:1-Cam:1}', name='fs1')
-# fs2 = StandardProsilica('XF:11IDA-BI{FS:2-Cam:1}', name='fs2')
-# fs_wbs = StandardProsilica('XF:11IDA-BI{BS:WB-Cam:1}', name='fs_wbs')
-# dcm_cam = StandardProsilica('XF:11IDA-BI{Mono:DCM-Cam:1}', name='dcm_cam')
-# fs_pbs = StandardProsilica('XF:11IDA-BI{BS:PB-Cam:1}', name='fs_pbs')
-# elm = Elm('XF:11IDA-BI{AH401B}AH401B:',)
-
 
 import time
 
@@ -499,14 +431,19 @@ import time
 if Camera_on==True:
 
     # time.sleep(1)
-    fs1 = StandardProsilicaV33('XF:11BMA-BI{FS:1-Cam:1}', name='fs1')
+    fs1 = StandardProsilicaV33('XF:11BMA-BI{FS:1-Cam:1}', name='webcam-1')
     # time.sleep(1)
-    fs2 = StandardProsilicaV33("XF:11BMA-BI{FS:2-Cam:1}", name="fs2")
+    fs2 = StandardProsilicaV33("XF:11BMA-BI{FS:2-Cam:1}", name="webcam-2")
     # time.sleep(1)
-    fs3 = StandardProsilicaV33("XF:11BMB-BI{FS:3-Cam:1}", name="fs3")
+    fs3 = StandardProsilicaV33("XF:11BMB-BI{FS:3-Cam:1}", name="webcam-3")
     # time.sleep(1)
-    fs4 = StandardProsilicaV33("XF:11BMB-BI{FS:4-Cam:1}", name="fs4")
-    fs5 = StandardProsilicaV33("XF:11BMB-BI{FS:Test-Cam:1}", name="fs5")
+    fs4 = StandardProsilicaV33("XF:11BMB-BI{FS:4-Cam:1}", name="webcam-4")
+    # mobile camera
+    fs5 = StandardProsilicaV33("XF:11BMB-BI{FS:Test-Cam:1}", name="webcam-5")
+    # off-axis camera
+    fs6 = StandardProsilicaV33("XF:11BMB-BI{OffAxis-Cam:1}", name="webcam-6")
+    # on-axis camera
+    fs9 = StandardProsilicaV33("XF:11BMB-BI{OnAxis-Cam:2}", name="webcam-9")
 
     all_standard_pros = [fs2, fs3, fs4]
 
