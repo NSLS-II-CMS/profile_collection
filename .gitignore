@@ -139,3 +139,4 @@ doc/source/_generated_images/*
 
 # Backups
 *.pybak
+.ipynb_checkpoints/

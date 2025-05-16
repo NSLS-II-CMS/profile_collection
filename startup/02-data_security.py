@@ -7,3 +7,6 @@ RE.md.pop('experiment_proposal_number', None)
 RE.md.pop('experiment_project', None)
 RE.md.pop('experiment_group', None)
 RE.md.pop('experiment_cycle', None)
+
+RE.md["experiment_alias_directory"] = "data_security_test" #NOTE TO SELF: Don't forget to delte this
+RE.md['savename'] = "testname"
