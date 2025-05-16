@@ -789,7 +789,7 @@ def waxs_on_inner():  # for inner-outer stitching
 # cms.SAXS.setCalibration([748, 1680-590], 2.01, [-64, -73]) # 13.5 keV
 cms.SAXS.setCalibration([761, 1680 - 606], 5.0, [-65, -73])
 
-RE.md["experiment_alias_directory"] = "/nsls2/data/cms/legacy/xf11bm/data/2022_1/LZhu2/"
+RE.md["experiment_alias_directory"] = proposal_path() + "experiments/LZhu2/"
 
 if True:
     cali = CapillaryHolder(base=stg)

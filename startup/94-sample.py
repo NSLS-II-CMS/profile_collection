@@ -2000,29 +2000,6 @@ class Sample_Generic(CoordinateSystem):
 
         get_beamline().beam.off()
 
-        # save the percentage information
-        # if verbosity>=5:
-        #     folder = '/nsls2/data/cms/legacy/xf11bm/data/2022_1/TKoga2/'
-        #     # filename = ''
-
-        #     current_data = {'a_sample': self.name,
-        #                     'b_exposure_time': detector.cam.acquire_time.get(),
-        #                     'c_exposure_percentage': percentage,
-        #                     'd_align_time': md['filename']
-        #                     }
-
-        #     temp_data = pds.DataFrame([current_data])
-
-        #     # INT_FILENAME='{}/data/{}.csv'.format(os.path.dirname(__file__) , 'alignment_results.csv')
-        #     INT_FILENAME='{}/data/{}.csv'.format(folder , 'exposure_info.csv')
-
-        #     if os.path.isfile(INT_FILENAME):
-        #         output_data = pds.read_csv(INT_FILENAME, index_col=0)
-        #         output_data = output_data.append(temp_data, ignore_index=True)
-        #         output_data.to_csv(INT_FILENAME)
-        #     else:
-        #         temp_data.to_csv(INT_FILENAME)
-
         if handlefile == True:
             for detector in get_beamline().detector:
                 self.handle_file(detector, extra=extra, verbosity=verbosity, **md)

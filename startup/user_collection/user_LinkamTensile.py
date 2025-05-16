@@ -39,7 +39,7 @@ from bluesky.suspenders import SuspendFloor, SuspendCeil
 # RE.install_suspender(sus)
 
 
-RE.md["experiment_alias_directory"] = "/nsls2/data/cms/legacy/xf11bm/data/2023_1/beamline"
+RE.md["experiment_alias_directory"] = proposal_path() + "experiments/beamline"
 # cms.SAXS.setCalibration([737, 1680-582], 3, [-65, -73]) #3m, 13.5kev
 # cms.SAXS.setCalibration([738, 1097], 3.0, [-65, -73])   #3m,13.5kev
 # cms.SAXS.setCalibration([738, 1680-590], 2, [-65, -73])

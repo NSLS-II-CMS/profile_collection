@@ -1,5 +1,5 @@
-# import time as ttime  # tea time
-# from datetime import datetime
+print(f'Loading {__file__}')
+
 from ophyd import (
     ProsilicaDetector,
     SingleTrigger,
@@ -28,14 +28,7 @@ from nslsii.ad33 import SingleTriggerV33, StatsPluginV33
 from ophyd.areadetector.filestore_mixins import FileStoreHDF5IterativeWrite
 from ophyd.areadetector.plugins import HDF5Plugin #,register_plugin,PluginBase
 
-
-print(f'Loading {__file__}')
-
-# import filestore.api as fs
-
-
-# class Elm(SingleTrigger, DetectorBase):
-#   pass
+import time
 
 
 Pilatus2M_on = True
@@ -61,9 +54,30 @@ Pilatus800_2_on = True
 ''' H5Plugin = HDF5Plugin  ''' 
 
 
-
 class TIFFPluginWithFileStore(TIFFPlugin, FileStoreTIFFIterativeWrite):
-    pass
+    def describe(self):
+        ret = super().describe()
+        key = self.parent._image_name
+        color_mode = self.parent.cam.color_mode.get(as_string=True)
+        if color_mode == 'Mono':
+            ret[key]['shape'] = [
+                self.parent.cam.num_images.get(),
+                #self.array_size.depth.get(),
+                self.array_size.height.get(),
+                self.array_size.width.get()
+                ]
+
+        elif color_mode in ['RGB1', 'Bayer']:
+            ret[key]['shape'] = [self.parent.cam.num_images.get(), *self.array_size.get()]
+        else:
+            raise RuntimeError("Color mode not supported")
+
+        cam_dtype = self.parent.cam.data_type.get(as_string=True)
+        type_map = {'UInt8': '|u1', 'UInt16': '<u2', 'Float32':'<f4', "Float64":'<f8'}
+        if cam_dtype in type_map:
+            ret[key].setdefault('dtype_str', type_map[cam_dtype])
+
+        return ret
 
 class HDF5PluginWithFileStore(HDF5Plugin, FileStoreHDF5IterativeWrite):
     pass
@@ -85,7 +99,6 @@ class ProsilicaDetectorCamV33(ProsilicaDetectorCam):
                 continue
             if hasattr(cpt, "ensure_nonblocking"):
                 cpt.ensure_nonblocking()
-
 
 class StandardProsilica(SingleTrigger, ProsilicaDetector):
     tiff = Cpt(TIFFPluginWithFileStore,
@@ -110,7 +123,6 @@ class StandardProsilica(SingleTrigger, ProsilicaDetector):
         self.tiff.reg_root = assets_path() + f'{self.name}'
         return super().stage(*args, **kwargs)
 
-
 class StandardProsilicaV33(SingleTriggerV33, ProsilicaDetector):
     tiff = Cpt(TIFFPluginWithFileStore,
                suffix='TIFF1:',
@@ -128,6 +140,10 @@ class StandardProsilicaV33(SingleTriggerV33, ProsilicaDetector):
     roi3 = Cpt(ROIPlugin, "ROI3:")
     roi4 = Cpt(ROIPlugin, "ROI4:")
     proc1 = Cpt(ProcessPlugin, "Proc1:")
+
+    @property
+    def hints(self):
+        return {'fields': [self.stats1.total.name]}
 
     def stage(self, *args, **kwargs):
         self.tiff.write_path_template = assets_path() + f'{self.name}/%Y/%m/%d/'
@@ -152,7 +168,6 @@ class PilatusDetectorCamV33(PilatusDetectorCam):
                 continue
             if hasattr(cpt, "ensure_nonblocking"):
                 cpt.ensure_nonblocking()
-
 
 class PilatusV33(SingleTriggerV33, PilatusDetector):
     cam = Cpt(PilatusDetectorCamV33, "cam1:")
@@ -190,7 +205,6 @@ class PilatusV33(SingleTriggerV33, PilatusDetector):
 
     def setExposureNumber(self, exposure_number, verbosity=3):
         yield from mv(self.cam.num_images, exposure_number)
-
 
 class Pilatus800V33(SingleTriggerV33, PilatusDetector):
     cam = Cpt(PilatusDetectorCamV33, "cam1:")
@@ -236,7 +250,6 @@ class Pilatus800V33(SingleTriggerV33, PilatusDetector):
     def setExposureNumber(self, exposure_number, verbosity=3):
         yield from mv(self.cam.num_images, exposure_number)
 
-
 class Pilatus8002V33(PilatusV33):
     cam = Cpt(PilatusDetectorCamV33, "cam1:")
     tiff = Cpt(
@@ -251,63 +264,6 @@ class Pilatus8002V33(PilatusV33):
         self.tiff.read_path_template = assets_path() + f'{self.name}/%Y/%m/%d/'
         self.tiff.reg_root = assets_path() + f'{self.name}'
         return super().stage(*args, **kwargs)
-
-
-
-# class Pilatus300V33(PilatusV33):
-#     tiff = Cpt(
-#         TIFFPluginWithFileStore,
-#         suffix="TIFF1:",
-#         write_path_template="/nsls2/data/cms/legacy/xf11bm/Pilatus300/%Y/%m/%d/",
-#         #    read_path_template='/nsls2/xf11bm/Pilatus300/%Y/%m/%d/',
-#         #    root='/nsls2/xf11bm')
-#         #    read_path_template='/nsls2/data/cms/legacy/xf11bm/Pilatus300/%Y/%m/%d/',
-#         read_path_template="/nsls2/data/cms/legacy/xf11bm/Pilatus300/%Y/%m/%d/",
-#         root="/nsls2/data/cms/legacy/xf11bm",
-#     )
-
-
-class Pilatus2M(SingleTrigger, PilatusDetector):
-    image = Cpt(ImagePlugin, "image1:")
-    stats1 = Cpt(StatsPluginV33, "Stats1:")
-    stats2 = Cpt(StatsPluginV33, "Stats2:")
-    stats3 = Cpt(StatsPluginV33, "Stats3:")
-    stats4 = Cpt(StatsPluginV33, "Stats4:")
-    stats5 = Cpt(StatsPluginV33, "Stats5:")
-    roi1 = Cpt(ROIPlugin, "ROI1:")
-    roi2 = Cpt(ROIPlugin, "ROI2:")
-    roi3 = Cpt(ROIPlugin, "ROI3:")
-    roi4 = Cpt(ROIPlugin, "ROI4:")
-    proc1 = Cpt(ProcessPlugin, "Proc1:")
-
-    trans1 = Cpt(TransformPlugin, "Trans1:")
-
-    tiff = Cpt(
-        TIFFPluginWithFileStore,
-        suffix="TIFF1:",
-        write_path_template = "",
-    )
-
-    def stage(self, *args, **kwargs):
-        self.tiff.write_path_template = assets_path() + f'{self.name}/%Y/%m/%d/'
-        self.tiff.read_path_template = assets_path() + f'{self.name}/%Y/%m/%d/'
-        self.tiff.reg_root = assets_path() + f'{self.name}'
-        return super().stage(*args, **kwargs)
-
-    def setExposureTime(self, exposure_time, verbosity=3):
-        # how to do this with stage_sigs (warning, need to change this every time
-        # if you set)
-        # RE(pilatus2M.setEposure(1))   ---format
-        # self.cam.stage_sigs['acquire_time'] = exposure_time
-        # self.cam.stage_sigs['acquire_period'] = exposure_time+.1
-
-        yield from mv(
-            self.cam.acquire_time,
-            exposure_time,
-            self.cam.acquire_period,
-            exposure_time + 0.1,
-        )
-        # yield from mv(self.cam.acquire_period, exposure_time+0.1)
 
 
 class Pilatus2MV33(SingleTriggerV33, PilatusDetector):
@@ -366,16 +322,6 @@ class Pilatus2MV33_h5(SingleTriggerV33, PilatusDetector):
     proc1 = Cpt(ProcessPlugin, "Proc1:")
     trans1 = Cpt(TransformPlugin, "Trans1:")
 
-    # tiff = Cpt(
-    #     TIFFPluginWithFileStore,
-    #     suffix="TIFF1:",
-    #     #    write_path_template='/nsls2/xf11bm/Pilatus2M/%Y/%m/%d/',     # GPFS client
-    #     # write_path_template='/Pilatus2M/%Y/%m/%d/',                 # NSF-mount of GPFS directory
-    #     #    root='/nsls2/xf11bm'
-    #     write_path_template="/nsls2/data/cms/legacy/xf11bm/Pilatus2M/%Y/%m/%d/",  # Lustre client
-    #     root="/nsls2/data/cms/legacy/xf11bm",
-    # )
-
     h5 = Cpt(
         HDF5PluginWithFileStore,
         suffix="HDF1:",
@@ -423,9 +369,6 @@ class Pilatus2MV33_h5(SingleTriggerV33, PilatusDetector):
             # Raise the error captured above to produce a useful error message.
             raise error
         return super().stage(*args, **kwargs)
-
-
-import time
 
 
 if Camera_on==True:
@@ -501,6 +444,18 @@ if Camera_on==True:
     #     item_check = getattr(fs1.cam, item)
     #     item_check.kind = "omitted"
 
+    all_standard_pros = [fs1, fs2, fs3, fs4, fs5, fs6, fs9]
+    for camera in all_standard_pros:
+        camera.read_attrs = ['stats1', 'stats2', 'stats3', 'stats4', 'stats5']
+        # camera.tiff.read_attrs = []  # leaving just the 'image'
+        for stats_name in ['stats1', 'stats2', 'stats3', 'stats4', 'stats5']:
+            stats_plugin = getattr(camera, stats_name)
+            stats_plugin.read_attrs = ['total']
+        camera.cam.ensure_nonblocking()
+
+        camera.read_attrs.append('tiff')
+        camera.tiff.read_attrs = []
+        camera.cam.ensure_nonblocking()
 
 
 # class StandardsimDetectorV33(SingleTriggerV33, ProsilicaDetector):

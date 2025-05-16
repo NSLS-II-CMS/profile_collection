@@ -1940,52 +1940,8 @@ class Sample_Generic(CoordinateSystem):
                 percentage = 100 * (time.time() - start_time) / max_exposure_time
                 print("After re-exposing .... percentage = {} ".format(percentage))
 
-                # if detector.name is 'pilatus300':
-                #     if caget('XF:11BMB-ES{Det:SAXS}:cam1:Acquire')==1:
-                #         status *= 0
-                # elif detector.name is 'pilatus2M':
-                #     if caget('XF:11BMB-ES{Det:PIL2M}:cam1:Acquire')==1:
-                #         status *= 0
-                # elif detector.name is 'pilatus800':
-                #     if caget('XF:11BMB-ES{Det:PIL800K}:cam1:Acquire')==1:
-                #         status *= 0
-                # elif detector.name is 'PhotonicSciences_CMS':
-                # if not detector.detector_is_ready(verbosity=0):
-                # status *= 0
-
-        # if verbosity>=3 and caget('XF:11BMB-ES{Det:PIL800K}:cam1:Acquire')==1:
-        #     print('Warning: Detector pilatus300 still not done acquiring.')
-
-        # #if verbosity>=3 and caget('XF:11BMB-ES{Det:SAXS}:cam1:Acquire')==1:
-        #     #print('Warning: Detector pilatus300 still not done acquiring.')
-
-        # if verbosity>=3 and caget('XF:11BMB-ES{Det:PIL2M}:cam1:Acquire')==1:
-        #     print('Warning: Detector pilatus2M still not done acquiring.')
 
         get_beamline().beam.off()
-
-        # save the percentage information
-        # if verbosity>=5:
-        #     folder = '/nsls2/data/cms/legacy/xf11bm/data/2022_1/TKoga2/'
-        #     # filename = ''
-
-        #     current_data = {'a_sample': self.name,
-        #                     'b_exposure_time': detector.cam.acquire_time.get(),
-        #                     'c_exposure_percentage': percentage,
-        #                     'd_align_time': md['filename']
-        #                     }
-
-        #     temp_data = pds.DataFrame([current_data])
-
-        #     # INT_FILENAME='{}/data/{}.csv'.format(os.path.dirname(__file__) , 'alignment_results.csv')
-        #     INT_FILENAME='{}/data/{}.csv'.format(folder , 'exposure_info.csv')
-
-        #     if os.path.isfile(INT_FILENAME):
-        #         output_data = pds.read_csv(INT_FILENAME, index_col=0)
-        #         output_data = output_data.append(temp_data, ignore_index=True)
-        #         output_data.to_csv(INT_FILENAME)
-        #     else:
-        #         temp_data.to_csv(INT_FILENAME)
 
         if handlefile == True:
             for detector in get_beamline().detector:

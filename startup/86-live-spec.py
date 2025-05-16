@@ -10,7 +10,7 @@ Serializer = suitcaseSpecfile.Serializer
 
 
 def spec_factory(name, doc):
-    directory = "/nsls2/data/cms/legacy/xf11bm/ScanFiles"
+    directory = proposal_path() + "experiments/data/ScanFiles"
     file_prefix = "cms_scan_" + time.strftime("%Y_%m_%d")
     
 # # skip multiple motor scans

@@ -57,7 +57,7 @@ nslsii.configure_base(get_ipython().user_ns,
 print("Initializing Tiled reading client...\nMake sure you check for duo push.")
 tiled_reading_client = from_profile("nsls2", username=None, include_data_sources=True)["cms"]["raw"]
 
-db = Broker(tiled_reading_client)
+# db = Broker(tiled_reading_client)
 
 from pyOlog.ophyd_tools import *
 
@@ -71,5 +71,8 @@ from bluesky.utils import register_transform
 register_transform('RE', prefix='<')
 
 # Setup the path to the secure assets folder for the current proposal
+def proposal_path():
+    return f"/nsls2/data/cms/proposals/{RE.md['cycle']}/{RE.md['data_session']}/"
+
 def assets_path():
-    return f"/nsls2/data/cms/proposals/{RE.md['cycle']}/{RE.md['data_session']}/assets/"
+    return proposal_path() + "assets/"
